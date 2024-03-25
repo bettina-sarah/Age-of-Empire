@@ -1,0 +1,96 @@
+�TAT INITIAL DU JEU
+
+0- Chaque joueur est identifi� par son nom, 
+	affich� dans la barre titre et dans
+	la section de commande, � droite
+1- l'aire de jeu est 4000x4000 pixels
+2- ressources du joueur affich�es dans 
+	le HUD (Heads Up Display)
+3- bouton "Chat" et "Aide" dans le HUD 
+	(voir plus bas)
+4- la couleur de fond du HUD correspond 
+	� votre couleur
+5- l'aire de jeu est peupl� de Biotopes
+	R�gions de biotopes de 4 types:
+	"arbres","eau","marais","roche","aureus"
+6- les r�gions "eau" et "marais" ne sont pas
+	exploit�s
+7- AU D�PART: la carte se localise (scroll) 
+	pour mettre la maison d'origine 
+	de chaque joueur dans 
+	la section visible
+8- la nourriture s'acquiert par le
+	ramassage de baies
+	NOTE: les arbustes de baies sont g�n�r�s
+		al�atoirement et progressivement
+9- Des daims peuplent aussi, al�atoirement, 
+	l'aire de jeu d�s le d�part, 
+	ils ne sont pas encore exploitables
+10- Une minicarte est cr�� et affiche
+	initialement les Biotopes
+11- les Batiments sont repr�sent�s 
+	dans la minicarte
+12- La minicarte est cliquable pour faire des 
+	d�placement de l'aire de jeu
+
+MANIPULATION DANS L'AIRE DE JEU
+
+CREATION DE PERSOS
+Bouton-1: sur une maison: cr�e ouvrier
+	attach� � cette maison
+
+Bouton-1: sur une caserne: cr�e un soldat
+
+MANIPULATION DES PERSOS
+Bouton-1: sur le terrain:	d�selectionne tout
+
+Bouton-1: sur les persos:	s�lectionne le perso,
+	affiche un bar jaune, 
+	affiche les commandes associ�es
+			
+Bouton-1: sur une ressource si des ouvriers selectionnes:	
+	commande d'aller ramasser cette ressource
+	NOTE: les ressources disopnibles sont
+	arbres -> bois
+	roches -> roche
+	aureus -> aureus
+	baie   -> nourriture 
+	ATTENTION: lorsque la ressource est �puis�e,
+	l'ouvrier arr�te simplement et
+	envoie un message aua autres ouvriers
+
+Bouton-2: sur le terrain, si perso selectionn�
+	dirige le perso � cet endroit
+			
+Majuscule-Bouton-1,glisse,rel�che:
+	sur le terrain:	selectionne le groupe
+	de vos persos � l'int�rieur
+
+CREATION DE BATIMENT (si perso choisi)
+Bouton-1: Le bouton passe au vert (actif)
+et
+Bouton-3: sur le terrain, construit le batiment choisi
+	� cet endroit
+	ATTENTION - aucun test est effectu� pour
+	permettre ou non de le positionner
+
+CHAT ET AIDE
+1- le chat permet l'envoie de message
+	� des joueurs sp�cifiques
+	 NOTE: pas d'envoie de groupe pour le moment
+2- le Bouton Chat change de couleur
+	lorsqu'un joueur re�oit une message
+3- le chat fait apparaitre un cadre dans la section gauche, 
+	en haut de la vue actuelle de la carte
+4- le bouton chat bascule la visibilit� 
+	du cadre de chat (montre, cache)
+5- le chat se compose de la liste des messages,
+	d'un combo pour choisir un joueur 
+	et d'un champ d'entr�e de texte
+6- le texte est envoy� sur la touche Return
+	(le texte n'est pas supprim� du champ)
+	
+7- le bouton aide affiche (et bascule)
+	le cadre du texte d'aide
+8- l'aide apparait dans un cadre dans la section droite, 
+	en haut de la vue actuelle de la carte
