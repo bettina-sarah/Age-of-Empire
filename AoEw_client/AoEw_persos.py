@@ -183,7 +183,13 @@ class Perso():
 
         if case.montype == "batiment":
             print("marche dans ", case.montype)
-            print(self.parent.parent.get_subcarte(x1, y1, 10))
+            cases = self.parent.parent.get_subcarte(x1, y1, 10)
+            self.contourne_batiment(cases)
+
+
+    def contourne_batiment(self, cases):
+        for case in cases:
+            print(case.montype)
 
 
 
@@ -430,49 +436,7 @@ class Ouvrier(Perso):
                         return obj
             return None
 
-    # def deplacer(self,pos):
-    #     self.position_visee = pos
-    #     self.actioncourante = "bouger"
-    #
-    # def bouger(self):
-    #     if self.position_visee:
-    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
-    #         # dynamique comme le daim
-    #         x = self.position_visee[0]
-    #         y = self.position_visee[1]
-    #         ang = Helper.calcAngle(self.x, self.y, x, y)
-    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-    #         self.test_etat_du_sol(x1, y1)
-    #         ######## FIN DE TEST POUR SURFACE MARCHEE
-    #         # si tout ba bien on continue avec la nouvelle valeur
-    #         self.x, self.y = x1, y1
-    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-    #         dist = Helper.calcDistance(self.x, self.y, x, y)
-    #         if dist <= self.vitesse:
-    #             if self.actioncourante=="bouger":
-    #                 self.actioncourante=None
-    #             return "rendu"
-    #         else:
-    #             return dist
 
-    # def test_etat_du_sol(self,x1, y1):
-    #     ######## SINON TROUVER VOIE DE CONTOURNEMENT
-    #     # ici oncalcule sur quelle case on circule
-    #     casex = x1 / self.parent.parent.taillecase
-    #     if casex != int(casex):
-    #         casex = int(casex) + 1
-    #     casey = y1 / self.parent.parent.taillecase
-    #     if casey != int(casey):
-    #         casey = int(casey) + 1
-    #     #####AJOUTER TEST DE LIMITE
-    #     # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-    #     if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "plaine":
-    #         # test pour être sur que de n'est 9 (9=batiment)
-    #         if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "batiment":
-    #             print("marche dans ", )
-    #         else:
-    #             print("marche dans batiment")
 
     def abandonner_ressource(self, ressource):
         if ressource == self.cible:
