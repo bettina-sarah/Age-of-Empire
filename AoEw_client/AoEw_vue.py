@@ -54,7 +54,19 @@ class Vue():
     def creer_cadres(self, url_serveur: str, nom_joueur_local: str, testdispo: str):
         self.cadres["splash"] = self.creer_cadre_splash(url_serveur, nom_joueur_local, testdispo)
         self.cadres["lobby"] = self.creer_cadre_lobby()
+        self.cadres["fin"] = self.creer_cadre_fin()
         self.cadres["jeu"] = self.creer_cadre_jeu()
+
+
+    def creer_cadre_fin(self):
+        self.cadreFin = Frame(self.cadreapp, bg="green", width=400, height=400)
+        # un canvas est utilisé pour 'dessiner' les widgets de cette fenêtre voir 'create_window' plus bas
+        self.canevasFin = Canvas(self.cadreFin, width=600, height=480, bg="SlateBlue1")
+
+        self.canevasFin.pack()
+
+        return self.cadreFin
+
 
     # le splash (ce qui 'splash' à l'écran lors du démarrage)
     # sera le cadre visuel initial lors du lancement de l'application
@@ -280,6 +292,9 @@ class Vue():
         self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
+        #ATTENTION POUR DES TEST A ENLEVER
+
+        self.canevas.tag_bind('ours','<Button-1>', self.test)
 
     def OnMouseWheel(self, evt):
         print(evt.keysym)
@@ -621,6 +636,13 @@ class Vue():
 
     ### FIN du multiselect
 
+    def test(self, evt):
+        joueur, t= self.parent.joueurs[0]
+        print( "PERDU:" + joueur)
+        self.parent.testa= True
+        self.changer_cadre("fin")
+
+
     def ramasser_ressource(self, evt):
         tag = self.canevas.gettags(CURRENT)
         if tag[1] == "" and self.action.persochoisi:
@@ -707,6 +729,10 @@ class Vue():
         elif self.action.persochoisi != []:
             self.action.ciblechoisi = mestags
             self.action.attaquer()
+
+    def afficherFin(self):
+        self.changer_cadre("fin")
+        pass
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur

@@ -6,6 +6,7 @@ from AoEw_modele import *
 
 class Controleur():
     def __init__(self):
+        self.testa = False
         self.ego_serveur = 0 # 1 si le joueur a creer la partie (seul lui peut 'lancer' la partie)
         self.iteration_boucle_jeu = 0
         self.actions_requises = []
@@ -122,41 +123,58 @@ class Controleur():
 
     # La boucle principale pour jouer une partie
     def boucler_sur_jeu(self):
-        self.iteration_boucle_jeu += 1
-        # test pour communiquer avec le serveur periodiquement
-        if self.iteration_boucle_jeu % self.modulo_appeler_serveur == 0:
-            actions = []
-            if self.actions_requises:
-                actions = self.actions_requises
-                self.actions_requises = []
-            url = self.url_serveur + "/boucler_sur_jeu"
-            if actions == []:
-                actions = ''
-            data = {"nom": self.nom_joueur_local,
-                      "iteration_boucle_jeu": self.iteration_boucle_jeu,
-                      "actions_requises": actions}
-            try:
-                mondict = self.appeler_serveur(url, data, method = "POST")
-                # verifie pour requete d'attente d'un joueur plus lent
-                if "ATTENTION" in mondict:
-                    print("SAUTER TOUR")
+
+        if self.finPartie():
+            self.iteration_boucle_jeu += 1
+            # test pour communiquer avec le serveur periodiquement
+            if self.iteration_boucle_jeu % self.modulo_appeler_serveur == 0:
+                actions = []
+                if self.actions_requises:
+                    actions = self.actions_requises
+                    self.actions_requises = []
+                url = self.url_serveur + "/boucler_sur_jeu"
+                if actions == []:
+                    actions = ''
+                data = {"nom": self.nom_joueur_local,
+                          "iteration_boucle_jeu": self.iteration_boucle_jeu,
+                          "actions_requises": actions}
+                try:
+                    mondict = self.appeler_serveur(url, data, method = "POST")
+                    # verifie pour requete d'attente d'un joueur plus lent
+                    if "ATTENTION" in mondict:
+                        print("SAUTER TOUR")
+                        self.on_joue = 0
+                    elif mondict:
+                        self.partie.ajouter_actions_a_faire(self.iteration_boucle_jeu,mondict)
+
+                except requests.exceptions.RequestException as e:
+                    print("An error occurred:", e)
                     self.on_joue = 0
-                elif mondict:
-                    self.partie.ajouter_actions_a_faire(self.iteration_boucle_jeu,mondict)
 
-            except requests.exceptions.RequestException as e:
-                print("An error occurred:", e)
-                self.on_joue = 0
+            if self.on_joue:
+                # envoyer les messages au modele et a la vue de faire leur job
+                self.partie.jouer_prochain_coup(self.iteration_boucle_jeu)
+                self.vue.afficher_jeu()
+            else:
+                self.iteration_boucle_jeu -= 1
+                self.on_joue = 1
+            # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
 
-        if self.on_joue:
-            # envoyer les messages au modele et a la vue de faire leur job
-            self.partie.jouer_prochain_coup(self.iteration_boucle_jeu)
-            self.vue.afficher_jeu()
-        else:
-            self.iteration_boucle_jeu -= 1
-            self.on_joue = 1
-        # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
-        self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+            self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+            print( self.joueurs)
+        else :
+            self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+
+
+
+
+    def finPartie(self):
+
+        if self.partie.test_fin():
+            self.vue.afficherFin()
+
+        return self.partie.test_fin()
+
 
     ###################################################################
     # fonction qui fait les appels au serveur

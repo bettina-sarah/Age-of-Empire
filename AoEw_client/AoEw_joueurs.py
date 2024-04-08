@@ -180,3 +180,10 @@ class Joueur():
         self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                        sorteperso)
 
+
+    def test_LOSING(self):
+        self.batiments = {"maison": {},
+                          "abri": {},
+                          "caserne": {},
+                          "usineballiste": {},
+                          "siteconstruction": {}}

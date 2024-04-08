@@ -438,6 +438,33 @@ class Partie():
         if ress not in self.ressourcemorte:
             self.ressourcemorte.append(ress)
 
+
+    def test_fin(self):
+    #    'JAJA_193': < AoEw_joueurs.Joueur object at  0x000001F0329B4790 >}
+        print(self.joueurs)
+
+        if self.parent.testa:
+
+            first_key = list(self.joueurs.keys())[1]
+            test=self.joueurs[first_key]
+
+
+            print(test.persos)
+            print(test.batiments)
+            test.test_LOSING()
+            print("joueur dans liste M")
+            print(self.joueurs)
+            print(test.batiments)
+            print("FIN YESY MORT")
+            return False
+        else:
+            return True
+
+
+
+
+
+
     #############################################################################
     # ATTENTION : NE PAS TOUCHER
     def ajouter_actions_a_faire(self, iteration, actionsrecues):
