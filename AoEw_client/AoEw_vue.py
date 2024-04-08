@@ -7,7 +7,7 @@ from chargeurdimages import *
 
 
 class Vue():
-    def __init__(self, parent, url_serveur, nom_joueur_local): #, testdispo):
+    def __init__(self, parent, url_serveur, nom_joueur_local):  # , testdispo):
         self.parent = parent
         self.root = Tk()
         self.root.title("Je suis " + nom_joueur_local)
@@ -21,6 +21,7 @@ class Vue():
         self.cadreactif = None
         # # objet pour cumuler les manipulations du joueur pour generer une action de jeu
         self.action = Action(self)
+        self.images = charger_images()
         # cadre principal de l'application
         self.cadreapp = Frame(self.root, width=500, height=400, bg="red")
         self.cadreapp.pack(expand=1, fill=BOTH)
@@ -37,7 +38,7 @@ class Vue():
         self.debut_selection = []
         self.selecteuractif = None
         # # images des assets, definies dans le modue loadeurimages
-        self.images = charger_images()
+
         self.gifs = charger_gifs()
 
     ####### INTERFACES GRAPHIQUES
@@ -69,7 +70,8 @@ class Vue():
         self.etatdujeu = Label(text=testdispo, font=("Arial", 18), borderwidth=2, relief=RIDGE)
         self.nomsplash = Entry(font=("Arial", 14))
         self.url_initial = Entry(font=("Arial", 14))
-        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12), command=self.initialiser_splash_post_connection)
+        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
+                                    command=self.initialiser_splash_post_connection)
         # on insère les infos par défaut (nom url) et reçu au démarrage (dispo)
         self.nomsplash.insert(0, nom_joueur_local)
         self.url_initial.insert(0, url_serveur)
@@ -171,10 +173,27 @@ class Vue():
         # fonction interne uniquement pour reproduire chaque item d'info
         def creer_champ_interne(listechamp):
             titre = Champ(self.cadrejeuinfo, text=i, bg="red", fg="white")
+
+
+
+
             varstr = StringVar()
             varstr.set(0)
             donnee = Champ(self.cadrejeuinfo, bg="red", fg="white", textvariable=varstr)
-            titre.pack(side=LEFT)
+            #titre.pack(side=LEFT)
+            if i == "Nourriture":
+                champ_image_nourriture = Champ(self.cadrejeuinfo, image=self.images["arbustebaiesgrand"])
+                champ_image_nourriture.pack(side=LEFT)
+            elif i == "Bois":
+                champ_image_bois = Champ(self.cadrejeuinfo, image=self.images["bois-ressource"])
+                champ_image_bois.pack(side=LEFT)
+            elif i == "Roche":
+                champ_image_roche = Champ(self.cadrejeuinfo, image=self.images["roches1petit"])
+                champ_image_roche.pack(side=LEFT)
+            elif i == "Aureus":
+                champ_image_aureus = Champ(self.cadrejeuinfo, image=self.images["aureusD_"])
+                champ_image_aureus.pack(side=LEFT)
+
             donnee.pack(side=LEFT)
             self.infohud[i] = [varstr, donnee]
 
@@ -306,7 +325,7 @@ class Vue():
         nom = self.nomsplash.get()
         ## ON VA LIRE LA VALEUR DE LA VARIABLE ASSOCIEE AU BTN RADION CHOISI
         urljeu = self.url_initial.get()
-        self.parent.creer_partie(nom) #, urljeu)  # ,valciv)
+        self.parent.creer_partie(nom)  # , urljeu)  # ,valciv)
 
     ###  METHODES POUR SPLASH ET LOBBY INSCRIPTION pour participer a une partie
     def update_splash(self, etat):
@@ -351,7 +370,8 @@ class Vue():
         # on ajuste la taille du canevas de jeu
         self.canevas.config(scrollregion=(0, 0, self.modele.aireX, self.modele.aireY))
         self.canevasaction.delete("nom")
-        self.canevasaction.create_text(100, 30, text=self.nom_joueur_local, font=("arial", 18, "bold"), anchor=S, tags=("nom"))
+        self.canevasaction.create_text(100, 30, text=self.nom_joueur_local, font=("arial", 18, "bold"), anchor=S,
+                                       tags=("nom"))
 
         # on cree les cadres affichant les items d'actions du joueur
         # cadre apparaissant si on selectionne un ouvrier
@@ -435,8 +455,9 @@ class Vue():
         print(self.parent.nom_joueur_local)
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
-                                          "statique", self.parent.nom_joueur_local, batiment.id, "batiment", batiment.montype,
-                                          ""))
+                                              "statique", self.parent.nom_joueur_local, batiment.id, "batiment",
+                                              batiment.montype,
+                                              ""))
 
         x0, y0, x2, y2 = self.canevas.bbox(chose)
 
@@ -750,7 +771,8 @@ class Action():
         txt = self.parent.entreechat.get()
         joueur = self.parent.joueurs.get()
         if joueur:
-            action = [self.parent.nom_joueur_local, "chatter", [self.parent.nom_joueur_local + ": " + txt, self.parent.nom_joueur_local, joueur]]
+            action = [self.parent.nom_joueur_local, "chatter",
+                      [self.parent.nom_joueur_local + ": " + txt, self.parent.nom_joueur_local, joueur]]
             self.parent.parent.actions_requises.append(action)
 
     def chatter(self):
@@ -783,6 +805,7 @@ class Action():
             self.aideon = 0
 
     ### FIN des methodes pour lancer la partie
+
 
 # classe qui est une sous-classe d'une classe tkinter dont on change les proprietes
 class Champ(Label):
