@@ -381,14 +381,20 @@ class Ouvrier(Perso):
                                                                              self.cible.sorte)
             self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
 
-            sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
-            print(sitecons)
+            try:
+                sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
+                print(sitecons)
 
-            self.parent.installer_batiment(batiment)
-            if self.cible.sorte == "maison":
-                self.batimentmere = batiment
-            self.cible = None
-            self.actioncourante = None
+                self.parent.installer_batiment(batiment)
+                if self.cible.sorte == "maison":
+                    self.batimentmere = batiment
+                self.cible = None
+                self.actioncourante = None
+
+            except:
+                print("batiementt deja construit")
+                self.cible = None
+                self.actioncourante = None
 
     def construire_site_construction(self, site_construction):
         self.cibler(site_construction)
