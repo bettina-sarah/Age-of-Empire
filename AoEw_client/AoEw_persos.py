@@ -144,10 +144,12 @@ class Perso():
             ang = Helper.calcAngle(self.x, self.y, x, y)
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.test_etat_du_sol(x1, y1)
+            self.get_directon_vers_position_visee()
+            print("avant : ", self.x,"/", self.y )
+            self.x, self.y = self.test_etat_du_sol(x1, y1)
+            print("apres : ", self.x,"/", self.y )
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
-            self.x, self.y = x1, y1
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
             dist = Helper.calcDistance(self.x, self.y, x, y)
             if dist <= self.vitesse:
@@ -166,8 +168,25 @@ class Perso():
             else:
                 self.dir = "G"
             self.image = self.image[:-1] + self.dir
+
+            if self.y < self.position_visee[0]:
+                self.dir += "B"
+            else:
+                self.dir += "H"
         else:
             self.position_visee = None
+
+    def get_directon_vers_position_visee(self):
+        if self.position_visee:
+            if self.x < self.position_visee[0]:
+                self.dir = "D"
+            else:
+                self.dir = "G"
+
+            if self.y < self.position_visee[1]:
+                self.dir += "B"
+            else:
+                self.dir += "H"
 
     def test_etat_du_sol(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
@@ -182,14 +201,43 @@ class Perso():
         case = self.parent.parent.trouver_case(x1, y1)
 
         if case.montype == "batiment":
-            print("marche dans ", case.montype)
-            cases = self.parent.parent.get_subcarte(x1, y1, 10)
-            self.contourne_batiment(cases)
+            cases = self.parent.parent.get_subcarte(x1, y1, 4)
+
+            x1, y1 = self.contourne_batiment(cases)
+            ang = Helper.calcAngle(self.x, self.y, x1,y1)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+
+        return x1,y1
 
 
     def contourne_batiment(self, cases):
+        cases_cibles = []
         for case in cases:
-            print(case.montype)
+            if case.montype != "batiment":
+                cases_cibles.append(case)
+        return self.trouve_case_contournement(cases_cibles)
+
+
+    def trouve_case_contournement(self, cases):
+        x,y = cases[0].x, cases[0].y
+        for case in cases:
+            if self.dir == "GH":
+                if case.x < x and case.y < y:
+                    x = case.x
+                    y = case.y
+            elif self.dir == "DH":
+                if case.x > x and case.y < y:
+                    x = case.x
+                    y = case.y
+            elif self.dir == "GB":
+                if case.x < x and case.y > y:
+                    x = case.x
+                    y = case.y
+            elif self.dir == "DB":
+                if case.x > x and case.y > y:
+                    x = case.x
+                    y = case.y
+        return [x,y]
 
 
 
