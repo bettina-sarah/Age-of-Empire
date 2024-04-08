@@ -376,7 +376,12 @@ class Vue():
     def afficher_depart(self):
         self.modele.listebiotopes.sort(key=lambda c: c.y)
         for i in self.modele.listebiotopes:
+            print(i.montype)
             if i.montype == "daim":
+                monitem = self.canevas.create_image(i.x, i.y, image=self.images[i.img], anchor=S,
+                                                    tags=("mobile", "", i.id, "biotope", i.montype, ""))
+                # tags=("mobile","",i.id,)
+            elif i.montype == "ours":
                 monitem = self.canevas.create_image(i.x, i.y, image=self.images[i.img], anchor=S,
                                                     tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("mobile","",i.id,)
@@ -508,6 +513,18 @@ class Vue():
             i = self.modele.biotopes["daim"][j]
             if i.etat == "mort":
                 self.canevas.create_image(i.x, i.y, image=self.images["daimMORT"],
+                                          tags=("mobile", "", i.id, "biotope", i.montype, ""))
+                # tags=("",i.id,"artefact","daim","mobile"))
+
+            else:
+                self.canevas.create_image(i.x, i.y, image=self.images[i.img],
+                                          tags=("mobile", "", i.id, "biotope", i.montype, ""))
+                # tags=("",i.id,"artefact","daim","mobile"))
+
+        for j in self.modele.biotopes["ours"].keys():
+            i = self.modele.biotopes["ours"][j]
+            if i.etat == "mort":
+                self.canevas.create_image(i.x, i.y, image=self.images["oursMORT"],
                                           tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("",i.id,"artefact","daim","mobile"))
 
