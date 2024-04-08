@@ -140,7 +140,7 @@ class Vue():
         # on crée les scrollbar AVANT le canevas de jeu car le canevas est dépendant de leur
         self.scrollV = Scrollbar(self.cadrecanevas, orient=VERTICAL)
         self.scrollH = Scrollbar(self.cadrecanevas, orient=HORIZONTAL)
-        self.canevas = Canvas(self.cadrecanevas, width=400, height=400, bg="DarkOliveGreen2",
+        self.canevas = Canvas(self.cadrecanevas, width=400, height=400, bg="indianRed1",
                               yscrollcommand=self.scrollV.set,
                               xscrollcommand=self.scrollH.set)
         self.scrollV.config(command=self.canevas.yview)
@@ -437,8 +437,14 @@ class Vue():
                                           tags=(
                                           "statique", self.parent.nom_joueur_local, batiment.id, "batiment", batiment.montype,
                                           ""))
-
         x0, y0, x2, y2 = self.canevas.bbox(chose)
+        mesCases = self.parent.partie.get_carte_bbox(x0, y0, x2, y2)
+        print(mesCases)
+        for i in mesCases:
+            taille = self.parent.partie.taillecase
+            x1,y1,x2,y2 = i[0]*taille, i[1]*taille, i[0]*taille+taille, i[1]*taille+taille
+            img = self.canevas.create_rectangle(x1,y1,x2,y2, fill="blue", tags=("statique",))
+
 
         couleurs = {0: "",
                     1: "light green",

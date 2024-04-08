@@ -145,9 +145,9 @@ class Perso():
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
             self.get_directon_vers_position_visee()
-            print("avant : ", self.x,"/", self.y )
+            # print("avant : ", self.x,"/", self.y )
             self.x, self.y = self.test_etat_du_sol(x1, y1)
-            print("apres : ", self.x,"/", self.y )
+            # print("apres : ", self.x,"/", self.y )
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
@@ -201,7 +201,17 @@ class Perso():
         case = self.parent.parent.trouver_case(x1, y1)
 
         if case.montype == "batiment":
-            cases = self.parent.parent.get_subcarte(x1, y1, 4)
+            print("je marche dans un batiment")
+            cases = self.parent.parent.get_subcarte(x1, y1, 2)
+            taille = self.parent.parent.taillecase
+            for i in cases:
+                if i.montype == "batiment":
+                    xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                else:
+                    xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+
 
             x1, y1 = self.contourne_batiment(cases)
             ang = Helper.calcAngle(self.x, self.y, x1,y1)
@@ -221,22 +231,25 @@ class Perso():
     def trouve_case_contournement(self, cases):
         x,y = cases[0].x, cases[0].y
         for case in cases:
+            # taille = self.parent.parent.taillecase
+            # xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+            # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
             if self.dir == "GH":
                 if case.x < x and case.y < y:
                     x = case.x
-                    y = case.y
+                    y = case.y+10
             elif self.dir == "DH":
                 if case.x > x and case.y < y:
                     x = case.x
-                    y = case.y
+                    y = case.y+10
             elif self.dir == "GB":
                 if case.x < x and case.y > y:
                     x = case.x
-                    y = case.y
+                    y = case.y -10
             elif self.dir == "DB":
                 if case.x > x and case.y > y:
                     x = case.x
-                    y = case.y
+                    # y = case.y-10
         return [x,y]
 
 

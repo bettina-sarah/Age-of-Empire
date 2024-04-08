@@ -117,6 +117,11 @@ class Partie():
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
         for i in cartebatiment:
             self.cartecase[i[1]][i[0]].montype = "batiment"
+            x1 = self.cartecase[i[1]][i[0]].x
+            y1 = self.cartecase[i[1]][i[0]].y
+            x2 = self.cartecase[i[1]][i[0]].x+self.taillecase
+            y2 = self.cartecase[i[1]][i[0]].y+self.taillecase
+            self.parent.vue.canevas.create_rectangle(x1, y1,x2,y2, fill="blue", tags=("statique",))
         batiment.cartebatiment = cartebatiment
 
     def creer_biotopes(self):
