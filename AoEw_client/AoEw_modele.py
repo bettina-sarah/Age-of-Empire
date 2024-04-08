@@ -335,11 +335,11 @@ class Partie():
 
         cx = int(x / self.taillecase)
         cy = int(y / self.taillecase)
-        if cx != 0 and x % self.taillecase > 0:
-            cx += 1
-
-        if cy != 0 and y % self.taillecase > 0:
-            cy += 1
+        # if cx != 0 and x % self.taillecase > 0:
+        #     cx += 1
+        #
+        # if cy != 0 and y % self.taillecase > 0:
+        #     cy += 1
 
         # possible d'etre dans une case trop loin
         if cx == self.taillecarte:

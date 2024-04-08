@@ -198,34 +198,37 @@ class Perso():
         if casey != int(casey):
             casey = int(casey) + 1
         #####AJOUTER TEST DE LIMITE
+        taille = self.parent.parent.taillecase
         case = self.parent.parent.trouver_case(x1, y1)
-
+        print("case : ", case.montype)
+        xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+        self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("",))
+        cases_cibles = []
         if case.montype == "batiment":
             print("je marche dans un batiment")
-            cases = self.parent.parent.get_subcarte(x1, y1, 2)
-            taille = self.parent.parent.taillecase
+            cases = self.parent.parent.get_subcarte(x1, y1, 1)
             for i in cases:
                 if i.montype == "batiment":
                     xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("",))
                 else:
+                    cases_cibles.append(case)
                     xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("",))
 
-
-            x1, y1 = self.contourne_batiment(cases)
+            if cases_cibles:
+                x1, y1 = self.trouve_case_contournement(cases_cibles)
             ang = Helper.calcAngle(self.x, self.y, x1,y1)
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
 
         return x1,y1
 
 
-    def contourne_batiment(self, cases):
-        cases_cibles = []
-        for case in cases:
-            if case.montype != "batiment":
-                cases_cibles.append(case)
-        return self.trouve_case_contournement(cases_cibles)
+    # def contourne_batiment(self, cases):
+    #     for case in cases:
+    #         if case.montype != "batiment":
+    #             cases_cibles.append(case)
+    #     return
 
 
     def trouve_case_contournement(self, cases):
