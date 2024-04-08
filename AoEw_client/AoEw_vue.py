@@ -359,6 +359,7 @@ class Vue():
         self.cadrejeuinfo.config(bg=coul[1])
         self.creer_aide()
         self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste"])
+        self.creer_cadre_maison(coul[0] + "_", ["ouvrier", "druide"])
         self.creer_chatter()
         # on affiche les maisons, point de depart des divers joueurs
         self.afficher_depart()
@@ -371,6 +372,18 @@ class Vue():
             btn = Button(self.cadreouvrier, text=i, image=self.images[coul + i])
             btn.bind("<Button>", self.batir_artefact)
             btn.pack()
+
+    def creer_cadre_maison(self, coul, persos):
+        self.cadrebatiment = Frame(self.canevasaction)
+        for i in persos:
+            btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i])
+            btn.bind("<Button>", self.creer_entite)
+            btn.pack()
+
+
+    def creer_cadre_caserne(self, coul, persos):
+        pass
+
 
     ##FONCTIONS D'AFFICHAGES##################################
     def afficher_depart(self):
