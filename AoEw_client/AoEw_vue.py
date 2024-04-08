@@ -443,7 +443,7 @@ class Vue():
         for i in mesCases:
             taille = self.parent.partie.taillecase
             x1,y1,x2,y2 = i[0]*taille, i[1]*taille, i[0]*taille+taille, i[1]*taille+taille
-            img = self.canevas.create_rectangle(x1,y1,x2,y2, fill="blue", tags=("statique",))
+            # img = self.canevas.create_rectangle(x1,y1,x2,y2, fill="blue", tags=("statique",))
 
 
         couleurs = {0: "",

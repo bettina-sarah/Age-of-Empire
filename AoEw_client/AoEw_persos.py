@@ -199,18 +199,17 @@ class Perso():
             casey = int(casey) + 1
         #####AJOUTER TEST DE LIMITE
         taille = self.parent.parent.taillecase
-        case = self.parent.parent.trouver_case(x1, y1)
-        print("case : ", case.montype)
+        case = self.parent.parent.trouver_case(x1, y1, self.dir)
         xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
         self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("",))
         cases_cibles = []
         if case.montype == "batiment":
             print("je marche dans un batiment")
-            cases = self.parent.parent.get_subcarte(x1, y1, 1)
+            cases = self.parent.parent.get_subcarte(x1, y1, 3)
             for i in cases:
                 if i.montype == "batiment":
                     xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("",))
+                    # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 else:
                     cases_cibles.append(case)
                     xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
@@ -233,26 +232,28 @@ class Perso():
 
     def trouve_case_contournement(self, cases):
         x,y = cases[0].x, cases[0].y
+        print(self.dir,"-----------------")
         for case in cases:
             # taille = self.parent.parent.taillecase
             # xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
             # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+            offset = self.parent.parent.taillecase
             if self.dir == "GH":
                 if case.x < x and case.y < y:
-                    x = case.x
-                    y = case.y+10
+                    x = case.x-offset 
+                    y = case.y-offset 
             elif self.dir == "DH":
                 if case.x > x and case.y < y:
-                    x = case.x
-                    y = case.y+10
+                    x = case.x+offset 
+                    y = case.y-offset
             elif self.dir == "GB":
                 if case.x < x and case.y > y:
-                    x = case.x
-                    y = case.y -10
+                    x = case.x-offset 
+                    y = case.y+offset
             elif self.dir == "DB":
                 if case.x > x and case.y > y:
-                    x = case.x
-                    # y = case.y-10
+                    x = case.x+offset 
+                    y = case.y-offset
         return [x,y]
 
 

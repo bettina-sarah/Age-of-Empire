@@ -22,6 +22,7 @@ class Region():
         self.montype = montype
         self.dicocases = {}
 
+
 class Caseregion():
     def __init__(self, parent, id, x, y):
         self.parent = parent
@@ -30,6 +31,7 @@ class Caseregion():
         self.ressources = {}
         self.x = x
         self.y = y
+
 
 #######################  LE MODELE est la partie #######################
 class Partie():
@@ -64,7 +66,7 @@ class Partie():
         # Decoupage de la surface
 
         self.taillecase = 20
-        self.demicase = self.taillecase/2
+        self.demicase = self.taillecase / 2
         self.taillecarte = int(self.aireX / self.taillecase)
         self.cartecase = []
         self.make_carte_case()
@@ -119,9 +121,9 @@ class Partie():
             self.cartecase[i[1]][i[0]].montype = "batiment"
             x1 = self.cartecase[i[1]][i[0]].x
             y1 = self.cartecase[i[1]][i[0]].y
-            x2 = self.cartecase[i[1]][i[0]].x+self.taillecase
-            y2 = self.cartecase[i[1]][i[0]].y+self.taillecase
-            self.parent.vue.canevas.create_rectangle(x1, y1,x2,y2, fill="blue", tags=("statique",))
+            x2 = self.cartecase[i[1]][i[0]].x + self.taillecase
+            y2 = self.cartecase[i[1]][i[0]].y + self.taillecase
+            self.parent.vue.canevas.create_rectangle(x1, y1, x2, y2, fill="blue", tags=("statique",))
         batiment.cartebatiment = cartebatiment
 
     def creer_biotopes(self):
@@ -321,7 +323,21 @@ class Partie():
                 t1.append(Caseregion(None, id, j, i))
             self.cartecase.append(t1)
 
-    def trouver_case(self, x, y):
+    def trouver_case(self, x, y, dir="none"):
+        offsetX = 0
+        offsetY = 0
+        if dir == "GH":
+            offsetX = -1
+            offsetY = -1
+        elif dir == "DH":
+            offsetX = 1
+            offsetY = -1
+        elif dir == "GB":
+            offsetX = -1
+            offsetY = 1
+        elif dir == "DB":
+            offsetX = 1
+            offsetY = 1
 
         if x < 0:
             x = 0
@@ -347,7 +363,7 @@ class Partie():
         if cy == self.taillecarte:
             cy -= 1
         # print(self.cartecase[cy][cx])
-        return self.cartecase[cy][cx]  # [cx,cy]
+        return self.cartecase[cy+offsetY][cx+offsetX]  # [cx,cy]
 
     def get_carte_bbox(self, x1, y1, x2, y2):  # case d'origine en cx et cy,  pour position pixels x, y
         # case d'origine en cx et cy,  pour position pixels x, y
@@ -438,7 +454,7 @@ class Partie():
             if (iteration - 1) > int(iteration_cle):
                 print("PEUX PASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
             if i[1]:
-                #action = json.loads(i[1])
+                # action = json.loads(i[1])
                 action = i[1]
             else:
                 action = None
@@ -449,5 +465,3 @@ class Partie():
                     for j in action:
                         self.actions_a_faire[iteration_cle].append(j)
     ##############################################################################
-
-
