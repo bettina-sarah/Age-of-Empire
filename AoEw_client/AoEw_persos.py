@@ -32,8 +32,9 @@ class Fleche():
         self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
         if dist <= self.taille:
-            rep = self.cibleennemi.recevoircoup(self.force)
-            return self
+            rep = self.proie.recevoir_coup(self.force)
+            self.parent.fleches.remove(self)
+            # return self
 
 class Javelot():
     def __init__(self, parent, id, proie):
@@ -240,9 +241,9 @@ class Ballista(Perso):
         self.image = couleur[0] + "_" + montype + self.dir
         self.cible = None
         self.angle = None
-        self.distancefeumax = 160
-        self.distancefeu = 160
-        self.delaifeu = 0
+        self.distancefeumax = 360
+        self.distancefeu = 360
+        self.delaifeu = 30
         self.delaifeumax=30
         self.fleches = []
         self.cibleennemi = None
@@ -254,8 +255,6 @@ class Ballista(Perso):
                                  }
 
     def cibler(self):
-
-
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
         if self.x < self.position_visee[0]:
             self.dir = "D"
@@ -284,18 +283,21 @@ class Ballista(Perso):
             print("self.actioncourante = ciblerennemi")
 
     def attaquerennemi(self):
+        self.delaifeu = self.delaifeu -1
         print("KAWABUNGA BABY")
         print(" DELAI FEU : ",self.delaifeu)
         if self.delaifeu == 0:
+
             id = get_prochain_id()
-            fleche = Fleche(self, id, self.cibler) # avant cetait ciblennemi
+            fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
+            self.fleches.append(fleche)
             self.delaifeu = self.delaifeumax
         for i in self.fleches:
             print("fleches :  ", i)
             rep = i.bouger()
-        if rep:
-            rep = self.cibleennemi.recevoir_coup(self.force)
-            self.fleches.remove(rep)
+        # if rep:
+            # self.cibleennemi.recevoir_coup(self.force)
+            # self.fleches.remove(rep)
 
 class Ouvrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):

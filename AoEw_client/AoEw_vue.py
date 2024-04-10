@@ -502,6 +502,10 @@ class Vue():
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
+                    if p == "ballista":
+                        for b in self.modele.joueurs[j].persos[p][k].fleches:
+                            self.canevas.create_image(b.x, b.y, image=self.images[b.image],
+                                                      tags=("mobile", j, b.id, "", type(b).__name__, ""))
                             # tags=(j,b.id,"artefact","mobile","javelot"))
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
