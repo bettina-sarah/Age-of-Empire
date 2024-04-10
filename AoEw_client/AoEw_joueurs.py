@@ -66,6 +66,7 @@ class Joueur():
                        "ingenieur": {},
                        "ballista": {}}
 
+
         self.batiments = {"maison": {},
                           "abri": {},
                           "caserne": {},
@@ -90,8 +91,12 @@ class Joueur():
         self.batiments[perso.montype].pop(perso.id)
 
     def attaquer(self, param):
+        print("PARAM", param)
         attaquants, attaque = param
+        print("Joueurs attaquants et attaque",attaquants, attaque)
         nomjoueur, idperso, sorte = attaque
+        dict = self.parent.joueurs[nomjoueur].persos[sorte]
+        print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
         ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
         for i in self.persos.keys():
             for j in attaquants:

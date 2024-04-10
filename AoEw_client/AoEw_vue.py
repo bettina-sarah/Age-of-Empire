@@ -1,5 +1,6 @@
 ## -*- Encoding: UTF-8 -*-
 
+from tkinter import *
 from tkinter import ttk
 from tkinter.simpledialog import *
 
@@ -13,16 +14,16 @@ class Vue():
         self.root.title("Je suis " + nom_joueur_local)
         self.nom_joueur_local = nom_joueur_local
         # attributs
-        self.cadrechaton = 0
+        self.cadrechaton = 0 # fenetre de chat on ou non
         self.textchat = ""
-        self.infohud = {}
+        self.infohud = {} # overhead display : les ressources et autres
         # # minicarte
         self.tailleminicarte = 220
         self.cadreactif = None
         # # objet pour cumuler les manipulations du joueur pour generer une action de jeu
-        self.action = Action(self)
+        self.action = Action(self) # pour avoir une action fraiche. C,est comme un Singleton
         # cadre principal de l'application
-        self.cadreapp = Frame(self.root, width=500, height=400, bg="red")
+        self.cadreapp = Frame(self.root, width=500, height=400, bg="red") # un frame generique pour toute lapp
         self.cadreapp.pack(expand=1, fill=BOTH)
 
         # # un dictionnaire pour conserver les divers cadres du jeu, creer plus bas
@@ -169,7 +170,7 @@ class Vue():
                         "Aureus": None}
 
         # fonction interne uniquement pour reproduire chaque item d'info
-        def creer_champ_interne(listechamp):
+        def creer_champ_interne(listechamp): # refactoriser pour etiquette au lieu de champ
             titre = Champ(self.cadrejeuinfo, text=i, bg="red", fg="white")
             varstr = StringVar()
             varstr.set(0)
@@ -250,7 +251,7 @@ class Vue():
         self.joueurs = ttk.Combobox(self.cadreparler,
                                     values=list(self.modele.joueurs.keys()))
         self.entreechat = Entry(self.cadreparler, width=20)
-        self.entreechat.bind("<Return>")  # ,self.action.envoyerchat)
+        self.entreechat.bind("<Return>", self.action.envoyer_chat)
         self.joueurs.pack(expand=1, fill=X)
         self.entreechat.pack(expand=1, fill=X)
         self.cadreparler.pack(expand=1, fill=X)
@@ -489,7 +490,7 @@ class Vue():
                     i = self.modele.joueurs[j].persos[p][k]
                     coul = self.modele.joueurs[j].couleur[0]
                     self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
-                                              tags=("mobile", j, k, "perso", type(i).__name__, ""))
+                                              tags=("mobile", j, k, "perso", type(i).__name__, "ballista"))
                     # tags=(j,k,"artefact","mobile","perso",p))
                     if k in self.action.persochoisi:
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
@@ -563,6 +564,7 @@ class Vue():
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
+        print("MESTAGS", mestags)
         if self.parent.nom_joueur_local == mestags[1]:
             if "Ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
@@ -711,6 +713,7 @@ class Action():
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
             sorte = self.ciblechoisi[5]
+            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[5])
             action = [self.parent.parent.nom_joueur_local, "attaquer", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 
@@ -786,7 +789,7 @@ class Action():
 
 # classe qui est une sous-classe d'une classe tkinter dont on change les proprietes
 class Champ(Label):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs): # keyword arg = nom arg = certaine valeur. Comme un dict
         Label.__init__(self, master, *args, **kwargs)
         self.config(font=("arial", 13, "bold"))
         self.config(bg="goldenrod3")

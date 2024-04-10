@@ -95,15 +95,16 @@ class Perso():
         self.vitesse = 5
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
-                                 "ciblerennemi": None,
-                                 "attaquerennemi": None,
-                                 "retourbatimentmere": None,
+                                 "attaquerennemi": None, # caller la bonne fctn attaquer
+                                 "ciblerennemi":None
                                  }
+        # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
         x = self.cibleennemi.x
         y = self.cibleennemi.y
+        pos_cible = x,y
         self.cibler(ennemi)
         dist = Helper.calcDistance(self.x, self.y, x, y)
         if dist <= self.vitesse:
@@ -136,6 +137,8 @@ class Perso():
         self.actioncourante = "bouger"
 
     def bouger(self):
+        print("bouger perso")
+
         if self.position_visee:
             # le if sert à savoir si on doit repositionner notre visee pour un objet
             # dynamique comme le daim
@@ -212,6 +215,7 @@ class Soldat(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
 
+
 class Archer(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
@@ -236,14 +240,21 @@ class Ballista(Perso):
         self.image = couleur[0] + "_" + montype + self.dir
         self.cible = None
         self.angle = None
-        self.distancefeumax = 30
-        self.distancefeu = 30
+        self.distancefeumax = 160
+        self.distancefeu = 160
+        self.delaifeu = 0
+        self.delaifeumax=30
         self.fleches = []
         self.cibleennemi = None
+        self.position_visee = None
         # self.nomimg="ballista"
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler
+                                 }
 
-    def cibler(self, pos):
-        self.position_visee = pos
+    def cibler(self):
+
 
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
         if self.x < self.position_visee[0]:
@@ -263,17 +274,24 @@ class Ballista(Perso):
         y = self.cibleennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        if dist <= self.distancefeu:
+        print("DISTANCE CALCULEE", dist)
+        print(self.distancefeu)
+        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
-        else:
+            print("self.actioncourante = attaquerennemi")
+        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "ciblerennemi"
+            print("self.actioncourante = ciblerennemi")
 
     def attaquerennemi(self):
+        print("KAWABUNGA BABY")
+        print(" DELAI FEU : ",self.delaifeu)
         if self.delaifeu == 0:
             id = get_prochain_id()
-            fleche = Fleche(self, id, self.ciblennemi)
+            fleche = Fleche(self, id, self.cibler) # avant cetait ciblennemi
             self.delaifeu = self.delaifeumax
         for i in self.fleches:
+            print("fleches :  ", i)
             rep = i.bouger()
         if rep:
             rep = self.cibleennemi.recevoir_coup(self.force)
@@ -398,6 +416,8 @@ class Ouvrier(Perso):
     def jouer_prochain_coup(self):
         if self.actioncourante:
             reponse = self.etats_et_actions[self.actioncourante]()
+            print("REPONSE==========================================================", type(reponse))
+            # lors dune attaque, ca fait un NonType not callable, mais tous les coups autre quune attaque donne NoneType et sont callés
 
     def lancer_javelot(self, proie):
         if self.javelots == []:
