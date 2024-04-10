@@ -181,6 +181,7 @@ class Joueur():
                                                                        sorteperso)
 
 
+    #test pour simuler un joueur qui perd
     def test_LOSING(self):
         self.batiments = {"maison": {},
                           "abri": {},

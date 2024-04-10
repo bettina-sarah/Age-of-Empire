@@ -274,7 +274,7 @@ class Partie():
         for i in self.biotopes["ours"].keys():
             self.biotopes["ours"][i].deplacer()
 
-        #Ajouter une liste des trucs a deplacer ? puis fair eune function? maybe ? :D
+        # Ajouter une liste des trucs a deplacer ? puis fair eune function? maybe ? :D
 
         for i in self.biotopes["eau"].keys():
             self.biotopes["eau"][i].jouer_prochain_coup()
@@ -438,32 +438,30 @@ class Partie():
         if ress not in self.ressourcemorte:
             self.ressourcemorte.append(ress)
 
-
     def test_fin(self):
-    #    'JAJA_193': < AoEw_joueurs.Joueur object at  0x000001F0329B4790 >}
-        print(self.joueurs)
+        #    'JAJA_193': < AoEw_joueurs.Joueur object at  0x000001F0329B4790 >}
+        print("Modele dicto")
+        print(self.joueurs.keys())
 
-        if self.parent.testa:
+        # pop or del to delete, pop return value (acion of player ? so we cna delete them?)
+        try:
+            for key in self.joueurs.keys():
+                joueur = self.joueurs.get(key)
+                # print(joueur.batiments)
+                batiement = joueur.batiments.values
+                print("dans test fin" + key, joueur.id, batiement)
+                #need a fucking intermediaire fucntionnnnnnnnjdndnjnjldnjlnjlnldnn
+                if batiement is None:
+                    self.parent.vue.update_affichageMort(self.joueurs[key])
+                    del self.joueurs[key]
 
-            first_key = list(self.joueurs.keys())[1]
-            test=self.joueurs[first_key]
+            print(self.joueurs.keys())
+        except RuntimeError:
+            print("AJOUT DE DICTO")
+            pass
+        # test.test_LOSING()
 
-
-            print(test.persos)
-            print(test.batiments)
-            test.test_LOSING()
-            print("joueur dans liste M")
-            print(self.joueurs)
-            print(test.batiments)
-            print("FIN YESY MORT")
-            return False
-        else:
-            return True
-
-
-
-
-
+        return len(self.joueurs) == 1
 
     #############################################################################
     # ATTENTION : NE PAS TOUCHER

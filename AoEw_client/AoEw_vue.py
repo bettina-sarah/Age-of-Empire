@@ -7,7 +7,7 @@ from chargeurdimages import *
 
 
 class Vue():
-    def __init__(self, parent, url_serveur, nom_joueur_local): #, testdispo):
+    def __init__(self, parent, url_serveur, nom_joueur_local):  # , testdispo):
         self.parent = parent
         self.root = Tk()
         self.root.title("Je suis " + nom_joueur_local)
@@ -57,7 +57,6 @@ class Vue():
         self.cadres["fin"] = self.creer_cadre_fin()
         self.cadres["jeu"] = self.creer_cadre_jeu()
 
-
     def creer_cadre_fin(self):
         self.cadreFin = Frame(self.cadreapp, bg="green", width=400, height=400)
         # un canvas est utilisé pour 'dessiner' les widgets de cette fenêtre voir 'create_window' plus bas
@@ -66,7 +65,6 @@ class Vue():
         self.canevasFin.pack()
 
         return self.cadreFin
-
 
     # le splash (ce qui 'splash' à l'écran lors du démarrage)
     # sera le cadre visuel initial lors du lancement de l'application
@@ -81,7 +79,8 @@ class Vue():
         self.etatdujeu = Label(text=testdispo, font=("Arial", 18), borderwidth=2, relief=RIDGE)
         self.nomsplash = Entry(font=("Arial", 14))
         self.url_initial = Entry(font=("Arial", 14))
-        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12), command=self.initialiser_splash_post_connection)
+        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
+                                    command=self.initialiser_splash_post_connection)
         # on insère les infos par défaut (nom url) et reçu au démarrage (dispo)
         self.nomsplash.insert(0, nom_joueur_local)
         self.url_initial.insert(0, url_serveur)
@@ -292,9 +291,10 @@ class Vue():
         self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
-        #ATTENTION POUR DES TEST A ENLEVER
 
-        self.canevas.tag_bind('ours','<Button-1>', self.test)
+        # ATTENTION POUR DES TEST A ENLEVER
+        ##pour les trst de fin
+        self.canevas.tag_bind('ours', '<Button-1>', self.test)
 
     def OnMouseWheel(self, evt):
         print(evt.keysym)
@@ -321,7 +321,7 @@ class Vue():
         nom = self.nomsplash.get()
         ## ON VA LIRE LA VALEUR DE LA VARIABLE ASSOCIEE AU BTN RADION CHOISI
         urljeu = self.url_initial.get()
-        self.parent.creer_partie(nom) #, urljeu)  # ,valciv)
+        self.parent.creer_partie(nom)  # , urljeu)  # ,valciv)
 
     ###  METHODES POUR SPLASH ET LOBBY INSCRIPTION pour participer a une partie
     def update_splash(self, etat):
@@ -366,7 +366,8 @@ class Vue():
         # on ajuste la taille du canevas de jeu
         self.canevas.config(scrollregion=(0, 0, self.modele.aireX, self.modele.aireY))
         self.canevasaction.delete("nom")
-        self.canevasaction.create_text(100, 30, text=self.nom_joueur_local, font=("arial", 18, "bold"), anchor=S, tags=("nom"))
+        self.canevasaction.create_text(100, 30, text=self.nom_joueur_local, font=("arial", 18, "bold"), anchor=S,
+                                       tags=("nom"))
 
         # on cree les cadres affichant les items d'actions du joueur
         # cadre apparaissant si on selectionne un ouvrier
@@ -455,8 +456,9 @@ class Vue():
         print(self.parent.nom_joueur_local)
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
-                                          "statique", self.parent.nom_joueur_local, batiment.id, "batiment", batiment.montype,
-                                          ""))
+                                              "statique", self.parent.nom_joueur_local, batiment.id, "batiment",
+                                              batiment.montype,
+                                              ""))
 
         x0, y0, x2, y2 = self.canevas.bbox(chose)
 
@@ -636,13 +638,6 @@ class Vue():
 
     ### FIN du multiselect
 
-    def test(self, evt):
-        joueur, t= self.parent.joueurs[0]
-        print( "PERDU:" + joueur)
-        self.parent.testa= True
-        self.changer_cadre("fin")
-
-
     def ramasser_ressource(self, evt):
         tag = self.canevas.gettags(CURRENT)
         if tag[1] == "" and self.action.persochoisi:
@@ -730,9 +725,23 @@ class Vue():
             self.action.ciblechoisi = mestags
             self.action.attaquer()
 
+        ##pour les trst de fin
+
+    def test(self, evt):
+        print("DANS TEST DE FIN")
+        first_key = list(self.parent.partie.joueurs.keys())[1]
+        test = self.parent.partie.joueurs[first_key]
+        test.test_LOSING()
+        del self.parent.partie.joueurs[first_key]
+
+
     def afficherFin(self):
         self.changer_cadre("fin")
-        pass
+        print("finis VUE")
+
+    def update_affichageMort(self, joueur):
+        self.canevas.delete(joueur)
+        self.canevas.delete(joueur)
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
@@ -793,7 +802,8 @@ class Action():
         txt = self.parent.entreechat.get()
         joueur = self.parent.joueurs.get()
         if joueur:
-            action = [self.parent.nom_joueur_local, "chatter", [self.parent.nom_joueur_local + ": " + txt, self.parent.nom_joueur_local, joueur]]
+            action = [self.parent.nom_joueur_local, "chatter",
+                      [self.parent.nom_joueur_local + ": " + txt, self.parent.nom_joueur_local, joueur]]
             self.parent.parent.actions_requises.append(action)
 
     def chatter(self):
@@ -826,6 +836,7 @@ class Action():
             self.aideon = 0
 
     ### FIN des methodes pour lancer la partie
+
 
 # classe qui est une sous-classe d'une classe tkinter dont on change les proprietes
 class Champ(Label):
