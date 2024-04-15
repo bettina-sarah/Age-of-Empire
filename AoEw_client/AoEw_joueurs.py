@@ -85,6 +85,7 @@ class Joueur():
         self.creer_point_origine(x, y)
 
     def annoncer_mort(self, perso):
+        print("==================pop suite a mort")
         self.persos[perso.montype].pop(perso.id)
 
     def annoncer_mort_batiment(self, perso):
