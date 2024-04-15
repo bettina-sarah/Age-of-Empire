@@ -25,7 +25,12 @@ class Joueur():
                                  "arbre": 10,
                                  "roche": 5,
                                  "aureus": 1,
-                                 "delai": 80}
+                                 "delai": 80},
+               "siteconstruction": {"nourriture": 0,
+                                 "arbre": 0,
+                                 "roche": 0,
+                                 "aureus": 0,
+                                 "delai": 0}
                }
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Soldat,

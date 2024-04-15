@@ -692,7 +692,13 @@ class Vue():
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
+
+            try:
                 self.parent.actions_requises.append(action)
+            except:
+                print("action invalide")
+
+
         elif self.action.persochoisi != []:
             self.action.ciblechoisi = mestags
             self.action.attaquer()
