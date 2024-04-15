@@ -102,7 +102,8 @@ class Joueur():
                        "chevalier": {},
                        "druide": {},
                        "ingenieur": {},
-                       "ballista": {}}
+                       "ballista": {},
+                       }
 
 
         self.batiments = {"maison": {},
@@ -123,6 +124,7 @@ class Joueur():
         self.creer_point_origine(x, y)
 
     def annoncer_mort(self, perso):
+        print("==================pop suite a mort")
         self.persos[perso.montype].pop(perso.id)
 
     def annoncer_mort_batiment(self, perso):
@@ -142,10 +144,18 @@ class Joueur():
         print("PARAM", param)
         attaquants, attaque = param
         print("Joueurs attaquants et attaque",attaquants, attaque)
+
         nomjoueur, idperso, sorte = attaque
-        dict = self.parent.joueurs[nomjoueur].persos[sorte]
-        print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
-        ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+
+        if sorte in self.batiments.keys():
+            ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
+            print("ENNEMI BATIMENT: ", ennemi)
+        else:
+            ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+            print("ENNEMI PERSO: ", ennemi)
+        # print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
+
+        # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
         for i in self.persos.keys():
             for j in attaquants:
                 if j in self.persos[i]:
