@@ -171,15 +171,20 @@ class Joueur():
 
     def construire_batiment(self, param):
         perso, sorte, pos = param
-        id = get_prochain_id()
-        # payer batiment
-        vals = Joueur.valeurs
-        for k, val in self.ressources.items():
-            self.ressources[k] = val - vals[sorte][k]
 
-        siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte,
-                                            Joueur.valeurs[sorte]["delai"])
-        self.batiments["siteconstruction"][id] = siteconstruction
+        if sorte == "siteconstruction":
+            siteconstruction = self.batiments["siteconstruction"][pos[2]]
+        else:
+            id = get_prochain_id()
+            # payer batiment
+            vals = Joueur.valeurs
+            for k, val in self.ressources.items():
+                self.ressources[k] = val - vals[sorte][k]
+
+            siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte,
+                                                Joueur.valeurs[sorte]["delai"])
+            self.batiments["siteconstruction"][id] = siteconstruction
+
         for i in perso:
             self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
 

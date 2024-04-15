@@ -671,9 +671,14 @@ class Vue():
 
     def construire_batiment(self, evt):
         mestags = self.canevas.gettags(CURRENT)
+
         if not mestags:
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
             self.action.construire_batiment(pos)
+        elif "SiteConstruction" in mestags: # permet de continuer une constuction de site de construction
+            pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
+            self.action.prochaineaction = "siteconstruction"
+            self.action.continuer_construction(pos)
 
     def creer_entite(self, evt):
         x, y = evt.x, evt.y
@@ -745,6 +750,10 @@ class Action():
     def construire_batiment(self, pos):
         self.btnactif.config(bg="SystemButtonFace")
         self.btnactif = None
+        action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+        self.parent.parent.actions_requises.append(action)
+
+    def continuer_construction(self, pos):
         action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
         self.parent.parent.actions_requises.append(action)
 
