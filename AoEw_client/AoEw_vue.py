@@ -685,7 +685,7 @@ class Vue():
             if "batiment" in mestags:
                 if "maison" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["archer", mestags[4], mestags[2], pos]]
+                    action = [self.parent.nom_joueur_local, "creerperso", ["ouvrier", mestags[4], mestags[2], pos]]
                 if "caserne" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     action = [self.parent.nom_joueur_local, "creerperso", ["soldat", mestags[4], mestags[2], pos]]
