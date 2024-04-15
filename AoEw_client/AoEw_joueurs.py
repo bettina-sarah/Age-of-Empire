@@ -133,12 +133,9 @@ class Joueur():
         # retirer de l'image de l'affichage
         self.batiments[perso.montype].pop(perso.id)
         self.parent.retirer_batiment_minimap(perso.id)
+        self.parent.parent.supprimer_batiment(perso.id)
         self.parent.reset_case_batiment(perso.cartebatiment)
 
-
-
-
-        #self.parent.parent.supprimer_batiment()
 
 
     def attaquer(self, param):
