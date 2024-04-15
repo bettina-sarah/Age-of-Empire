@@ -90,7 +90,7 @@ class Joueur():
     def annoncer_mort_batiment(self, perso):
         print("batiment mort!")
         self.batiments[perso.montype].pop(perso.id)
-        #self.parent.parent.supprimer_batiment()
+        self.parent.parent.supprimer_batiment(perso.id)
 
 
     def attaquer(self, param):

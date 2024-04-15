@@ -537,6 +537,9 @@ class Vue():
                 self.btnchat.config(bg="orange")
             self.modele.joueurs[self.parent.nom_joueur_local].chatneuf = 0
 
+    def supprimer_batiment(self, id_batiment):
+        self.canevas.delete(id_batiment)
+
     def centrer_maison(self):
         self.root.update()
         cle = list(self.modele.joueurs[self.nom_joueur_local].batiments["maison"].keys())[0]
