@@ -22,6 +22,7 @@ class Region():
         self.montype = montype
         self.dicocases = {}
 
+
 class Caseregion():
     def __init__(self, parent, id, x, y):
         self.parent = parent
@@ -30,6 +31,7 @@ class Caseregion():
         self.ressources = {}
         self.x = x
         self.y = y
+
 
 #######################  LE MODELE est la partie #######################
 class Partie():
@@ -431,7 +433,7 @@ class Partie():
             if (iteration - 1) > int(iteration_cle):
                 print("PEUX PASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
             if i[1]:
-                #action = json.loads(i[1])
+                # action = json.loads(i[1])
                 action = i[1]
             else:
                 action = None
@@ -441,6 +443,37 @@ class Partie():
                 else:
                     for j in action:
                         self.actions_a_faire[iteration_cle].append(j)
+
     ##############################################################################
 
+    ## Ajout Abi
+
+    def eliminer_joueur(self):
+
+
+
+        print("liste mort mtn")
+        print(self.parent.mort)
+
+        joueur= self.joueurs.get(self.parent.nom_joueur_local)
+        print(joueur)
+
+        if joueur.id in self.parent.mort:
+            pass
+        else:
+            if joueur.batiments["maison"] != {} or joueur.batiments["abri"] != {} or joueur.batiments["caserne"] != {} or joueur.batiments["usineballiste"] != {}:
+                pass
+            else:
+                self.parent.mort.append(joueur.id)
+                print("JE SUIS MORT " + joueur.id)
+
+                #creer action qui update tout le monde les morts
+                action = [self.parent.nom_joueur_local, "abandonner",
+                          [self.parent.nom_joueur_local + ": abandonne ", self.parent.mort]]
+
+                self.parent.actions_requises.append(action)
+                self.parent.tuer_joueur()
+                print("liste controlleur tous " )
+                print(self.parent.mort)
+                        # del self.joueurs[key]
 

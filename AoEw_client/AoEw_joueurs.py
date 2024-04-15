@@ -5,6 +5,7 @@ from AoEw_divers import *
 from AoEw_batiments import *
 from AoEw_persos import *
 
+
 class Joueur():
     valeurs = {"maison": {"nourriture": 10,
                           "arbre": 20,
@@ -99,10 +100,17 @@ class Joueur():
                     self.persos[i][j].attaquer(ennemi)
                     # j.attaquer(ennemi)
 
+    # changer a mort
     def abandonner(self, param):
         # ajouter parametre nom de l'Abandonneux, et si c'est moi, envoyer une action
         # quitter au serveur et faire destroy
+        print("param de abandonner")
+        print( param)
         msg = param[0]
+
+        self.parent.mort = param[1]
+        #update everyone`s list
+
         self.parent.montrer_msg_general(msg)
 
     def chatter(self, param):
@@ -180,3 +188,9 @@ class Joueur():
         self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                        sorteperso)
 
+    def test(self):
+        self.batiments = {"maison": {},
+                          "abri": {},
+                          "caserne": {},
+                          "usineballiste": {},
+                          "siteconstruction": {}}

@@ -6,6 +6,8 @@ from AoEw_modele import *
 
 class Controleur():
     def __init__(self):
+        self.type=None
+        self.mort= []
         self.ego_serveur = 0 # 1 si le joueur a creer la partie (seul lui peut 'lancer' la partie)
         self.iteration_boucle_jeu = 0
         self.actions_requises = []
@@ -79,6 +81,8 @@ class Controleur():
         listejoueurs = []
         for i in self.joueurs:
             listejoueurs.append(i[0])
+
+        self.type = len(listejoueurs)
         # on cree le modele (la partie)
         self.partie = Partie(self, listejoueurs)
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
@@ -142,6 +146,8 @@ class Controleur():
                     print("SAUTER TOUR")
                     self.on_joue = 0
                 elif mondict:
+                    print("dicto")
+                    print(mondict)
                     self.partie.ajouter_actions_a_faire(self.iteration_boucle_jeu,mondict)
 
             except requests.exceptions.RequestException as e:
@@ -155,8 +161,23 @@ class Controleur():
         else:
             self.iteration_boucle_jeu -= 1
             self.on_joue = 1
+
+
         # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
-        self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+        # self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+
+
+        if self.partie.eliminer_joueur() and self.iteration_boucle_jeu > 5 and self.type > 1:
+            print("Controlleur FIN")
+        #     for i in self.joueurs:
+        #         print(i)
+        #     self.vue.afficherFin()
+        else:
+            self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+
+
+
+
 
     ###################################################################
     # fonction qui fait les appels au serveur
@@ -192,6 +213,12 @@ class Controleur():
     def trouver_valeurs(self):
         vals = self.partie.trouver_valeurs()
         return vals
+
+
+    #ajoute Abi AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH
+    def tuer_joueur(self):
+
+        self.vue.unbind_joueur()
 
 if __name__ == '__main__':
     print("Bienvenue au RTS")
