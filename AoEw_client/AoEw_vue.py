@@ -66,6 +66,7 @@ class Vue():
         self.canevassplash.pack()
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
+        # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
         self.etatdujeu = Label(text=testdispo, font=("Arial", 18), borderwidth=2, relief=RIDGE)
         self.nomsplash = Entry(font=("Arial", 14))
@@ -490,7 +491,7 @@ class Vue():
                     i = self.modele.joueurs[j].persos[p][k]
                     coul = self.modele.joueurs[j].couleur[0]
                     self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
-                                              tags=("mobile", j, k, "perso", type(i).__name__, "ballista"))
+                                              tags=("mobile", j, k, "perso", i.montype))
                     # tags=(j,k,"artefact","mobile","perso",p))
                     if k in self.action.persochoisi:
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
@@ -570,7 +571,7 @@ class Vue():
         mestags = self.canevas.gettags(CURRENT)
         print("MESTAGS", mestags)
         if self.parent.nom_joueur_local == mestags[1]:
-            if "Ouvrier" == mestags[4]:
+            if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
             else:
@@ -716,8 +717,8 @@ class Action():
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
-            sorte = self.ciblechoisi[5]
-            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[5])
+            sorte = self.ciblechoisi[4]
+            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "attaquer", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 
