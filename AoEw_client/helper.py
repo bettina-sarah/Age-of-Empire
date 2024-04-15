@@ -1,6 +1,6 @@
 import math
 
-class Helper(object):
+class Helper(object): # pas de init car pas necessaire car utilise de maniere statique
     def getAngledPoint(angle,longueur,cx,cy):
         x = (math.cos(angle)*longueur)+cx
         y = (math.sin(angle)*longueur)+cy
