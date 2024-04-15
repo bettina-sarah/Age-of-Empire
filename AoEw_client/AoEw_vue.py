@@ -384,8 +384,6 @@ class Vue():
         print(persos)
         for i in persos:
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
-            #btn.bind("<Button>", self.test_entite)
-
             btn.bind("<Button>", lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
                                                                                                                   tag_batiment,
                                                                                                                   id_joueur,
@@ -396,23 +394,84 @@ class Vue():
                                                              window=self.cadrebatiment,
                                                              anchor=N))
 
+    def creer_cadre_caserne(self, coul, persos, tag_batiment, id_joueur, pos):
+        self.cadrebatiment = Frame(self.canevasaction)
+        for i in persos:
+            btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                  tag_batiment,
+                                                                                                                  id_joueur,
+                                                                                                                  pos))
+            btn.pack()
+
+        self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
+                                                                          window=self.cadrebatiment,
+                                                                          anchor=N))
+
+    def creer_cadre_abri(self, coul, persos, tag_batiment, id_joueur, pos):
+        self.cadrebatiment = Frame(self.canevasaction)
+        for i in persos:
+            if i=="druide-ours": # !! image a faire
+                btn = Button(self.cadrebatiment, text=i)
+            else:
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                  tag_batiment,
+                                                                                                                  id_joueur,
+                                                                                                                  pos))
+            btn.pack()
+
+        self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
+                                                                          window=self.cadrebatiment,
+                                                                          anchor=N))
+
+    def creer_cadre_usine(self, coul, persos, tag_batiment, id_joueur, pos):
+        self.cadrebatiment = Frame(self.canevasaction)
+        for i in persos:
+            if i == "catapulte":  # !! image a faire
+                btn = Button(self.cadrebatiment, text=i)
+            else:
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                  tag_batiment,
+                                                                                                                  id_joueur,
+                                                                                                                  pos))
+            btn.pack()
+
+        self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
+                                                                          window=self.cadrebatiment,
+                                                                          anchor=N))
+
+    def creer_cadre_champs_tir(self, coul, persos, tag_batiment, id_joueur, pos):
+        self.cadrebatiment = Frame(self.canevasaction)
+        for i in persos:
+            btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                  tag_batiment,
+                                                                                                                  id_joueur,
+                                                                                                                  pos))
+            btn.pack()
+
+        self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
+                                                                          window=self.cadrebatiment,
+                                                                          anchor=N))
+
 
     def test_entite(self, type_perso, tag_batiment, id_joueur, pos):
         action = [self.parent.nom_joueur_local, "creerperso", [type_perso, tag_batiment, id_joueur, pos]]
         self.parent.actions_requises.append(action)
+        self.action.widgetsactifs.pop(-1)
 
 
-    def creer_cadre_caserne(self, coul, persos):
-        pass
 
-    def creer_cadre_abri(self, coul, persos):
-        pass
-
-    def creer_cadre_usine(self, coul, persos):
-        pass
-
-    def creer_cadre_champs_tir(self, coul, persos):
-        pass
 
 
     ##FONCTIONS D'AFFICHAGES##################################
@@ -729,19 +788,20 @@ class Vue():
                     # action = ['JAJA_605', 'creerperso', ['ouvrier', 'maison', 'id_44890', [1418.0, 3036.0]]]
                 if "caserne" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["soldat", mestags[4], mestags[2], pos]]
-                    self.parent.actions_requises.append(action)
+                    self.creer_cadre_caserne(coul[0] + "_", ["soldat", "chevalier"], mestags[4], mestags[2], pos)
                 if "abri" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["druide", mestags[4], mestags[2], pos]]
-                    self.parent.actions_requises.append(action)
+                    self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
-                    self.parent.actions_requises.append(action)
+                    self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"], mestags[4], mestags[2], pos)
+                if "champs_de_tir" in mestags:
+                    pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "chevalier-archer"], mestags[4], mestags[2], pos)
         elif self.action.persochoisi != []:
             self.action.ciblechoisi = mestags
             self.action.attaquer()
+
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
@@ -792,8 +852,6 @@ class Action():
         self.widgetsactifs = self.parent.canevasaction.create_window(100, 60,
                                                                      window=self.parent.cadreouvrier,
                                                                      anchor=N)
-
-        self.widgetsactifs.append(maison)
 
         self.parent.root.update()
         fh = self.parent.cadreouvrier.winfo_height()
