@@ -691,6 +691,8 @@ class Vue():
             self.action.ciblechoisi = mestags
             self.action.attaquer()
 
+    def get_batiment_bbox(self, batiment):
+        return self.canevas.bbox(batiment)
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
 # pour demander une action

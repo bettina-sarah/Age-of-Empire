@@ -443,4 +443,9 @@ class Partie():
                         self.actions_a_faire[iteration_cle].append(j)
     ##############################################################################
 
+    def reset_case_batiment(self, cartebatiment):
+        print("click")
+        for i in cartebatiment:
+            self.cartecase[i[1]][i[0]].montype = "plaine"
 
+        pass

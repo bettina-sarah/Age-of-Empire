@@ -193,6 +193,9 @@ class Controleur():
         vals = self.partie.trouver_valeurs()
         return vals
 
+    def get_batiment_bbox(self, batiment):
+        return self.vue.get_batiment_bbox(batiment)
+
 if __name__ == '__main__':
     print("Bienvenue au RTS")
     c = Controleur()
