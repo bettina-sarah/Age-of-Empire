@@ -444,4 +444,7 @@ class Partie():
                         self.actions_a_faire[iteration_cle].append(j)
     ##############################################################################
 
+    def retirer_batiment_minimap(self, id):
+        self.parent.retirer_batiment_minimap(id)
+
 

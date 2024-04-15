@@ -88,6 +88,9 @@ class Joueur():
         self.persos[perso.montype].pop(perso.id)
 
     def annoncer_mort_batiment(self, perso):
+
+
+        self.parent.retirer_batiment_minimap(perso.id)
         self.batiments[perso.montype].pop(perso.id)
 
     def attaquer(self, param):
