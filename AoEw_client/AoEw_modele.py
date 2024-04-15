@@ -444,7 +444,14 @@ class Partie():
                         self.actions_a_faire[iteration_cle].append(j)
     ##############################################################################
 
+
     def retirer_batiment_minimap(self, id):
         self.parent.retirer_batiment_minimap(id)
 
+    def reset_case_batiment(self, cartebatiment):
+        print("click")
+        for i in cartebatiment:
+            self.cartecase[i[1]][i[0]].montype = "plaine"
 
+
+        pass

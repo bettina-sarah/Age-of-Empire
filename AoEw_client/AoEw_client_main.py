@@ -196,6 +196,8 @@ class Controleur():
     def retirer_batiment_minimap(self, id):
         self.vue.minicarte.delete(id)
 
+
+
 if __name__ == '__main__':
     print("Bienvenue au RTS")
     c = Controleur()

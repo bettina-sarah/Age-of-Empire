@@ -90,7 +90,12 @@ class Joueur():
     def annoncer_mort_batiment(self, perso):
 
 
+
+        # retirer de la minimap
+        # placer les case à plaine
+        # retirer de l'image de l'affichage
         self.parent.retirer_batiment_minimap(perso.id)
+        self.parent.reset_case_batiment(perso.cartebatiment)
         self.batiments[perso.montype].pop(perso.id)
 
     def attaquer(self, param):
