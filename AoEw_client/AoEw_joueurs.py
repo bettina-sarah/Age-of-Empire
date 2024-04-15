@@ -32,6 +32,39 @@ class Joueur():
                                  "aureus": 0,
                                  "delai": 0}
                }
+
+    prix_unite = {"ouvrier": {"nourriture": 10,
+                          "arbre": 10,
+                          "roche": 10,
+                          "aureus": 2,
+                          "delai": 50},
+               "soldat": {"nourriture": 10,
+                        "arbre": 10,
+                        "roche": 5,
+                        "aureus": 1,
+                        "delai": 30},
+               "chevalier": {"nourriture": 10,
+                           "arbre": 10,
+                           "roche": 5,
+                           "aureus": 1,
+                           "delai": 60},
+               "druide": {"nourriture": 10,
+                                 "arbre": 10,
+                                 "roche": 35,
+                                 "aureus": 31,
+                                 "delai": 80},
+               "ballista": {"nourriture": 30,
+                                 "arbre": 30,
+                                 "roche": 30,
+                                 "aureus": 30,
+                                 "delai": 30},
+               "ingenieur": {"nourriture": 30,
+                            "arbre": 30,
+                            "roche": 30,
+                            "aureus": 30,
+                            "delai": 30}
+               }
+
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Soldat,
                      "archer": Archer,
@@ -199,12 +232,26 @@ class Joueur():
 
     def creer_perso(self, param):
         sorteperso, batimentsource, idbatiment, pos = param
-        id = get_prochain_id()
-        batiment = self.batiments[batimentsource][idbatiment]
 
-        x = batiment.x + 100 + (random.randrange(50) - 15)
-        y = batiment.y + (random.randrange(50) - 15)
+        # le joueur a-t-il les ressources pour creer l'unité
+        prix_perso = Joueur.prix_unite
+        possede_les_ressources = True
 
-        self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
-                                                                       sorteperso)
+        for k, val in self.ressources.items():
+            if self.ressources[k] - prix_perso[sorteperso][k] < 0:
+                possede_les_ressources = False
+
+        if possede_les_ressources:
+            # paye les ressources
+            for k, val in self.ressources.items():
+                self.ressources[k] = val - prix_perso[sorteperso][k]
+
+            id = get_prochain_id()
+            batiment = self.batiments[batimentsource][idbatiment]
+
+            x = batiment.x + 100 + (random.randrange(50) - 15)
+            y = batiment.y + (random.randrange(50) - 15)
+
+            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+                                                                           sorteperso)
 
