@@ -29,11 +29,20 @@ class Fleche():
         self.image = "javelot" + dir
 
     def bouger(self):
+        if not self.proie:
+            print("=============================empty parent fleches")
+            self.parent.fleches = []
         self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
         if dist <= self.taille:
             rep = self.proie.recevoir_coup(self.force)
             self.parent.fleches.remove(self)
+            if rep == 1:
+                print("==========================fleches clear")
+                self.parent.fleches.clear()
+                print("Dans fleche vider le parent ciblennemi")
+                self.parent.cibleennemi = None;
+
             # return self
 
 class Javelot():
@@ -91,7 +100,7 @@ class Perso():
         self.position_visee = None
         self.cibleennemi = None
         self.mana = 100
-        self.force = 5
+        self.force = 15
         self.champvision = 100
         self.vitesse = 5
         self.angle = None
@@ -125,7 +134,8 @@ class Perso():
         self.mana -= force
         print("Ouch")
         if self.mana < 1:
-            print("MORTS")
+            print("MORT")
+            print("id du perso mort :", self.id)
             self.parent.annoncer_mort(self)
             return 1
 
@@ -220,6 +230,70 @@ class Soldat(Perso):
 class Archer(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+
+        self.dir = "D"
+        # self.cible = None
+        # self.angle = None
+        self.distancefeumax = 360
+        self.distancefeu = 360
+        self.delaifeu = 30
+        self.delaifeumax = 30
+        self.fleches = []
+        self.cibleennemi = None
+        self.position_visee = None
+        # self.nomimg="ballista"
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+        # if self.y < self.position_visee[1]:
+        #     self.dir = self.dir + "B"
+        # else:
+        #     self.dir = self.dir + "H"
+
+        self.image = self.image[:-2] + self.dir
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+        print(self.distancefeu)
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "ciblerennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                id = get_prochain_id()
+                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.fleches.append(fleche)
+                self.delaifeu = self.delaifeumax
+            if len(self.fleches) > 0:
+                for i in self.fleches:
+                    print("fleches :  ", i)
+                    rep = i.bouger()
+                # if rep:
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
+
 
 class Chevalier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -401,12 +475,16 @@ class Ouvrier(Perso):
                                                                              self.cible.sorte)
             self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
 
-            sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
-            print(sitecons)
+            try:
+                sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
+                print(sitecons)
+                self.parent.installer_batiment(batiment)
+            except:
+                print("batiment deja terminer")
 
-            self.parent.installer_batiment(batiment)
             if self.cible.sorte == "maison":
                 self.batimentmere = batiment
+
             self.cible = None
             self.actioncourante = None
 

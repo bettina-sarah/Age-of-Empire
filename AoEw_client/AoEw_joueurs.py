@@ -25,8 +25,46 @@ class Joueur():
                                  "arbre": 10,
                                  "roche": 5,
                                  "aureus": 1,
-                                 "delai": 80}
+                                 "delai": 80},
+               "siteconstruction": {"nourriture": 0,
+                                 "arbre": 0,
+                                 "roche": 0,
+                                 "aureus": 0,
+                                 "delai": 0}
                }
+
+    prix_unite = {"ouvrier": {"nourriture": 10,
+                          "arbre": 10,
+                          "roche": 10,
+                          "aureus": 2,
+                          "delai": 50},
+               "soldat": {"nourriture": 10,
+                        "arbre": 10,
+                        "roche": 5,
+                        "aureus": 1,
+                        "delai": 30},
+               "chevalier": {"nourriture": 10,
+                           "arbre": 10,
+                           "roche": 5,
+                           "aureus": 1,
+                           "delai": 60},
+               "druide": {"nourriture": 10,
+                                 "arbre": 10,
+                                 "roche": 35,
+                                 "aureus": 31,
+                                 "delai": 80},
+               "ballista": {"nourriture": 30,
+                                 "arbre": 30,
+                                 "roche": 30,
+                                 "aureus": 30,
+                                 "delai": 30},
+               "ingenieur": {"nourriture": 30,
+                            "arbre": 30,
+                            "roche": 30,
+                            "aureus": 30,
+                            "delai": 30}
+               }
+
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Soldat,
                      "archer": Archer,
@@ -64,7 +102,8 @@ class Joueur():
                        "chevalier": {},
                        "druide": {},
                        "ingenieur": {},
-                       "ballista": {}}
+                       "ballista": {},
+                       }
 
 
         self.batiments = {"maison": {},
@@ -85,19 +124,38 @@ class Joueur():
         self.creer_point_origine(x, y)
 
     def annoncer_mort(self, perso):
+        print("==================pop suite a mort")
         self.persos[perso.montype].pop(perso.id)
 
     def annoncer_mort_batiment(self, perso):
+
+        print("batiment mort!")
+        # retirer de la minimap
+        # placer les case à plaine
+        # retirer de l'image de l'affichage
         self.batiments[perso.montype].pop(perso.id)
+        self.parent.retirer_batiment_minimap(perso.id)
+        self.parent.parent.supprimer_batiment(perso.id)
+        self.parent.reset_case_batiment(perso.cartebatiment)
+
+
 
     def attaquer(self, param):
         print("PARAM", param)
         attaquants, attaque = param
         print("Joueurs attaquants et attaque",attaquants, attaque)
+
         nomjoueur, idperso, sorte = attaque
-        dict = self.parent.joueurs[nomjoueur].persos[sorte]
-        print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
-        ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+
+        if sorte in self.batiments.keys():
+            ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
+            print("ENNEMI BATIMENT: ", ennemi)
+        else:
+            ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+            print("ENNEMI PERSO: ", ennemi)
+        # print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
+
+        # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
         for i in self.persos.keys():
             for j in attaquants:
                 if j in self.persos[i]:
@@ -153,15 +211,20 @@ class Joueur():
 
     def construire_batiment(self, param):
         perso, sorte, pos = param
-        id = get_prochain_id()
-        # payer batiment
-        vals = Joueur.valeurs
-        for k, val in self.ressources.items():
-            self.ressources[k] = val - vals[sorte][k]
 
-        siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte,
-                                            Joueur.valeurs[sorte]["delai"])
-        self.batiments["siteconstruction"][id] = siteconstruction
+        if sorte == "siteconstruction":
+            siteconstruction = self.batiments["siteconstruction"][pos[2]]
+        else:
+            id = get_prochain_id()
+            # payer batiment
+            vals = Joueur.valeurs
+            for k, val in self.ressources.items():
+                self.ressources[k] = val - vals[sorte][k]
+
+            siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte,
+                                                Joueur.valeurs[sorte]["delai"])
+            self.batiments["siteconstruction"][id] = siteconstruction
+
         for i in perso:
             self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
 
@@ -176,12 +239,26 @@ class Joueur():
 
     def creer_perso(self, param):
         sorteperso, batimentsource, idbatiment, pos = param
-        id = get_prochain_id()
-        batiment = self.batiments[batimentsource][idbatiment]
 
-        x = batiment.x + 100 + (random.randrange(50) - 15)
-        y = batiment.y + (random.randrange(50) - 15)
+        # le joueur a-t-il les ressources pour creer l'unité
+        prix_perso = Joueur.prix_unite
+        possede_les_ressources = True
 
-        self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
-                                                                       sorteperso)
+        for k, val in self.ressources.items():
+            if self.ressources[k] - prix_perso[sorteperso][k] < 0:
+                possede_les_ressources = False
+
+        if possede_les_ressources:
+            # paye les ressources
+            for k, val in self.ressources.items():
+                self.ressources[k] = val - prix_perso[sorteperso][k]
+
+            id = get_prochain_id()
+            batiment = self.batiments[batimentsource][idbatiment]
+
+            x = batiment.x + 100 + (random.randrange(50) - 15)
+            y = batiment.y + (random.randrange(50) - 15)
+
+            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+                                                                           sorteperso)
 

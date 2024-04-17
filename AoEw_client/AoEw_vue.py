@@ -66,6 +66,7 @@ class Vue():
         self.canevassplash.pack()
 
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
+        # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
         self.etatdujeu = Label(text=testdispo, font=("Arial", 18), borderwidth=2, relief=RIDGE)
         self.nomsplash = Entry(font=("Arial", 14))
@@ -591,7 +592,7 @@ class Vue():
                     i = self.modele.joueurs[j].persos[p][k]
                     coul = self.modele.joueurs[j].couleur[0]
                     self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
-                                              tags=("mobile", j, k, "perso", type(i).__name__, "ballista"))
+                                              tags=("mobile", j, k, "perso", i.montype))
                     # tags=(j,k,"artefact","mobile","perso",p))
                     if k in self.action.persochoisi:
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
@@ -603,11 +604,13 @@ class Vue():
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
-                    if p == "ballista":
+                    if p == "ballista" or p == "archer":
                         for b in self.modele.joueurs[j].persos[p][k].fleches:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
                             # tags=(j,b.id,"artefact","mobile","javelot"))
+
+
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["daim"].keys():
@@ -637,6 +640,9 @@ class Vue():
             if self.modele.joueurs[self.parent.nom_joueur_local].chatneuf and self.action.chaton == 0:
                 self.btnchat.config(bg="orange")
             self.modele.joueurs[self.parent.nom_joueur_local].chatneuf = 0
+
+    def supprimer_batiment(self, id_batiment):
+        self.canevas.delete(id_batiment)
 
     def centrer_maison(self):
         self.root.update()
@@ -671,7 +677,7 @@ class Vue():
         mestags = self.canevas.gettags(CURRENT)
         print("MESTAGS", mestags)
         if self.parent.nom_joueur_local == mestags[1]:
-            if "Ouvrier" == mestags[4]:
+            if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
             else:
@@ -772,9 +778,14 @@ class Vue():
 
     def construire_batiment(self, evt):
         mestags = self.canevas.gettags(CURRENT)
+
         if not mestags:
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
             self.action.construire_batiment(pos)
+        elif "SiteConstruction" in mestags: # permet de continuer une constuction de site de construction
+            pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
+            self.action.prochaineaction = "siteconstruction"
+            self.action.continuer_construction(pos)
 
     def creer_entite(self, evt):
         x, y = evt.x, evt.y
@@ -794,10 +805,21 @@ class Vue():
                     self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+
                     self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"], mestags[4], mestags[2], pos)
                 if "champs_de_tir" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "chevalier-archer"], mestags[4], mestags[2], pos)
+
+                    action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
+
+            try:
+                self.parent.actions_requises.append(action)
+            except:
+                print("action invalide")
+
+
+
         elif self.action.persochoisi != []:
             self.action.ciblechoisi = mestags
             self.action.attaquer()
@@ -822,8 +844,8 @@ class Action():
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
-            sorte = self.ciblechoisi[5]
-            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[5])
+            sorte = self.ciblechoisi[4]
+            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "attaquer", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 
@@ -845,6 +867,10 @@ class Action():
     def construire_batiment(self, pos):
         self.btnactif.config(bg="SystemButtonFace")
         self.btnactif = None
+        action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+        self.parent.parent.actions_requises.append(action)
+
+    def continuer_construction(self, pos):
         action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
         self.parent.parent.actions_requises.append(action)
 

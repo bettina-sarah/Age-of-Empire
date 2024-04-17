@@ -182,6 +182,9 @@ class Controleur():
     def afficher_batiment(self, nom, batiment):  # ca devient un elem permanent du jeu alors on le met ici
         self.vue.afficher_batiment(nom, batiment)
 
+    def supprimer_batiment(self, id_batiment):
+        self.vue.supprimer_batiment(id_batiment)
+
     def afficher_bio(self, bio):
         self.vue.afficher_bio(bio)
 
@@ -192,6 +195,11 @@ class Controleur():
     def trouver_valeurs(self):
         vals = self.partie.trouver_valeurs()
         return vals
+
+    def retirer_batiment_minimap(self, id):
+        self.vue.minicarte.delete(id)
+
+
 
 if __name__ == '__main__':
     print("Bienvenue au RTS")
