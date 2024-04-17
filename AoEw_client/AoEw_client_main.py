@@ -8,7 +8,7 @@ class Controleur():
 
     def __init__(self):
         self.type=None
-        self.mort= []
+       
         self.ego_serveur = 0 # 1 si le joueur a creer la partie (seul lui peut 'lancer' la partie)
         self.iteration_boucle_jeu = 0
         self.actions_requises = []
@@ -128,6 +128,7 @@ class Controleur():
     # La boucle principale pour jouer une partie
     def boucler_sur_jeu(self): #
         self.iteration_boucle_jeu += 1
+        
         # test pour communiquer avec le serveur periodiquement
         if self.iteration_boucle_jeu % self.modulo_appeler_serveur == 0:
             actions = []
@@ -168,13 +169,13 @@ class Controleur():
         # self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
 
 
-        if self.partie.eliminer_joueur() and self.iteration_boucle_jeu > 5 and self.type > 1:
-            print("Controlleur FIN")
-        #     for i in self.joueurs:
-        #         print(i)
-        #     self.vue.afficherFin()
-        else:
-            self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+        # if self.partie.eliminer_joueur() and self.iteration_boucle_jeu > 5 and self.type > 1:
+        #     print("Controlleur FIN")
+        # #     for i in self.joueurs:
+        # #         print(i)
+        # #     self.vue.afficherFin()
+        
+        self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
 
 
 
@@ -204,8 +205,11 @@ class Controleur():
     def afficher_batiment(self, nom, batiment):  # ca devient un elem permanent du jeu alors on le met ici
         self.vue.afficher_batiment(nom, batiment)
 
-    def supprimer_batiment(self, id_batiment):
+    def supprimer_batiment(self, id_batiment, id_joueur):
         self.vue.supprimer_batiment(id_batiment)
+        self.partie.delete_batim_joueurs(id_batiment, id_joueur)
+        # self.partie.eliminer_joueur()
+        
 
     def afficher_bio(self, bio):
         self.vue.afficher_bio(bio)
@@ -219,13 +223,17 @@ class Controleur():
         return vals
 
 
+    def afficher_fin(self, gagnant):
+        self.vue.afficher_fin(gagnant)
+
+
     #ajoute Abi AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH
     def tuer_joueur(self):
-
         self.vue.unbind_joueur()
 
     def retirer_batiment_minimap(self, id):
         self.vue.minicarte.delete(id)
+
 
 
 

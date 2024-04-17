@@ -59,6 +59,7 @@ class Partie():
 
     def __init__(self, parent, mondict):
         self.parent = parent
+        self.mort = []
         self.actions_a_faire = {}
         self.debut = int(time.time())
         self.aireX = 4000
@@ -72,10 +73,10 @@ class Partie():
         self.delaiprochaineaction = 20
 
         self.joueurs = {}
-        self.classesbatiments = {"maison": Maison,
+        self.classesbatiments = {"maison": Usineballiste,  # change back maison
                                  "caserne": Caserne,
                                  "abri": Abri,
-                                 "usineballiste": Usineballiste}
+                                 "usineballiste": Maison}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,
@@ -449,34 +450,76 @@ class Partie():
 
     ## Ajout Abi
 
-    def eliminer_joueur(self):
-        
-
-
-        print("liste mort mtn")
-        print(self.parent.mort)
-
-        joueur= self.joueurs.get(self.parent.nom_joueur_local)
+    def delete_batim_joueurs(self, id_batim, joueur):
+        print("JOEEUR LOCAL")
+        print(self.parent.nom_joueur_local)
+        print("joueur qui a etet delete")
         print(joueur)
+        joueur = self.joueurs.get(joueur)
+        print(joueur.batiments)
 
-        if joueur.id in self.parent.mort:
-            pas
-        else:
-            if joueur.batiments["maison"] != {} or joueur.batiments["abri"] != {} or joueur.batiments["caserne"] != {} or joueur.batiments["usineballiste"] != {}:
-                pass
-            else:
-                self.parent.mort.append(joueur.id)
-                print("JE SUIS MORT " + joueur.id)
+        for key, value_list in joueur.batiments.items():
+            if id_batim in value_list:
+                value_list.remove(id_batim)
+        # joueur.batiments.pop(id_batim)
 
-                #creer action qui update tout le monde les morts
-                action = [self.parent.nom_joueur_local, "abandonner",
-                          [self.parent.nom_joueur_local + ": abandonne ", self.parent.mort]]
+        self.eliminer_joueur()
 
-                self.parent.actions_requises.append(action)
-                self.parent.tuer_joueur()
-                print("liste controlleur tous " )
-                print(self.parent.mort)
-                        # del self.joueurs[key]
+    def eliminer_joueur(self):
+        print("liste mort avant")
+        print(self.mort)
+        localaa = self.joueurs.get(self.parent.nom_joueur_local)
+        print(localaa)
+        try:
+            for key in self.joueurs.keys():
+                joueur = self.joueurs.get(key)
+
+                batiement = joueur.batiments.values
+                print("dans test fin " + key, joueur.id, batiement)
+
+                if joueur.batiments["maison"] == {} and joueur.batiments["abri"] == {} and joueur.batiments[
+                    "caserne"] == {} and joueur.batiments["usineballiste"] == {}:
+                    if joueur.id not in self.mort:
+                        self.mort.append(joueur.id)
+                        if joueur.id == localaa.id:
+                            print("jeu suis mort" + joueur.id)
+                            self.parent.vue.unbind_joueur()
+                            # self.parent.vue.changer_cadre("limbo")
+                            print(self.mort)
+                            # ajouter afficher_mort
+            print(self.joueurs.keys())
+        except RuntimeError:
+            print("AJOUT DE DICTO")
+            pass
+        #
+        # if len(self.mort) - len(self.joueurs) == 1:
+        #     print("dans test de fin, 1 seul joueurs")
+        #     t = set(self.mort)
+        #     print(t)
+        #     j = set(self.joueurs.keys())
+        #     print(j)
+        #     self.parent.afficher_fin(list(j - t))
+
+        # if joueur.id not in self.parent.mort:
+        #     if joueur.batiments["maison"] != {} or joueur.batiments["abri"] != {} or joueur.batiments["caserne"] != {} or joueur.batiments["usineballiste"] != {}:
+        #         # self.montrer_msggeneral("VOUS ETES vivant")
+        #         print("vivant")
+        #     else:
+        #         self.parent.mort.append(joueur.id)
+        #         print("JE SUIS MORT " + joueur.id)
+        #         self.montrer_msg_general("vous etes vivant")
+        #         self.parent.tuer_joueur()
+        #         self.parent.a
+        #
+        #         #creer action qui update tout le monde les morts
+        #         # action = [self.parent.nom_joueur_local, "abandonner",
+        #         #           [self.parent.nom_joueur_local + ": abandonne ", self.parent.mort]]
+        #
+        #         # self.parent.actions_requises.append(action)
+        #         # self.parent.tuer_joueur()
+        #         print("liste controlleur tous " )
+        #         print(self.parent.mort)
+        # del self.joueurs[key]
 
     def retirer_batiment_minimap(self, id):
         self.parent.retirer_batiment_minimap(id)
@@ -485,6 +528,4 @@ class Partie():
         print("click")
         for i in cartebatiment:
             self.cartecase[i[1]][i[0]].montype = "plaine"
-
-
         pass

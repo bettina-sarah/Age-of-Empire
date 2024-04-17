@@ -55,10 +55,73 @@ class Vue():
     def creer_cadres(self, url_serveur: str, nom_joueur_local: str, testdispo: str):
         self.cadres["splash"] = self.creer_cadre_splash(url_serveur, nom_joueur_local, testdispo)
         self.cadres["lobby"] = self.creer_cadre_lobby()
+        self.cadres["limbo"] = self.creer_cadre_jeu_limbo()
+        self.cadres["fin"] = self.creer_cadre_fin()
         self.cadres["jeu"] = self.creer_cadre_jeu()
 
     # le splash (ce qui 'splash' à l'écran lors du démarrage)
     # sera le cadre visuel initial lors du lancement de l'application
+
+    def creer_cadre_fin(self):
+        self.cadreFin = Frame(self.cadreapp, bg="green", width=400, height=400)
+        # un canvas est utilisé pour 'dessiner' les widgets de cette fenêtre voir 'create_window' plus bas
+        self.canevasFin = Canvas(self.cadreFin, width=600, height=480, bg="SlateBlue1")
+
+        self.canevasFin.pack()
+
+        return self.cadreFin
+
+    def afficher_fin(self, gagnant):
+        print(gagnant)
+        self.changer_cadre("fin")
+        print("finis VUE")
+
+    def afficher_limbo(self):
+        print("DANS LE LIMBO")
+        self.changer_cadre("limbo")
+
+    def creer_cadre_jeu_limbo(self):
+        # le cadre principal du jeu, remplace le Lobby
+        self.cadrepartie = Frame(self.cadreapp, bg="green", width=400, height=400)
+        # cadre du jeu et ses scrollbars
+        self.creer_aire_de_jeu()
+        # cadre pour info sur les ressources du joueur en haut de l'aire de jeu
+        self.creer_HUD()
+        # cadre pour commandes et infos des objets de jeu, situe a droite
+        self.creer_cadre_jeu_action()
+        # configuration de la section qui s'etire lorsque la fenetre change de taille
+        self.cadrepartie.rowconfigure(0, weight=1)
+        self.cadrepartie.columnconfigure(0, weight=1)
+        # on retourne ce cadre pour l'insérer dans le dictionnaires des cadres
+        return self.cadrepartie
+
+    def creer_aire_de_jeu_limbo(self):
+        # definition du cadre avec le canvas de jeu et les scrollbars
+        self.cadrecanevas = Frame(self.cadrepartie)
+        # on crée les scrollbar AVANT le canevas de jeu car le canevas est dépendant de leur
+        self.scrollV = Scrollbar(self.cadrecanevas, orient=VERTICAL)
+        self.scrollH = Scrollbar(self.cadrecanevas, orient=HORIZONTAL)
+        self.canevas = Canvas(self.cadrecanevas, width=400, height=400, bg="DarkOliveGreen2",
+                              yscrollcommand=self.scrollV.set,
+                              xscrollcommand=self.scrollH.set)
+        self.scrollV.config(command=self.canevas.yview)
+        self.scrollH.config(command=self.canevas.xview)
+        # on visualise utilisant grid (grille)
+        # le grid avec 'sticky' indique que l'objet doit s'acroitre pour coller aux 'points cardinaux' (anglais)
+
+        self.canevas.grid(row=1, column=0, sticky=N + S + E + W)
+        self.scrollV.grid(row=1, column=1, sticky=N + S)
+        self.scrollH.grid(row=2, column=0, sticky=E + W)
+
+        # visualise le cadre qui contient le canevas de jeu
+        self.cadrecanevas.grid(column=0, row=0, sticky=N + S + E + W)
+        # on doit preciser quelle partie de la grille (grid) va s'accroitre, colonne et rangée
+        # ici on precise que c'est le canevas et non les scrollbar qui doit s'agrandir
+        self.cadrecanevas.rowconfigure(1, weight=1)
+        self.cadrecanevas.columnconfigure(0, weight=1)
+
+
+
     def creer_cadre_splash(self, url_serveur: str, nom_joueur_local: str, testdispo: str) -> Frame:
         self.cadresplash = Frame(self.cadreapp)
         # un canvas est utilisé pour 'dessiner' les widgets de cette fenêtre voir 'create_window' plus bas
@@ -121,6 +184,21 @@ class Vue():
         self.canevaslobby.create_window(200, 400, window=self.btnlancerpartie, width=100, height=30)
         # on retourne ce cadre pour l'insérer dans le dictionnaires des cadres
         return self.cadrelobby
+    
+    def creer_cadre_limbo(self):
+        # le cadre principal du jeu, remplace le Lobby
+        self.cadrepartie = Frame(self.cadreapp, bg="green", width=400, height=400)
+        # cadre du jeu et ses scrollbars
+        self.creer_aire_de_jeu()
+        # cadre pour info sur les ressources du joueur en haut de l'aire de jeu
+        self.creer_HUD()
+        # cadre pour commandes et infos des objets de jeu, situe a droite
+        self.creer_cadre_jeu_action()
+        # configuration de la section qui s'etire lorsque la fenetre change de taille
+        self.cadrepartie.rowconfigure(0, weight=1)
+        self.cadrepartie.columnconfigure(0, weight=1)
+        # on retourne ce cadre pour l'insérer dans le dictionnaires des cadres
+        return self.cadrepartie
 
     def creer_cadre_jeu(self):
         # le cadre principal du jeu, remplace le Lobby
@@ -192,11 +270,10 @@ class Vue():
         self.infohud["msggeneral"] = [champmsg]
         self.btnchat = Button(self.cadrejeuinfo, text="Chat", command=self.action.chatter)
         self.btnaide = Button(self.cadrejeuinfo, text="Aide", command=self.action.aider)
-        self.quitter = Button(self.cadrejeuinfo, text="quitter", command=self.action.abandonner)
 
         self.btnaide.pack(side=RIGHT)
         self.btnchat.pack(side=RIGHT)
-        self.quitter.pack(side=RIGHT)
+
 
         self.cadrejeuinfo.grid(row=0, column=0, sticky=E + W, columnspan=2)
 
@@ -761,6 +838,7 @@ class Vue():
         # self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         # self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         # self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
+
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
