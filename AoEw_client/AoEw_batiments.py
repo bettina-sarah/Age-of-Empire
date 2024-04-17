@@ -34,6 +34,7 @@ class Batiment():
             self.parent.annoncer_mort_batiment(self)
             return 1
 
+
 class Usineballiste(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
