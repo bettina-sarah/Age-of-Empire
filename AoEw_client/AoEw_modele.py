@@ -450,7 +450,7 @@ class Partie():
     ## Ajout Abi
 
     def eliminer_joueur(self):
-
+        
 
 
         print("liste mort mtn")
@@ -460,7 +460,7 @@ class Partie():
         print(joueur)
 
         if joueur.id in self.parent.mort:
-            pass
+            pas
         else:
             if joueur.batiments["maison"] != {} or joueur.batiments["abri"] != {} or joueur.batiments["caserne"] != {} or joueur.batiments["usineballiste"] != {}:
                 pass

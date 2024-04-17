@@ -361,11 +361,15 @@ class Ballista(Perso):
         print("KAWABUNGA BABY")
         print(" DELAI FEU : ",self.delaifeu)
         if self.delaifeu == 0:
-
             id = get_prochain_id()
-            fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
-            self.fleches.append(fleche)
-            self.delaifeu = self.delaifeumax
+            try:
+                fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
+                self.fleches.append(fleche)
+                self.delaifeu = self.delaifeumax
+            except AttributeError :
+                prin("cicle morte")
+                pass
+
         for i in self.fleches:
             print("fleches :  ", i)
             rep = i.bouger()
