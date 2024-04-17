@@ -374,6 +374,7 @@ class Vue():
         # self.centrer_maison()
 
     def creer_cadre_ouvrier(self, coul, artefacts):
+
         self.cadreouvrier = Frame(self.canevasaction)
         for i in artefacts:
             btn = Button(self.cadreouvrier, text=i, image=self.images[coul + i])
@@ -381,6 +382,9 @@ class Vue():
             btn.pack()
 
     def creer_cadre_maison(self, coul, persos, tag_batiment, id_joueur, pos):
+        if self.action.widgetsactifs:
+            self.canevasaction.delete(self.action.widgetsactifs)
+            self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         print(persos)
         for i in persos:
@@ -469,10 +473,6 @@ class Vue():
     def test_entite(self, type_perso, tag_batiment, id_joueur, pos):
         action = [self.parent.nom_joueur_local, "creerperso", [type_perso, tag_batiment, id_joueur, pos]]
         self.parent.actions_requises.append(action)
-        self.action.widgetsactifs.pop(-1)
-
-
-
 
 
     ##FONCTIONS D'AFFICHAGES##################################
@@ -875,6 +875,10 @@ class Action():
         self.parent.parent.actions_requises.append(action)
 
     def afficher_commande_perso(self):
+        # ! enlever widget de créer perso
+        if self.widgetsactifs:
+            self.parent.canevasaction.delete(self.widgetsactifs)
+            self.widgetsactifs = []
         self.widgetsactifs = self.parent.canevasaction.create_window(100, 60,
                                                                      window=self.parent.cadreouvrier,
                                                                      anchor=N)
