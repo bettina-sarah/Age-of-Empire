@@ -366,9 +366,10 @@ class Ballista(Perso):
             fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
             self.fleches.append(fleche)
             self.delaifeu = self.delaifeumax
-        for i in self.fleches:
-            print("fleches :  ", i)
-            rep = i.bouger()
+        if len(self.fleches) > 0:
+            for i in self.fleches:
+                print("fleches :  ", i)
+                rep = i.bouger()
         # if rep:
             # self.cibleennemi.recevoir_coup(self.force)
             # self.fleches.remove(rep)
