@@ -29,11 +29,21 @@ class Fleche():
         self.image = "javelot" + dir
 
     def bouger(self):
+        if not self.proie:
+            print("=============================empty parent fleches")
+            self.parent.fleches = []
         self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
         if dist <= self.taille:
-            rep = self.cibleennemi.recevoircoup(self.force)
-            return self
+            rep = self.proie.recevoir_coup(self.force)
+            self.parent.fleches.remove(self)
+            if rep == 1:
+                print("==========================fleches clear")
+                self.parent.fleches.clear()
+                print("Dans fleche vider le parent ciblennemi")
+                self.parent.cibleennemi = None;
+
+            # return self
 
 class Javelot():
     def __init__(self, parent, id, proie):
@@ -90,20 +100,21 @@ class Perso():
         self.position_visee = None
         self.cibleennemi = None
         self.mana = 100
-        self.force = 5
+        self.force = 15
         self.champvision = 100
         self.vitesse = 5
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
-                                 "ciblerennemi": None,
-                                 "attaquerennemi": None,
-                                 "retourbatimentmere": None,
+                                 "attaquerennemi": None, # caller la bonne fctn attaquer
+                                 "ciblerennemi":None
                                  }
+        # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
         x = self.cibleennemi.x
         y = self.cibleennemi.y
+        pos_cible = x,y
         self.cibler(ennemi)
         dist = Helper.calcDistance(self.x, self.y, x, y)
         if dist <= self.vitesse:
@@ -123,7 +134,8 @@ class Perso():
         self.mana -= force
         print("Ouch")
         if self.mana < 1:
-            print("MORTS")
+            print("MORT")
+            print("id du perso mort :", self.id)
             self.parent.annoncer_mort(self)
             return 1
 
@@ -136,6 +148,8 @@ class Perso():
         self.actioncourante = "bouger"
 
     def bouger(self):
+        print("bouger perso")
+
         if self.position_visee:
             # le if sert à savoir si on doit repositionner notre visee pour un objet
             # dynamique comme le daim
@@ -212,9 +226,74 @@ class Soldat(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
 
+
 class Archer(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+
+        self.dir = "D"
+        # self.cible = None
+        # self.angle = None
+        self.distancefeumax = 360
+        self.distancefeu = 360
+        self.delaifeu = 30
+        self.delaifeumax = 30
+        self.fleches = []
+        self.cibleennemi = None
+        self.position_visee = None
+        # self.nomimg="ballista"
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+        # if self.y < self.position_visee[1]:
+        #     self.dir = self.dir + "B"
+        # else:
+        #     self.dir = self.dir + "H"
+
+        self.image = self.image[:-2] + self.dir
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+        print(self.distancefeu)
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "ciblerennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                id = get_prochain_id()
+                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.fleches.append(fleche)
+                self.delaifeu = self.delaifeumax
+            if len(self.fleches) > 0:
+                for i in self.fleches:
+                    print("fleches :  ", i)
+                    rep = i.bouger()
+                # if rep:
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
+
 
 class Chevalier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -236,15 +315,20 @@ class Ballista(Perso):
         self.image = couleur[0] + "_" + montype + self.dir
         self.cible = None
         self.angle = None
-        self.distancefeumax = 30
-        self.distancefeu = 30
+        self.distancefeumax = 360
+        self.distancefeu = 360
+        self.delaifeu = 30
+        self.delaifeumax=30
         self.fleches = []
         self.cibleennemi = None
+        self.position_visee = None
         # self.nomimg="ballista"
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler
+                                 }
 
-    def cibler(self, pos):
-        self.position_visee = pos
-
+    def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
         if self.x < self.position_visee[0]:
             self.dir = "D"
@@ -263,21 +347,31 @@ class Ballista(Perso):
         y = self.cibleennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        if dist <= self.distancefeu:
+        print("DISTANCE CALCULEE", dist)
+        print(self.distancefeu)
+        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
-        else:
+            print("self.actioncourante = attaquerennemi")
+        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "ciblerennemi"
+            print("self.actioncourante = ciblerennemi")
 
     def attaquerennemi(self):
+        self.delaifeu = self.delaifeu -1
+        print("KAWABUNGA BABY")
+        print(" DELAI FEU : ",self.delaifeu)
         if self.delaifeu == 0:
+
             id = get_prochain_id()
-            fleche = Fleche(self, id, self.ciblennemi)
+            fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
+            self.fleches.append(fleche)
             self.delaifeu = self.delaifeumax
         for i in self.fleches:
+            print("fleches :  ", i)
             rep = i.bouger()
-        if rep:
-            rep = self.cibleennemi.recevoir_coup(self.force)
-            self.fleches.remove(rep)
+        # if rep:
+            # self.cibleennemi.recevoir_coup(self.force)
+            # self.fleches.remove(rep)
 
 class Ouvrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -398,6 +492,8 @@ class Ouvrier(Perso):
     def jouer_prochain_coup(self):
         if self.actioncourante:
             reponse = self.etats_et_actions[self.actioncourante]()
+            print("REPONSE==========================================================", type(reponse))
+            # lors dune attaque, ca fait un NonType not callable, mais tous les coups autre quune attaque donne NoneType et sont callés
 
     def lancer_javelot(self, proie):
         if self.javelots == []:

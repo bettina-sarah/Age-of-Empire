@@ -1,5 +1,6 @@
  ## -*- Encoding: UTF-8 -*-
 
+from tkinter import *
 from tkinter import ttk
 from tkinter.simpledialog import *
 
@@ -13,16 +14,16 @@ class Vue():
         self.root.title("Je suis " + nom_joueur_local)
         self.nom_joueur_local = nom_joueur_local
         # attributs
-        self.cadrechaton = 0
+        self.cadrechaton = 0 # fenetre de chat on ou non
         self.textchat = ""
-        self.infohud = {}
+        self.infohud = {} # overhead display : les ressources et autres
         # # minicarte
         self.tailleminicarte = 220
         self.cadreactif = None
         # # objet pour cumuler les manipulations du joueur pour generer une action de jeu
-        self.action = Action(self)
+        self.action = Action(self) # pour avoir une action fraiche. C,est comme un Singleton
         # cadre principal de l'application
-        self.cadreapp = Frame(self.root, width=500, height=400, bg="red")
+        self.cadreapp = Frame(self.root, width=500, height=400, bg="red") # un frame generique pour toute lapp
         self.cadreapp.pack(expand=1, fill=BOTH)
 
         # # un dictionnaire pour conserver les divers cadres du jeu, creer plus bas
@@ -64,6 +65,7 @@ class Vue():
         self.canevassplash = Canvas(self.cadresplash, width=600, height=480, bg="wheat1")
         self.canevassplash.pack()
 
+        # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # creation ds divers widgets (champ de texte 'Entry' et boutons cliquables (Button)
         # les champs et
         self.etatdujeu = Label(text=testdispo, font=("Arial", 18), borderwidth=2, relief=RIDGE)
@@ -170,7 +172,7 @@ class Vue():
                         "Aureus": None}
 
         # fonction interne uniquement pour reproduire chaque item d'info
-        def creer_champ_interne(listechamp):
+        def creer_champ_interne(listechamp): # refactoriser pour etiquette au lieu de champ
             titre = Champ(self.cadrejeuinfo, text=i, bg="red", fg="white")
             varstr = StringVar()
             varstr.set(0)
@@ -254,7 +256,7 @@ class Vue():
         self.joueurs = ttk.Combobox(self.cadreparler,
                                     values=list(self.modele.joueurs.keys()))
         self.entreechat = Entry(self.cadreparler, width=20)
-        self.entreechat.bind("<Return>")  # ,self.action.envoyerchat)
+        self.entreechat.bind("<Return>", self.action.envoyer_chat)
         self.joueurs.pack(expand=1, fill=X)
         self.entreechat.pack(expand=1, fill=X)
         self.cadreparler.pack(expand=1, fill=X)
@@ -498,7 +500,7 @@ class Vue():
                     i = self.modele.joueurs[j].persos[p][k]
                     coul = self.modele.joueurs[j].couleur[0]
                     self.canevas.create_image(i.x, i.y, anchor=S, image=self.images[i.image],
-                                              tags=("mobile", j, k, "perso", type(i).__name__, ""))
+                                              tags=("mobile", j, k, "perso", i.montype))
                     # tags=(j,k,"artefact","mobile","perso",p))
                     if k in self.action.persochoisi:
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
@@ -510,7 +512,13 @@ class Vue():
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
+                    if p == "ballista" or p == "archer":
+                        for b in self.modele.joueurs[j].persos[p][k].fleches:
+                            self.canevas.create_image(b.x, b.y, image=self.images[b.image],
+                                                      tags=("mobile", j, b.id, "", type(b).__name__, ""))
                             # tags=(j,b.id,"artefact","mobile","javelot"))
+
+
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["daim"].keys():
@@ -572,8 +580,9 @@ class Vue():
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
+        print("MESTAGS", mestags)
         if self.parent.nom_joueur_local == mestags[1]:
-            if "Ouvrier" == mestags[4]:
+            if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
             else:
@@ -758,7 +767,8 @@ class Action():
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
-            sorte = self.ciblechoisi[5]
+            sorte = self.ciblechoisi[4]
+            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "attaquer", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 
@@ -840,7 +850,7 @@ class Action():
 
 # classe qui est une sous-classe d'une classe tkinter dont on change les proprietes
 class Champ(Label):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs): # keyword arg = nom arg = certaine valeur. Comme un dict
         Label.__init__(self, master, *args, **kwargs)
         self.config(font=("arial", 13, "bold"))
         self.config(bg="goldenrod3")

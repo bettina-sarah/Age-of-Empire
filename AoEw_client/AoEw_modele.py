@@ -87,6 +87,7 @@ class Partie():
         self.msggeneralcompteur = 0
         self.listebiotopes = []
         self.biotopes = {"daim": {},
+                         "ours": {},
                          "arbre": {},
                          "roche": {},
                          "aureus": {},
