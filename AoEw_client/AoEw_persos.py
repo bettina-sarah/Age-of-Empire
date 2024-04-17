@@ -215,8 +215,10 @@ class Perso():
         #####AJOUTER TEST DE LIMITE
         taille = self.parent.parent.taillecase
         case = self.parent.parent.trouver_case(x1, y1, self.dir)
+        # affichage --------------------------------------------------------------------------------------------------
         xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
         self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("",))
+        # affichage --------------------------------------------------------------------------------------------------
         cases_cibles = []
         if case.montype == "batiment":
             print("je marche dans un batiment")

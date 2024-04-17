@@ -103,6 +103,10 @@ class Partie():
         self.creer_biotopes()
         self.creer_population(mondict)
 
+        self.taillecase = 20
+        self.demicase = self.taillecase / 2
+        self.taillecarte = int(self.aireX / self.taillecase)
+
     def trouver_valeurs(self):
         vals = Partie.valeurs
         return vals
@@ -415,9 +419,9 @@ class Partie():
         cx = int(x / self.taillecase)
         cy = int(y / self.taillecase)
         # possible d'etre dans une case trop loin
-        if cx == self.largeurcase:
+        if cx == self.taillecase:
             cx -= 1
-        if cy == self.hauteurcase:
+        if cy == self.taillecase:
             cy -= 1
 
         # le centre en pixels de la case d'origine
@@ -436,17 +440,17 @@ class Partie():
         casecoinx2 = cx + d
         casecoiny2 = cy + d
         # assure qu'on deborde pas
-        if casecoinx2 >= self.largeurcase:
-            casecoinx2 = self.largeurcase - 1
-        if casecoiny2 >= self.hauteurcase:
-            casecoiny2 = self.hauteurcase - 1
+        # if casecoinx2 >= self.taillecase:
+        #     casecoinx2 = self.taillecase - 1
+        # if casecoiny2 >= self.taillecase:
+        #     casecoiny2 = self.taillecase - 1
 
         distmax = (d * self.taillecase) + self.demicase
 
         t1 = []
         for i in range(casecoiny1, casecoiny2):
             for j in range(casecoinx1, casecoinx2):
-                case = self.carte[i][j]
+                case = self.cartecase[i][j]
                 pxcentrecasex = (j * self.taillecase) + self.demicase
                 pxcentrecasey = (i * self.taillecase) + self.demicase
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
