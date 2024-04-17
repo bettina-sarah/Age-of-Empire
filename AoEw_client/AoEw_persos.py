@@ -3,6 +3,7 @@ import math
 from helper import Helper
 from AoEw_divers import *
 
+
 class Fleche():
     def __init__(self, parent, id, proie):
         self.parent = parent
@@ -45,6 +46,7 @@ class Fleche():
 
             # return self
 
+
 class Javelot():
     def __init__(self, parent, id, proie):
         self.parent = parent
@@ -85,6 +87,7 @@ class Javelot():
                 self.parent.javelots.remove(self)
                 self.parent.actioncourante = "ciblerproie"
 
+
 class Perso():
     def __init__(self, parent, id, batiment, couleur, x, y, montype):
         self.parent = parent
@@ -105,8 +108,8 @@ class Perso():
         self.vitesse = 5
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
-                                 "attaquerennemi": None, # caller la bonne fctn attaquer
-                                 "ciblerennemi":None
+                                 "attaquerennemi": None,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": None
                                  }
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
@@ -114,7 +117,7 @@ class Perso():
         self.cibleennemi = ennemi
         x = self.cibleennemi.x
         y = self.cibleennemi.y
-        pos_cible = x,y
+        pos_cible = x, y
         self.cibler(ennemi)
         dist = Helper.calcDistance(self.x, self.y, x, y)
         if dist <= self.vitesse:
@@ -148,8 +151,6 @@ class Perso():
         self.actioncourante = "bouger"
 
     def bouger(self):
-        print("bouger perso")
-
         if self.position_visee:
             # le if sert à savoir si on doit repositionner notre visee pour un objet
             # dynamique comme le daim
@@ -158,10 +159,12 @@ class Perso():
             ang = Helper.calcAngle(self.x, self.y, x, y)
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.test_etat_du_sol(x1, y1)
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            self.x, self.y = self.test_etat_du_sol(x1, y1)
+            # print("apres : ", self.x,"/", self.y )
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
-            self.x, self.y = x1, y1
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
             dist = Helper.calcDistance(self.x, self.y, x, y)
             if dist <= self.vitesse:
@@ -170,6 +173,21 @@ class Perso():
                 return "rendu"
             else:
                 return dist
+
+    def get_directon_vers_position_visee(self):
+        if self.position_visee:
+            if self.x < self.position_visee[0]:
+                self.dir = "D"
+            else:
+                self.dir = "G"
+
+            if self.y < self.position_visee[1]:
+                self.dir += "B"
+            else:
+                self.dir += "H"
+
+
+
 
     def cibler(self, obj):
         self.cible = obj
@@ -183,6 +201,8 @@ class Perso():
         else:
             self.position_visee = None
 
+
+
     def test_etat_du_sol(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
         # ici oncalcule sur quelle case on circule
@@ -193,33 +213,94 @@ class Perso():
         if casey != int(casey):
             casey = int(casey) + 1
         #####AJOUTER TEST DE LIMITE
-        case = self.parent.parent.trouver_case(x1, y1)
-        #
-        # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        if case.montype != "plaine":
-            # test pour être sur que de n'est 9 (9=batiment)
-            if case.montype != "batiment":
-                print("marche dans ", case.montype)
-            else:
-                print("marche dans batiment")
+        taille = self.parent.parent.taillecase
+        case = self.parent.parent.trouver_case(x1, y1, self.dir)
+        xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+        self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("",))
+        cases_cibles = []
+        if case.montype == "batiment":
+            print("je marche dans un batiment")
+            cases = self.parent.parent.get_subcarte(x1, y1, 3)
+            for i in cases:
+                if i.montype == "batiment":
+                    xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                    # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                else:
+                    cases_cibles.append(case)
+                    xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("",))
 
-    def test_etat_du_sol1(self, x1, y1):
-        ######## SINON TROUVER VOIE DE CONTOURNEMENT
-        # ici oncalcule sur quelle case on circule
-        casex = x1 / self.parent.parent.taillecase
-        if casex != int(casex):
-            casex = int(casex) + 1
-        casey = y1 / self.parent.parent.taillecase
-        if casey != int(casey):
-            casey = int(casey) + 1
-        #####AJOUTER TEST DE LIMITE
-        # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
-        if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "plaine":
-            # test pour être sur que de n'est 9 (9=batiment)
-            if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "batiment":
-                print("marche dans ", )
-            else:
-                print("marche dans batiment")
+            if cases_cibles:
+                x1, y1 = self.trouve_case_contournement(cases_cibles)
+            ang = Helper.calcAngle(self.x, self.y, x1,y1)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+
+        return x1,y1
+
+    def trouve_case_contournement(self, cases):
+        x,y = cases[0].x, cases[0].y
+        print(self.dir,"-----------------")
+        for case in cases:
+            # taille = self.parent.parent.taillecase
+            # xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+            # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+            offset = self.parent.parent.taillecase
+            if self.dir == "GH":
+                if case.x < x and case.y < y:
+                    x = case.x-offset
+                    y = case.y-offset
+            elif self.dir == "DH":
+                if case.x > x and case.y < y:
+                    x = case.x+offset
+                    y = case.y-offset
+            elif self.dir == "GB":
+                if case.x < x and case.y > y:
+                    x = case.x-offset
+                    y = case.y+offset
+            elif self.dir == "DB":
+                if case.x > x and case.y > y:
+                    x = case.x+offset
+                    y = case.y-offset
+        return [x,y]
+
+    # def test_etat_du_sol(self, x1, y1):
+    #     ######## SINON TROUVER VOIE DE CONTOURNEMENT
+    #     # ici oncalcule sur quelle case on circule
+    #     casex = x1 / self.parent.parent.taillecase
+    #     if casex != int(casex):
+    #         casex = int(casex) + 1
+    #     casey = y1 / self.parent.parent.taillecase
+    #     if casey != int(casey):
+    #         casey = int(casey) + 1
+    #     #####AJOUTER TEST DE LIMITE
+    #     case = self.parent.parent.trouver_case(x1, y1)
+    #     return case.montype != "batiment"
+    # :
+    #     print("marche dans ", case.montype, x1, "/",y1)
+    #     return
+    # else:
+    #     #change la direction sinon
+    #     return (0,0)
+    #     print("marche dans batiment")
+
+    # def test_etat_du_sol1(self, x1, y1):
+    #     ######## SINON TROUVER VOIE DE CONTOURNEMENT
+    #     # ici oncalcule sur quelle case on circule
+    #     casex = x1 / self.parent.parent.taillecase
+    #     if casex != int(casex):
+    #         casex = int(casex) + 1
+    #     casey = y1 / self.parent.parent.taillecase
+    #     if casey != int(casey):
+    #         casey = int(casey) + 1
+    #     #####AJOUTER TEST DE LIMITE
+    #     # test si different de 0 (0=plaine), voir Partie pour attribution des valeurs
+    #     if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "plaine":
+    #         # test pour être sur que de n'est 9 (9=batiment)
+    #         if self.parent.parent.cartecase[int(casey)][int(casex)].montype != "batiment":
+    #             print("marche dans ", )
+    #         else:
+    #             print("marche dans batiment")
+
 
 class Soldat(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -299,13 +380,16 @@ class Chevalier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
+
 class Druide(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
+
 class Ingenieur(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+
 
 class Ballista(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -318,7 +402,7 @@ class Ballista(Perso):
         self.distancefeumax = 360
         self.distancefeu = 360
         self.delaifeu = 30
-        self.delaifeumax=30
+        self.delaifeumax = 30
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None
@@ -349,29 +433,29 @@ class Ballista(Perso):
         dist = Helper.calcDistance(self.x, self.y, x, y)
         print("DISTANCE CALCULEE", dist)
         print(self.distancefeu)
-        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
             print("self.actioncourante = attaquerennemi")
-        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "ciblerennemi"
             print("self.actioncourante = ciblerennemi")
 
     def attaquerennemi(self):
-        self.delaifeu = self.delaifeu -1
+        self.delaifeu = self.delaifeu - 1
         print("KAWABUNGA BABY")
-        print(" DELAI FEU : ",self.delaifeu)
+        print(" DELAI FEU : ", self.delaifeu)
         if self.delaifeu == 0:
-
             id = get_prochain_id()
-            fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
+            fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
             self.fleches.append(fleche)
             self.delaifeu = self.delaifeumax
         for i in self.fleches:
             print("fleches :  ", i)
             rep = i.bouger()
         # if rep:
-            # self.cibleennemi.recevoir_coup(self.force)
-            # self.fleches.remove(rep)
+        # self.cibleennemi.recevoir_coup(self.force)
+        # self.fleches.remove(rep)
+
 
 class Ouvrier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -496,7 +580,7 @@ class Ouvrier(Perso):
     def jouer_prochain_coup(self):
         if self.actioncourante:
             reponse = self.etats_et_actions[self.actioncourante]()
-            print("REPONSE==========================================================", type(reponse))
+            # print("REPONSE==========================================================", type(reponse))
             # lors dune attaque, ca fait un NonType not callable, mais tous les coups autre quune attaque donne NoneType et sont callés
 
     def lancer_javelot(self, proie):
@@ -606,4 +690,3 @@ class Ouvrier(Perso):
     #         else:
     #             c = None
     #     self.angle = Helper.calcAngle(self.x, self.y, self.cible.x, self.cible.y)
-

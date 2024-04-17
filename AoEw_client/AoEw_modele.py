@@ -315,7 +315,49 @@ class Partie():
                 t1.append(Caseregion(None, id, j, i))
             self.cartecase.append(t1)
 
-    def trouver_case(self, x, y):
+    # def trouver_case(self, x, y):
+    #
+    #     if x < 0:
+    #         x = 0
+    #     if y < 0:
+    #         y = 0
+    #
+    #     if x > (self.aireX - 1):
+    #         x = self.aireX - 1
+    #     if y > (self.aireY - 1):
+    #         y = self.aireY - 1
+    #
+    #     cx = int(x / self.taillecase)
+    #     cy = int(y / self.taillecase)
+    #     # if cx != 0 and x % self.taillecase > 0:
+    #     #     cx += 1
+    #     #
+    #     # if cy != 0 and y % self.taillecase > 0:
+    #     #     cy += 1
+    #
+    #     # possible d'etre dans une case trop loin
+    #     if cx == self.taillecarte:
+    #         cx -= 1
+    #     if cy == self.taillecarte:
+    #         cy -= 1
+    #     # print("--> carte",self.cartecase[cy][cx])
+    #     return self.cartecase[cy][cx]  # [cx,cy]
+
+    def trouver_case(self, x, y, dir="none"):
+        offsetX = 0
+        offsetY = 0
+        if dir == "GH":
+            offsetX = -1
+            offsetY = -1
+        elif dir == "DH":
+            offsetX = 1
+            offsetY = -1
+        elif dir == "GB":
+            offsetX = -1
+            offsetY = 1
+        elif dir == "DB":
+            offsetX = 1
+            offsetY = 1
 
         if x < 0:
             x = 0
@@ -329,11 +371,11 @@ class Partie():
 
         cx = int(x / self.taillecase)
         cy = int(y / self.taillecase)
-        if cx != 0 and x % self.taillecase > 0:
-            cx += 1
-
-        if cy != 0 and y % self.taillecase > 0:
-            cy += 1
+        # if cx != 0 and x % self.taillecase > 0:
+        #     cx += 1
+        #
+        # if cy != 0 and y % self.taillecase > 0:
+        #     cy += 1
 
         # possible d'etre dans une case trop loin
         if cx == self.taillecarte:
@@ -341,7 +383,7 @@ class Partie():
         if cy == self.taillecarte:
             cy -= 1
         # print(self.cartecase[cy][cx])
-        return self.cartecase[cy][cx]  # [cx,cy]
+        return self.cartecase[cy+offsetY][cx+offsetX]  # [cx,cy]
 
     def get_carte_bbox(self, x1, y1, x2, y2):  # case d'origine en cx et cy,  pour position pixels x, y
         # case d'origine en cx et cy,  pour position pixels x, y
