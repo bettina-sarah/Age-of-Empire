@@ -1,4 +1,4 @@
-## -*- Encoding: UTF-8 -*-
+ ## -*- Encoding: UTF-8 -*-
 
 from tkinter import ttk
 from tkinter.simpledialog import *
