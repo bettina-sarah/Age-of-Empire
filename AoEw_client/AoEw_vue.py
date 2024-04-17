@@ -394,10 +394,34 @@ class Vue():
                                                                                                                   id_joueur,
                                                                                                                   pos))
             btn.pack()
+            self.afficher_labels_ressources(i)
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
                                                              window=self.cadrebatiment,
                                                              anchor=N))
+
+    def afficher_labels_ressources(self, index):
+        
+        self.self_dict_temp_ressources = {"nourriture": self.images["arbustebaiespetit"],
+         "arbre": self.images["bois-ressource"],
+         "roche": self.images["roches1petit"],
+         "aureus": self.images["aureusD_"]}
+
+        self.frame_generique(index)
+
+        # FRAME NOURRITURE
+        frame_nourriture = Frame(self.cadrebatiment)
+        for key, image in self.self_dict_temp_ressources.items():
+            image_nourriture = Label(frame_nourriture, image=image)
+            lbl_nourriture = Label(frame_nourriture, text=self.modele.joueurs[self.parent.nom_joueur_local].prix_unite[index][key])
+            frame_nourriture.pack()
+            image_nourriture.pack()
+            lbl_nourriture.pack()
+
+
+
+
+
 
     def creer_cadre_caserne(self, coul, persos, tag_batiment, id_joueur, pos):
         if self.action.widgetsactifs:
