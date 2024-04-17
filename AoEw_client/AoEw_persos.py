@@ -217,8 +217,8 @@ class Perso():
         case = self.parent.parent.trouver_case(x1, y1, self.dir)
         # affichage --------------------------------------------------------------------------------------------------
         xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
-        self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("",))
-        # affichage --------------------------------------------------------------------------------------------------
+        self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
+
         cases_cibles = []
         if case.montype == "batiment":
             print("je marche dans un batiment")
@@ -226,43 +226,51 @@ class Perso():
             for i in cases:
                 if i.montype == "batiment":
                     xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 else:
-                    cases_cibles.append(case)
+                    cases_cibles.append(i)
                     xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("",))
-
+                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+        # affichage --------------------------------------------------------------------------------------------------
             if cases_cibles:
                 x1, y1 = self.trouve_case_contournement(cases_cibles)
             ang = Helper.calcAngle(self.x, self.y, x1,y1)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse+15, self.x, self.y)
 
         return x1,y1
 
     def trouve_case_contournement(self, cases):
+
         x,y = cases[0].x, cases[0].y
         print(self.dir,"-----------------")
         for case in cases:
-            # taille = self.parent.parent.taillecase
-            # xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
-            # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
-            offset = self.parent.parent.taillecase
+            print(case.montype)
+            taille = self.parent.parent.taillecase
+            xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+            self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+            offset = self.parent.parent.taillecase*2
             if self.dir == "GH":
-                if case.x < x and case.y < y:
-                    x = case.x-offset
-                    y = case.y-offset
+                print("GH->", )
+                if case.x <= x and case.y <= y:
+                    print("x:(",x,")",case.x+offset)
+                    print("y:(",y,")",case.y+offset)
+                    x = case.x
+                    y = case.y
             elif self.dir == "DH":
-                if case.x > x and case.y < y:
-                    x = case.x+offset
-                    y = case.y-offset
+                print("DH->", )
+                if case.x >= x and case.y <= y:
+                    x = case.x
+                    y = case.y
             elif self.dir == "GB":
-                if case.x < x and case.y > y:
-                    x = case.x-offset
-                    y = case.y+offset
+                if case.x <= x and case.y >= y:
+                    print("GB->", )
+                    x = case.x
+                    y = case.y
             elif self.dir == "DB":
-                if case.x > x and case.y > y:
-                    x = case.x+offset
-                    y = case.y-offset
+                if case.x >= x and case.y >= y:
+                    print("DB->",)
+                    x = case.x
+                    y = case.y
         return [x,y]
 
     # def test_etat_du_sol(self, x1, y1):
