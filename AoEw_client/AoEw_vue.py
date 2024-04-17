@@ -400,6 +400,9 @@ class Vue():
                                                              anchor=N))
 
     def creer_cadre_caserne(self, coul, persos, tag_batiment, id_joueur, pos):
+        if self.action.widgetsactifs:
+            self.canevasaction.delete(self.action.widgetsactifs)
+            self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
@@ -416,6 +419,9 @@ class Vue():
                                                                           anchor=N))
 
     def creer_cadre_abri(self, coul, persos, tag_batiment, id_joueur, pos):
+        if self.action.widgetsactifs:
+            self.canevasaction.delete(self.action.widgetsactifs)
+            self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             if i=="druide-ours": # !! image a faire
@@ -435,6 +441,9 @@ class Vue():
                                                                           anchor=N))
 
     def creer_cadre_usine(self, coul, persos, tag_batiment, id_joueur, pos):
+        if self.action.widgetsactifs:
+            self.canevasaction.delete(self.action.widgetsactifs)
+            self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             if i == "catapulte":  # !! image a faire
@@ -454,6 +463,9 @@ class Vue():
                                                                           anchor=N))
 
     def creer_cadre_champs_tir(self, coul, persos, tag_batiment, id_joueur, pos):
+        if self.action.widgetsactifs:
+            self.canevasaction.delete(self.action.widgetsactifs)
+            self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
@@ -469,10 +481,12 @@ class Vue():
                                                                           window=self.cadrebatiment,
                                                                           anchor=N))
 
-
     def test_entite(self, type_perso, tag_batiment, id_joueur, pos):
         action = [self.parent.nom_joueur_local, "creerperso", [type_perso, tag_batiment, id_joueur, pos]]
-        self.parent.actions_requises.append(action)
+        try:
+            self.parent.actions_requises.append(action)
+        except:
+            print("action invalide")
 
 
     ##FONCTIONS D'AFFICHAGES##################################
@@ -787,6 +801,7 @@ class Vue():
             self.action.prochaineaction = "siteconstruction"
             self.action.continuer_construction(pos)
 
+    # fonction crée pas une entité, envoye les params au bon cadre qui va créer entite via self.test_entite()
     def creer_entite(self, evt):
         x, y = evt.x, evt.y
         mestags = self.canevas.gettags(CURRENT)
@@ -796,7 +811,6 @@ class Vue():
                 if "maison" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_maison(coul[0] + "_", ["ouvrier", "ouvrier"], mestags[4], mestags[2], pos)
-                    # action = ['JAJA_605', 'creerperso', ['ouvrier', 'maison', 'id_44890', [1418.0, 3036.0]]]
                 if "caserne" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_caserne(coul[0] + "_", ["soldat", "chevalier"], mestags[4], mestags[2], pos)
@@ -810,16 +824,6 @@ class Vue():
                 if "champs_de_tir" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "chevalier-archer"], mestags[4], mestags[2], pos)
-
-                    action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
-
-            try:
-                self.parent.actions_requises.append(action)
-            except:
-                print("action invalide")
-
-
-
         elif self.action.persochoisi != []:
             self.action.ciblechoisi = mestags
             self.action.attaquer()
