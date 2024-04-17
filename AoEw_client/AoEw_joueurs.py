@@ -238,27 +238,35 @@ class Joueur():
                 self.persos[j][i].jouer_prochain_coup()
 
     def creer_perso(self, param):
+        # print("=================================================================PARAM ================", param)
+
+
         sorteperso, batimentsource, idbatiment, pos = param
+        # print("IDBATIMENT et VALUES =======================", idbatiment, self.batiments.values())
+        # print(type(self.batiments[batimentsource].values()))
+        # print(type(idbatiment))
+        if idbatiment in self.batiments[batimentsource].keys():
 
-        # le joueur a-t-il les ressources pour creer l'unité
-        prix_perso = Joueur.prix_unite
-        possede_les_ressources = True
+            # le joueur a-t-il les ressources pour creer l'unité
+            prix_perso = Joueur.prix_unite
+            possede_les_ressources = True
 
-        for k, val in self.ressources.items():
-            if self.ressources[k] - prix_perso[sorteperso][k] < 0:
-                possede_les_ressources = False
-
-        if possede_les_ressources:
-            # paye les ressources
             for k, val in self.ressources.items():
-                self.ressources[k] = val - prix_perso[sorteperso][k]
+                if self.ressources[k] - prix_perso[sorteperso][k] < 0:
+                    possede_les_ressources = False
 
-            id = get_prochain_id()
-            batiment = self.batiments[batimentsource][idbatiment]
+            if possede_les_ressources:
+                # paye les ressources
+                for k, val in self.ressources.items():
+                    self.ressources[k] = val - prix_perso[sorteperso][k]
 
-            x = batiment.x + 100 + (random.randrange(50) - 15)
-            y = batiment.y + (random.randrange(50) - 15)
+                id = get_prochain_id()
 
-            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
-                                                                           sorteperso)
+                batiment = self.batiments[batimentsource][idbatiment]
+
+                x = batiment.x + 100 + (random.randrange(50) - 15)
+                y = batiment.y + (random.randrange(50) - 15)
+
+                self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+                                                                               sorteperso)
 

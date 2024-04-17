@@ -284,7 +284,7 @@ class Vue():
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
 
     def OnMouseWheel(self, evt):
-        print(evt.keysym)
+        print("evt.keysym", evt.keysym)
         rep = self.scrollV.get()[0]
         if evt.delta < 0:
             rep = rep + 0.02
@@ -574,15 +574,19 @@ class Vue():
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
-        print("MESTAGS", mestags)
+        print("AJOTUER SELECTION", mestags)
         if self.parent.nom_joueur_local == mestags[1]:
+            print(" if self.parent.nom_joueur_local == mestags[1]:", self.parent.nom_joueur_local)
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
             else:
+                print("else pas ouvrier", self.action.persochoisi)
                 self.action.persochoisi.append(mestags[2])
         elif self.action.persochoisi != []:
+            print("Dans le elif self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
+            print(" self.action.ciblechoisi ",  self.action.ciblechoisi)
             self.action.attaquer()
 
     # Methodes pour multiselect
@@ -663,7 +667,7 @@ class Vue():
         self.action.btnactif = obj
 
         vals = self.parent.trouver_valeurs()
-        print(vals)
+        print("vals dans batier artefact ", vals)
         ok = 1
         for k, val in self.modele.joueurs[self.nom_joueur_local].ressources.items():
             if val <= vals[nomsorte][k]:
@@ -689,18 +693,36 @@ class Vue():
     def creer_entite(self, evt):
         x, y = evt.x, evt.y
         mestags = self.canevas.gettags(CURRENT)
-        if self.parent.nom_joueur_local in mestags:
+        print("test de creer entite : ", mestags)
+        # print(type(mestags))
+        # print(" if ",self.parent.nom_joueur_local, "in mestags and", mestags[1], "==", self.parent.nom_joueur_local)
+        # # sorteperso, batimentsource, idbatiment, pos = param
+        # # if idbatiment in self.batiments[batimentsource].keys():
+        # print("LES JOUEURS", self.parent.joueurs)
+        # print("Les batiments des joueurs" ,self.parent.joueurs.batiments)
+        # print("Les batiments du premier joueur:", self.parent.joueurs[0].batiments)
+
+        # if mestags[2] not in self.parent.joueurs.batiments[mestags[4]].keys():
+
+        # Ne pas checker explicitement le id ennemi. Checker le ID du batiment clicke et regarder sil est dans les miens.
+        # Sil ne lest pas, lattaquer
+        if True:
+            print("Dans Vue, creer_entite")
             if "batiment" in mestags:
                 if "maison" in mestags:
+                    print("je viens de demander a maison")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     action = [self.parent.nom_joueur_local, "creerperso", ["ouvrier", mestags[4], mestags[2], pos]]
                 if "caserne" in mestags:
+                    print("je viens de demander a caserne")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     action = [self.parent.nom_joueur_local, "creerperso", ["soldat", mestags[4], mestags[2], pos]]
                 if "abri" in mestags:
+                    print("je viens de demander a a abri")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     action = [self.parent.nom_joueur_local, "creerperso", ["druide", mestags[4], mestags[2], pos]]
                 if "usineballiste" in mestags:
+                    print("je viens de demander a usine ballista de creer une balliste calice")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
 
@@ -711,6 +733,7 @@ class Vue():
 
 
         elif self.action.persochoisi != []:
+            print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
             self.action.attaquer()
 
