@@ -109,8 +109,11 @@ class Perso():
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
-                                 "ciblerennemi": None
-                                 }
+                                 "ciblerennemi": None,
+                                 "contourne": self.contourne}
+
+        self.cible_contournement = None
+
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
     def attaquer(self, ennemi):
@@ -161,12 +164,17 @@ class Perso():
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
             self.get_directon_vers_position_visee()
             # print("avant : ", self.x,"/", self.y )
-            self.x, self.y = self.test_etat_du_sol(x1, y1)
-            # print("apres : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol2(x1, y1):
+                print("couuut")
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.x, self.y = x1,y1
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
             dist = Helper.calcDistance(self.x, self.y, x, y)
+
             if dist <= self.vitesse:
                 if self.actioncourante == "bouger":
                     self.actioncourante = None
@@ -203,7 +211,30 @@ class Perso():
 
 
 
-    def test_etat_du_sol(self, x1, y1):
+    def get_map_contournement(self):
+        x1, y1 = self.x, self.y
+
+        casex = x1 / self.parent.parent.taillecase
+        if casex != int(casex):
+            casex = int(casex) + 1
+        casey = y1 / self.parent.parent.taillecase
+        if casey != int(casey):
+            casey = int(casey) + 1
+
+        taille = self.parent.parent.taillecase
+
+        cases_cibles = []
+        cases = self.parent.parent.get_carte_contournement(x1, y1, 5,2)
+        for i in cases:
+            if i.montype == "batiment":
+                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+            else:
+                cases_cibles.append(i)
+
+        return cases_cibles
+
+    def test_etat_du_sol2(self, x1, y1):
         ######## SINON TROUVER VOIE DE CONTOURNEMENT
         # ici oncalcule sur quelle case on circule
         casex = x1 / self.parent.parent.taillecase
@@ -217,61 +248,105 @@ class Perso():
         case = self.parent.parent.trouver_case(x1, y1, self.dir)
         # affichage --------------------------------------------------------------------------------------------------
         xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
-        self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
+        # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
+        return case.montype == "batiment"
 
-        cases_cibles = []
-        if case.montype == "batiment":
-            print("je marche dans un batiment")
-            cases = self.parent.parent.get_subcarte(x1, y1, 3)
-            for i in cases:
-                if i.montype == "batiment":
-                    xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
-                else:
-                    cases_cibles.append(i)
-                    xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                    self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
-        # affichage --------------------------------------------------------------------------------------------------
-            if cases_cibles:
-                x1, y1 = self.trouve_case_contournement(cases_cibles)
-            ang = Helper.calcAngle(self.x, self.y, x1,y1)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse+15, self.x, self.y)
+    def contourne(self):
+        if not self.cible_contournement:
+            self.get_cible_contournement()
 
-        return x1,y1
+        x = self.cible_contournement[0]
+        y = self.cible_contournement[1]
+        ang = Helper.calcAngle(self.x, self.y, x, y)
+        self.x, self.y  = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+        dist = Helper.calcDistance(self.x, self.y, x, y)
 
-    def trouve_case_contournement(self, cases):
+        if dist <= self.vitesse:
+            self.cible_contournement = None
+            self.actioncourante = "bouger"
+            return "rendu"
+        else:
+            return dist
 
-        x,y = cases[0].x, cases[0].y
-        print(self.dir,"-----------------")
-        for case in cases:
-            print(case.montype)
-            taille = self.parent.parent.taillecase
-            xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
-            self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
-            offset = self.parent.parent.taillecase*2
+
+
+
+    def get_cible_contournement(self):
+        cases = self.get_map_contournement()
+        self.get_directon_vers_position_visee()
+        taille = self.parent.parent.taillecase
+        if cases:
             if self.dir == "GH":
-                print("GH->", )
-                if case.x <= x and case.y <= y:
-                    print("x:(",x,")",case.x+offset)
-                    print("y:(",y,")",case.y+offset)
-                    x = case.x
-                    y = case.y
+                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
             elif self.dir == "DH":
-                print("DH->", )
-                if case.x >= x and case.y <= y:
-                    x = case.x
-                    y = case.y
+                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
             elif self.dir == "GB":
-                if case.x <= x and case.y >= y:
-                    print("GB->", )
-                    x = case.x
-                    y = case.y
+                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
             elif self.dir == "DB":
-                if case.x >= x and case.y >= y:
-                    print("DB->",)
-                    x = case.x
-                    y = case.y
-        return [x,y]
+                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+
+
+    # def trouve_case_contournement(self, cases):
+    #     x,y = cases[0].x, cases[0].y
+    #     print(self.dir,"-----------------")
+    #     for case in cases:
+    #         print(case.montype)
+    #         taille = self.parent.parent.taillecase
+    #         xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+    #         self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+    #         offset = self.parent.parent.taillecase*2
+    #         if self.dir == "GH":
+    #             print("GH->", )
+    #             if case.x <= x and case.y <= y:
+    #                 print("x:(",x,")",case.x+offset)
+    #                 print("y:(",y,")",case.y+offset)
+    #                 x,y = cases[0].x, cases[0].y
+    #         elif self.dir == "DH":
+    #             if case.x >= x and case.y <= y:
+    #                 print("DH->", )
+    #                 x,y = cases[len(cases)-1].x, cases[len(cases)-1].y
+    #         elif self.dir == "GB":
+    #             if case.x <= x and case.y >= y:
+    #                 print("GB->", )
+    #                 x, y = cases[0].x, cases[0].y
+    #         elif self.dir == "DB":
+    #             if case.x >= x and case.y >= y:
+    #                 print("DB->",)
+    #                 x, y = cases[len(cases)-1].x, cases[len(cases)-1].y
+    #                 # x = case.x
+    #                 # y = case.y
+    #     return [x,y]
+
+    # def trouve_case_contournement(self, cases):
+    #     x,y = cases[0].x, cases[0].y
+    #     print(self.dir,"-----------------")
+    #     for case in cases:
+    #         print(case.montype)
+    #         taille = self.parent.parent.taillecase
+    #         xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
+    #         self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+    #         offset = self.parent.parent.taillecase*2
+    #         if self.dir == "GH":
+    #             print("GH->", )
+    #             if case.x <= x and case.y <= y:
+    #                 print("x:(",x,")",case.x+offset)
+    #                 print("y:(",y,")",case.y+offset)
+    #                 x,y = cases[0].x, cases[0].y
+    #         elif self.dir == "DH":
+    #             if case.x >= x and case.y <= y:
+    #                 print("DH->", )
+    #                 x,y = cases[len(cases)-1].x, cases[len(cases)-1].y
+    #         elif self.dir == "GB":
+    #             if case.x <= x and case.y >= y:
+    #                 print("GB->", )
+    #                 x, y = cases[0].x, cases[0].y
+    #         elif self.dir == "DB":
+    #             if case.x >= x and case.y >= y:
+    #                 print("DB->",)
+    #                 x, y = cases[len(cases)-1].x, cases[len(cases)-1].y
+    #                 # x = case.x
+    #                 # y = case.y
+    #     return [x,y]
 
     # def test_etat_du_sol(self, x1, y1):
     #     ######## SINON TROUVER VOIE DE CONTOURNEMENT
@@ -490,7 +565,7 @@ class Ouvrier(Perso):
                                  "ciblerressource": self.cibler_ressource,
                                  "retourbatimentmere": self.retour_batiment_mere,
                                  "validerjavelot": self.valider_javelot,
-                                 }
+                                 "contourne": self.contourne}
 
     def chasser_ramasser(self, objetcible, sontype, actiontype):
         self.cible = objetcible

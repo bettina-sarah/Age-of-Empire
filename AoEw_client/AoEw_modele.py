@@ -458,6 +458,48 @@ class Partie():
                     t1.append(case)
         return t1
 
+    def get_carte_contournement(self, x, y, dx,dy):
+        cx = int(x / self.taillecase)
+        cy = int(y / self.taillecase)
+        # possible d'etre dans une case trop loin
+        if cx == self.taillecase:
+            cx -= 1
+        if cy == self.taillecase:
+            cy -= 1
+
+        # le centre en pixels de la case d'origine
+        pxcentrex = (cx * self.taillecase) + self.demicase
+        pxcentrey = (cy * self.taillecase) + self.demicase
+
+        # la case superieur gauche de la case d'origine
+        casecoinx1 = cx - dx
+        casecoiny1 = cy - dy
+        # assure qu'on deborde pas
+        if casecoinx1 < 0:
+            casecoinx1 = 0
+        if casecoiny1 < 0:
+            casecoiny1 = 0
+        # la case inferieur droite
+        casecoinx2 = cx + dx
+        casecoiny2 = cy + dy
+
+
+        distmax = (10 * self.taillecase) + self.demicase
+
+        t1 = []
+        for i in range(casecoiny1, casecoiny2):
+            for j in range(casecoinx1, casecoinx2):
+                case = self.cartecase[i][j]
+                pxcentrecasex = (j * self.taillecase) + self.demicase
+                pxcentrecasey = (i * self.taillecase) + self.demicase
+                distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
+                if distcase <= distmax:
+                    t1.append(case)
+        print(t1)
+        return t1
+        pass
+
+
     def eliminer_ressource(self, type, ress):
         if ress.idregion:
             # self.regions[ress.montype][ress.idregion].listecases.pop(ress.id)
