@@ -350,18 +350,18 @@ class Partie():
     def trouver_case(self, x, y, dir="none"):
         offsetX = 0
         offsetY = 0
-        if dir == "GH":
-            offsetX = -1
-            offsetY = -1
-        elif dir == "DH":
-            offsetX = 1
-            offsetY = -1
-        elif dir == "GB":
-            offsetX = -1
-            offsetY = 1
-        elif dir == "DB":
-            offsetX = 1
-            offsetY = 1
+        # if dir == "GH":
+        #     offsetX = -1
+        #     offsetY = -1
+        # elif dir == "DH":
+        #     offsetX = 1
+        #     offsetY = -1
+        # elif dir == "GB":
+        #     offsetX = -1
+        #     offsetY = 1
+        # elif dir == "DB":
+        #     offsetX = 1
+        #     offsetY = 1
 
         if x < 0:
             x = 0
@@ -495,7 +495,6 @@ class Partie():
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax:
                     t1.append(case)
-        print(t1)
         return t1
         pass
 

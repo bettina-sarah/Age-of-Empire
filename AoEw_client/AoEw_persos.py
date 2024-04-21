@@ -111,7 +111,7 @@ class Perso():
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
                                  "ciblerennemi": None,
                                  "contourne": self.contourne}
-
+        self.action_precedente = None
         self.cible_contournement = None
 
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
@@ -166,7 +166,7 @@ class Perso():
             # print("avant : ", self.x,"/", self.y )
             # self.x, self.y = self.test_etat_du_sol(x1, y1)
             if self.test_etat_du_sol2(x1, y1):
-                print("couuut")
+                self.action_precedente = self.actioncourante
                 self.actioncourante = "contourne"
                 return "contourne"
             self.x, self.y = x1,y1
@@ -194,6 +194,16 @@ class Perso():
             else:
                 self.dir += "H"
 
+    def get_directon_contournement(self):
+        #suis-je plus près de ma cible sur l'axe des x ou y
+        if self.position_visee:
+            x = abs(self.x - self.position_visee[0])
+            y = abs(self.x - self.position_visee[1])
+            if x < y:
+                print("direction: vertical")
+            else:
+                print("direction: horinzontal")
+            return x > y
 
 
 
@@ -224,13 +234,20 @@ class Perso():
         taille = self.parent.parent.taillecase
 
         cases_cibles = []
-        cases = self.parent.parent.get_carte_contournement(x1, y1, 5,2)
+        # trouve si on frappe un mur à l'horinzontal ou vertial
+        if self.get_directon_contournement():
+            cases = self.parent.parent.get_carte_contournement(x1, y1, 1,4)
+        else:
+            cases = self.parent.parent.get_carte_contournement(x1, y1, 4,1)
+
         for i in cases:
             if i.montype == "batiment":
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
             else:
                 cases_cibles.append(i)
+                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
 
         return cases_cibles
 
@@ -263,10 +280,9 @@ class Perso():
 
         if dist <= self.vitesse:
             self.cible_contournement = None
-            self.actioncourante = "bouger"
-            return "rendu"
-        else:
-            return dist
+            print("je veux: ", self.action_precedente)
+            self.actioncourante = self.action_precedente
+
 
 
 
