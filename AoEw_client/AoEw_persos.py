@@ -267,12 +267,16 @@ class Perso():
 
         for i in cases:
             if i.montype == "batiment":
+                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
             else:
                 cases_cibles.append(i)
+                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 # xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
                 # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
         # print("new map: ", len(cases_cibles))
         return cases_cibles
 
