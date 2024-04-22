@@ -5,7 +5,11 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <orderEntry type="inheritedJdk" />
+=======
+    <orderEntry type="jdk" jdkName="Python 3.10" jdkType="Python SDK" />
+>>>>>>> final_Abi
 =======
     <orderEntry type="jdk" jdkName="Python 3.10 (RTS_serveur)" jdkType="Python SDK" />
 >>>>>>> main

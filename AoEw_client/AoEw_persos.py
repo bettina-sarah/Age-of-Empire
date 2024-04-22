@@ -10,7 +10,7 @@ class Fleche():
         self.id = id
         self.vitesse = 18
         self.taille = 20
-        self.force = 10
+        self.force = 30 ##A REMMETTRE A 10
         self.proie = proie
         self.proiex = self.proie.x
         self.proiey = self.proie.y
@@ -103,7 +103,7 @@ class Perso():
         self.position_visee = None
         self.cibleennemi = None
         self.mana = 100
-        self.force = 15
+        self.force = 100
         self.champvision = 100
         self.vitesse = 5
         self.angle = None
@@ -123,6 +123,7 @@ class Perso():
 
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
+
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
         x = self.cibleennemi.x
@@ -135,7 +136,10 @@ class Perso():
         else:
             self.actioncourante = "ciblerennemi"
 
+
+#perso
     def attaquer_ennemi(self):
+        print("attquer")
         rep = self.cibleennemi.recevoir_coup(self.force)
         if rep == 1:
             self.cibleennemi = None
@@ -149,6 +153,7 @@ class Perso():
         if self.mana < 1:
             print("MORT")
             print("id du perso mort :", self.id)
+            print("proprio:", self.parent.id)
             self.parent.annoncer_mort(self)
             return 1
 
@@ -471,30 +476,32 @@ class Ballista(Perso):
         y = self.cibleennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        print("DISTANCE CALCULEE", dist)
-        print(self.distancefeu)
-        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
+
+        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
-        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "ciblerennemi"
-            print("self.actioncourante = ciblerennemi")
+
 
     def attaquerennemi(self):
-        self.delaifeu = self.delaifeu - 1
-        print("KAWABUNGA BABY")
-        print(" DELAI FEU : ", self.delaifeu)
+        self.delaifeu = self.delaifeu -1
         if self.delaifeu == 0:
             id = get_prochain_id()
-            fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
-            self.fleches.append(fleche)
-            self.delaifeu = self.delaifeumax
+            try:
+                fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
+                self.fleches.append(fleche)
+                self.delaifeu = self.delaifeumax
+            except AttributeError:
+
+                self.actioncourante = None
+
         for i in self.fleches:
-            print("fleches :  ", i)
             rep = i.bouger()
         # if rep:
         # self.cibleennemi.recevoir_coup(self.force)
         # self.fleches.remove(rep)
+
+
 
 
 class Ouvrier(Perso):

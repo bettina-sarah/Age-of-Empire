@@ -8,22 +8,25 @@ from chargeurdimages import *
 
 
 class Vue():
-    def __init__(self, parent, url_serveur, nom_joueur_local): #, testdispo):
+    def __init__(self, parent, url_serveur, nom_joueur_local):  # , testdispo):
+
+        self.gagnant = "ARI"
         self.parent = parent
         self.root = Tk()
         self.root.title("Je suis " + nom_joueur_local)
         self.nom_joueur_local = nom_joueur_local
         # attributs
-        self.cadrechaton = 0 # fenetre de chat on ou non
+        self.cadrechaton = 0  # fenetre de chat on ou non
         self.textchat = ""
-        self.infohud = {} # overhead display : les ressources et autres
+        self.infohud = {}  # overhead display : les ressources et autres
         # # minicarte
         self.tailleminicarte = 220
         self.cadreactif = None
+        self.limbo = 0
         # # objet pour cumuler les manipulations du joueur pour generer une action de jeu
-        self.action = Action(self) # pour avoir une action fraiche. C,est comme un Singleton
+        self.action = Action(self)  # pour avoir une action fraiche. C,est comme un Singleton
         # cadre principal de l'application
-        self.cadreapp = Frame(self.root, width=500, height=400, bg="red") # un frame generique pour toute lapp
+        self.cadreapp = Frame(self.root, width=500, height=400, bg="red")  # un frame generique pour toute lapp
         self.cadreapp.pack(expand=1, fill=BOTH)
 
         # # un dictionnaire pour conserver les divers cadres du jeu, creer plus bas
@@ -55,10 +58,43 @@ class Vue():
     def creer_cadres(self, url_serveur: str, nom_joueur_local: str, testdispo: str):
         self.cadres["splash"] = self.creer_cadre_splash(url_serveur, nom_joueur_local, testdispo)
         self.cadres["lobby"] = self.creer_cadre_lobby()
+
         self.cadres["jeu"] = self.creer_cadre_jeu()
 
     # le splash (ce qui 'splash' à l'écran lors du démarrage)
     # sera le cadre visuel initial lors du lancement de l'application
+
+    def creer_cadre_fin(self):
+        self.cadreFin = Frame(self.cadreapp, bg="gold", width=500, height=400)
+
+        self.cadreFin.pack_propagate(False)
+        label_text = "FIN DE LA PARTIE"
+        label = Label(self.cadreFin, text=label_text, bg=self.cadreFin['bg'], font=("arial", 12, "bold"))
+        label.config()
+        t1 = Label(self.cadreFin, text="Gagnant", bg=self.cadreFin['bg'], font=("arial", 14, "bold"))
+
+        gagnant = Label(self.cadreFin, text=self.gagnant, bg=self.cadreFin['bg'], font=("arial", 18, "bold"))
+        gagnant.config()
+
+
+        label.pack(expand=True)
+        t1.pack(expand=True)
+        gagnant.pack(expand=True)
+        self.cadreFin.rowconfigure(0, weight=1)
+        self.cadreFin.columnconfigure(0, weight=1)
+
+        # self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
+        #                             command=self.initialiser_splash_post_connection)
+        # self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
+
+        return self.cadreFin
+
+    def afficher_fin(self, gagnant):
+
+        self.gagnant = gagnant
+        self.cadres["fin"] = self.creer_cadre_fin()
+        self.changer_cadre("fin")
+
     def creer_cadre_splash(self, url_serveur: str, nom_joueur_local: str, testdispo: str) -> Frame:
         self.cadresplash = Frame(self.cadreapp)
         # un canvas est utilisé pour 'dessiner' les widgets de cette fenêtre voir 'create_window' plus bas
@@ -71,7 +107,8 @@ class Vue():
         self.etatdujeu = Label(text=testdispo, font=("Arial", 18), borderwidth=2, relief=RIDGE)
         self.nomsplash = Entry(font=("Arial", 14))
         self.url_initial = Entry(font=("Arial", 14))
-        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12), command=self.initialiser_splash_post_connection)
+        self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
+                                    command=self.initialiser_splash_post_connection)
         # on insère les infos par défaut (nom url) et reçu au démarrage (dispo)
         self.nomsplash.insert(0, nom_joueur_local)
         self.url_initial.insert(0, url_serveur)
@@ -163,7 +200,9 @@ class Vue():
         self.connecter_event()
 
     def creer_HUD(self):
+
         self.cadrejeuinfo = Frame(self.cadrecanevas, bg="blue")
+        self.cadretemp = self.cadrejeuinfo
         # des etiquettes d'info
         self.infohud = {"Nourriture": None,
                         "Bois": None,
@@ -171,7 +210,7 @@ class Vue():
                         "Aureus": None}
 
         # fonction interne uniquement pour reproduire chaque item d'info
-        def creer_champ_interne(listechamp): # refactoriser pour etiquette au lieu de champ
+        def creer_champ_interne(listechamp):  # refactoriser pour etiquette au lieu de champ
             titre = Champ(self.cadrejeuinfo, text=i, bg="red", fg="white")
             varstr = StringVar()
             varstr.set(0)
@@ -194,6 +233,7 @@ class Vue():
 
         self.btnaide.pack(side=RIGHT)
         self.btnchat.pack(side=RIGHT)
+
         self.cadrejeuinfo.grid(row=0, column=0, sticky=E + W, columnspan=2)
 
     def creer_cadre_jeu_action(self):
@@ -284,6 +324,10 @@ class Vue():
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
         self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
 
+        # self.canevas.tag_bind("daim", "<Button-1>", self.afficher_fin)
+
+        # self.canevas.bind("<space>", self.test)
+
     def OnMouseWheel(self, evt):
         print(evt.keysym)
         rep = self.scrollV.get()[0]
@@ -304,12 +348,15 @@ class Vue():
 
         # cette méthode sert à changer le cadre (Frame) actif de la fenêtre, on n'a qu'à fournir le cadre requis
 
+    def test_HUD(self):
+        self.limbo = 1
+
     ##### FONCTION DU SPLASH #########################################################################
     def creer_partie(self):
         nom = self.nomsplash.get()
         ## ON VA LIRE LA VALEUR DE LA VARIABLE ASSOCIEE AU BTN RADION CHOISI
         urljeu = self.url_initial.get()
-        self.parent.creer_partie(nom) #, urljeu)  # ,valciv)
+        self.parent.creer_partie(nom)  # , urljeu)  # ,valciv)
 
     ###  METHODES POUR SPLASH ET LOBBY INSCRIPTION pour participer a une partie
     def update_splash(self, etat):
@@ -354,7 +401,8 @@ class Vue():
         # on ajuste la taille du canevas de jeu
         self.canevas.config(scrollregion=(0, 0, self.modele.aireX, self.modele.aireY))
         self.canevasaction.delete("nom")
-        self.canevasaction.create_text(100, 30, text=self.nom_joueur_local, font=("arial", 18, "bold"), anchor=S, tags=("nom"))
+        self.canevasaction.create_text(100, 30, text=self.nom_joueur_local, font=("arial", 18, "bold"), anchor=S,
+                                       tags=("nom"))
 
         # on cree les cadres affichant les items d'actions du joueur
         # cadre apparaissant si on selectionne un ouvrier
@@ -625,8 +673,9 @@ class Vue():
 
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
-                                          "statique", self.parent.nom_joueur_local, batiment.id, "batiment", batiment.montype,
-                                          ""))
+                                              "statique", self.parent.nom_joueur_local, batiment.id, "batiment",
+                                              batiment.montype,
+                                              ""))
 
         x0, y0, x2, y2 = self.canevas.bbox(chose)
 
@@ -655,7 +704,31 @@ class Vue():
         # commencer par les choses des joueurs
         for j in self.modele.joueurs.keys():
             # ajuster les infos du HUD
-            if j == self.parent.nom_joueur_local:
+            if self.limbo == 1:
+                self.cadrejeuinfo.destroy()
+                self.canevasaction.destroy()
+                self.canevasaction = Canvas(self.cadreaction, width=200, height=300, bg="lightblue",
+                                            yscrollcommand=self.scrollVaction.set)
+                self.canevasaction.grid(row=0, column=0, sticky=N + S)
+                self.canevasaction.create_text(100, 30, text="Vous êtes mort", font=("arial", 18, "bold"),
+                                               anchor=S,
+                                               tags=("nom"))
+                self.canevasaction.create_text(100, 60, text="Joueurs Restant", font=("arial", 12, "bold"),
+                                               anchor=S,
+                                               tags=("nom"))
+
+                # update lsit of dead for everyone bug
+                i = 30
+                for t in self.modele.joueurs.keys():
+                    if t != self.parent.nom_joueur_local:
+                        self.canevasaction.create_text(100, 80 + i, text=t, font=("arial", 10, "bold"),
+                                                       anchor=S,
+                                                       tags=("nom"))
+                        i += 30
+
+                self.canevasaction.rowconfigure(0, weight=1)
+
+            elif j == self.parent.nom_joueur_local:
                 self.infohud["Nourriture"][0].set(self.modele.joueurs[j].ressources["nourriture"])
                 self.infohud["Bois"][0].set(self.modele.joueurs[j].ressources["arbre"])
                 self.infohud["Roche"][0].set(self.modele.joueurs[j].ressources["roche"])
@@ -696,8 +769,6 @@ class Vue():
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
                             # tags=(j,b.id,"artefact","mobile","javelot"))
-
-
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["daim"].keys():
@@ -887,7 +958,7 @@ class Vue():
         if not mestags:
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
             self.action.construire_batiment(pos)
-        elif "SiteConstruction" in mestags: # permet de continuer une constuction de site de construction
+        elif "SiteConstruction" in mestags:  # permet de continuer une constuction de site de construction
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
             self.action.prochaineaction = "siteconstruction"
             self.action.continuer_construction(pos)
@@ -919,6 +990,44 @@ class Vue():
             self.action.ciblechoisi = mestags
             self.action.attaquer()
 
+    # Ajout pour affichage de fin
+
+    def test(self, evt):
+        # print("DANS TEST DE FIN")
+
+        self.changer_cadre("fin")
+
+    def unbind_joueur(self):
+        # unbind tout ou juste le tick sur les joueur ?
+        # test sur self
+
+        self.canevas.tag_unbind("perso", "<Button-1>")
+
+        # on attache (bind) desF événements soit aux objets eux même
+        # self.canevas.bind("<Button-1>", self.annuler_action)
+        # self.canevas.bind("<Button-3>", self.construire_batiment)
+        # # faire une multiselection
+        # self.canevas.bind("<Shift-Button-1>", self.debuter_selection)
+        # self.canevas.bind("<Shift-B1-Motion>", self.afficher_selection)
+        # self.canevas.bind("<Shift-ButtonRelease-1>", self.terminer_selection)
+        #
+        # self.canevas.bind("<Button-2>", self.indiquer_position)
+        #
+        # self.canevas.bind("<MouseWheel>", self.OnMouseWheel)
+        # self.canevas.bind("<Control-MouseWheel>", self.OnCtrlMouseWheel)
+        #
+        # # soit aux dessins, en vertu de leur tag (propriétés des objets dessinés)
+        # # ALL va réagir à n'importe quel dessin
+        # # sinon on spécifie un tag particulier, exemple avec divers tag, attaché par divers événements
+        # self.canevas.tag_bind("batiment", "<Button-1>", self.creer_entite)
+        # self.canevas.tag_bind("perso", "<Button-1>", self.ajouter_selection)
+        # self.canevas.tag_bind("arbre", "<Button-1>", self.ramasser_ressource)
+        # self.canevas.tag_bind("aureus", "<Button-1>", self.ramasser_ressource)
+        # self.canevas.tag_bind("roche", "<Button-1>", self.ramasser_ressource)
+        # self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
+        # self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
+        # self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
+
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
@@ -940,7 +1049,7 @@ class Action():
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
             sorte = self.ciblechoisi[4]
-            print("Vue attaquer, sorte, self.ciblechoisi",sorte, self.ciblechoisi[4])
+            print("Vue attaquer, sorte, self.ciblechoisi", sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "attaquer", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 
@@ -989,7 +1098,8 @@ class Action():
         txt = self.parent.entreechat.get()
         joueur = self.parent.joueurs.get()
         if joueur:
-            action = [self.parent.nom_joueur_local, "chatter", [self.parent.nom_joueur_local + ": " + txt, self.parent.nom_joueur_local, joueur]]
+            action = [self.parent.nom_joueur_local, "chatter",
+                      [self.parent.nom_joueur_local + ": " + txt, self.parent.nom_joueur_local, joueur]]
             self.parent.parent.actions_requises.append(action)
 
     def chatter(self):
@@ -1021,11 +1131,16 @@ class Action():
             self.parent.canevas.delete(self.aideon)
             self.aideon = 0
 
+    # //changer aort
+    def abandonner(self, param):
+        pass
+
     ### FIN des methodes pour lancer la partie
+
 
 # classe qui est une sous-classe d'une classe tkinter dont on change les proprietes
 class Champ(Label):
-    def __init__(self, master, *args, **kwargs): # keyword arg = nom arg = certaine valeur. Comme un dict
+    def __init__(self, master, *args, **kwargs):  # keyword arg = nom arg = certaine valeur. Comme un dict
         Label.__init__(self, master, *args, **kwargs)
         self.config(font=("arial", 13, "bold"))
         self.config(bg="goldenrod3")

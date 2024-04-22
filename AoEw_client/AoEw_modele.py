@@ -22,6 +22,7 @@ class Region():
         self.montype = montype
         self.dicocases = {}
 
+
 class Caseregion():
     def __init__(self, parent, id, x, y):
         self.parent = parent
@@ -30,6 +31,7 @@ class Caseregion():
         self.ressources = {}
         self.x = x
         self.y = y
+
 
 #######################  LE MODELE est la partie #######################
 class Partie():
@@ -57,6 +59,7 @@ class Partie():
 
     def __init__(self, parent, mondict):
         self.parent = parent
+        self.mort = []
         self.actions_a_faire = {}
         self.debut = int(time.time())
         self.aireX = 4000
@@ -70,10 +73,10 @@ class Partie():
         self.delaiprochaineaction = 20
 
         self.joueurs = {}
-        self.classesbatiments = {"maison": Maison,
+        self.classesbatiments = {"maison": Usineballiste,  # change back maison
                                  "caserne": Caserne,
                                  "abri": Abri,
-                                 "usineballiste": Usineballiste}
+                                 "usineballiste": Maison}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,
@@ -534,7 +537,7 @@ class Partie():
             if (iteration - 1) > int(iteration_cle):
                 print("PEUX PASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
             if i[1]:
-                #action = json.loads(i[1])
+                # action = json.loads(i[1])
                 action = i[1]
             else:
                 action = None
@@ -544,8 +547,50 @@ class Partie():
                 else:
                     for j in action:
                         self.actions_a_faire[iteration_cle].append(j)
+
     ##############################################################################
 
+    ## Ajout Abi
+
+    def delete_batim_joueurs(self, id_batim, joueur):
+        print("JOEEUR LOCAL")
+        print(self.parent.nom_joueur_local)
+        print("joueur qui a etet delete")
+        print(joueur)
+        joueur = self.joueurs.get(joueur)
+        print(joueur.batiments)
+
+        for key, value_list in joueur.batiments.items():
+            if id_batim in value_list:
+                value_list.remove(id_batim)
+        # joueur.batiments.pop(id_batim)
+
+        self.eliminer_joueur()
+
+    def eliminer_joueur(self):
+
+        localaa = self.joueurs.get(self.parent.nom_joueur_local)
+
+        for key in self.joueurs.keys():
+            joueur = self.joueurs.get(key)
+            batiement = joueur.batiments.values
+            if joueur.batiments["maison"] == {} and joueur.batiments["abri"] == {} and joueur.batiments[
+                "caserne"] == {} and joueur.batiments["usineballiste"] == {}:
+                if joueur.id not in self.mort:
+                    self.mort.append(joueur.id)
+                    if joueur.id == localaa.id:
+                        self.parent.tuer_joueur()
+        self.fin_jeu()
+
+    def fin_jeu(self):
+        temp = []
+        for key in self.joueurs.keys():
+            j = self.joueurs.get(key)
+            if j.id not in self.mort:
+                temp.append(j.nom)
+
+        if len(temp) == 1:
+            self.parent.afficher_fin(temp[0])
 
     def retirer_batiment_minimap(self, id):
         self.parent.retirer_batiment_minimap(id)
@@ -554,6 +599,4 @@ class Partie():
         print("click")
         for i in cartebatiment:
             self.cartecase[i[1]][i[0]].montype = "plaine"
-
-
         pass

@@ -5,7 +5,10 @@ from AoEw_vue import *
 from AoEw_modele import *
 
 class Controleur():
-    def __init__(self):#__ pour dire que cest linterpreteur python qui utilise cela
+
+    def __init__(self):
+        self.type=None
+       
         self.ego_serveur = 0 # 1 si le joueur a creer la partie (seul lui peut 'lancer' la partie)
         self.iteration_boucle_jeu = 0
         self.actions_requises = []
@@ -79,6 +82,8 @@ class Controleur():
         listejoueurs = []
         for i in self.joueurs:
             listejoueurs.append(i[0])
+
+        self.type = len(listejoueurs)
         # on cree le modele (la partie)
         self.partie = Partie(self, listejoueurs)
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
@@ -123,6 +128,7 @@ class Controleur():
     # La boucle principale pour jouer une partie
     def boucler_sur_jeu(self): #
         self.iteration_boucle_jeu += 1
+        
         # test pour communiquer avec le serveur periodiquement
         if self.iteration_boucle_jeu % self.modulo_appeler_serveur == 0:
             actions = []
@@ -139,7 +145,6 @@ class Controleur():
                 mondict = self.appeler_serveur(url, data, method = "POST")
                 # verifie pour requete d'attente d'un joueur plus lent
                 if "ATTENTION" in mondict:
-                    print("SAUTER TOUR")
                     self.on_joue = 0
                 elif mondict:
                     self.partie.ajouter_actions_a_faire(self.iteration_boucle_jeu,mondict)
@@ -155,8 +160,11 @@ class Controleur():
         else:
             self.iteration_boucle_jeu -= 1
             self.on_joue = 1
-        # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
+
+        
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
+
+
 
     ###################################################################
     # fonction qui fait les appels au serveur
@@ -182,8 +190,11 @@ class Controleur():
     def afficher_batiment(self, nom, batiment):  # ca devient un elem permanent du jeu alors on le met ici
         self.vue.afficher_batiment(nom, batiment)
 
-    def supprimer_batiment(self, id_batiment):
+    def supprimer_batiment(self, id_batiment, id_joueur):
         self.vue.supprimer_batiment(id_batiment)
+        self.partie.delete_batim_joueurs(id_batiment, id_joueur)
+        # self.partie.eliminer_joueur()
+        
 
     def afficher_bio(self, bio):
         self.vue.afficher_bio(bio)
@@ -196,8 +207,20 @@ class Controleur():
         vals = self.partie.trouver_valeurs()
         return vals
 
+
+    def afficher_fin(self, gagnant):
+        self.vue.afficher_fin(gagnant)
+
+
+    #ajoute Abi AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH
+    def tuer_joueur(self):
+        self.vue.unbind_joueur()
+        self.vue.test_HUD()
+
     def retirer_batiment_minimap(self, id):
         self.vue.minicarte.delete(id)
+
+
 
 
 
