@@ -625,6 +625,9 @@ class Ouvrier(Perso):
     def cibler_proie(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
+        print(reponse)
+        if reponse == "contourne":
+            return "contourne"
         if reponse == "rendu":
             if self.typeressource == "daim" or self.typeressource == "eau":
                 self.actioncourante = "ramasserressource"
