@@ -119,7 +119,11 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
         for i in cartebatiment:
-            self.cartecase[i[1]][i[0]].montype = "batiment"
+            #pour contournement avec retour de ressource
+            if(batiment.montype == "maison"):
+                self.cartecase[i[1]][i[0]].montype = "batiment-m"
+            else:
+                self.cartecase[i[1]][i[0]].montype = "batiment"
         batiment.cartebatiment = cartebatiment
 
     def creer_biotopes(self):
