@@ -111,9 +111,15 @@ class Perso():
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
                                  "ciblerennemi": None,
                                  "contourne": self.contourne}
+
+        #contournement
         self.action_precedente = None
         self.cible_contournement = None
         self.cibles_contournement_precedentes = []
+        self.contournements = 0
+        self.contournement_range_base = 5
+        self.contournement_range_offset = 0
+        self.contournement_range = 5
 
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
@@ -149,6 +155,11 @@ class Perso():
     def jouer_prochain_coup(self):
         if self.actioncourante:
             reponse = self.etats_et_actions[self.actioncourante]()
+
+
+
+
+
 
 
     def deplacer(self, pos):
@@ -235,7 +246,6 @@ class Perso():
             self.position_visee = None
 
 
-
     def get_map_contournement(self):
         x1, y1 = self.x, self.y
 
@@ -251,9 +261,9 @@ class Perso():
         cases_cibles = []
         # trouve si on frappe un mur à l'horinzontal ou vertial
         if self.get_directon_contournement(x1,y1): #horizontal
-            cases = self.parent.parent.get_carte_contournement(x1, y1, 1,5)
+            cases = self.parent.parent.get_carte_contournement(x1, y1, 1,self.contournement_range)
         else: #vertical
-            cases = self.parent.parent.get_carte_contournement(x1, y1, 5,1)
+            cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
 
         for i in cases:
             if i.montype == "batiment":
@@ -282,7 +292,6 @@ class Perso():
         # xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
         # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
         # affichage --------------------------------------------------------------------------------------------------
-
         return case.montype == "batiment"
 
     def contourne(self):
@@ -305,6 +314,7 @@ class Perso():
             self.cible_contournement = None
             print("je veux: ", self.action_precedente)
             self.actioncourante = self.action_precedente
+
 
     def get_cible_contournement(self):
         cases = self.get_map_contournement()
