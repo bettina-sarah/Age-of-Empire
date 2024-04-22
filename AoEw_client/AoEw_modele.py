@@ -127,9 +127,16 @@ class Partie():
             case = self.trouver_case(x, y)
             if case.montype == "plaine":
                 id = get_prochain_id()
-                mondaim = Daim(self, id, x, y)
-                self.biotopes["daim"][id] = mondaim
-                self.listebiotopes.append(mondaim)
+                if n % 2 == 0:
+                    monanimal = Daim(self, id, x, y)
+                    self.biotopes["daim"][id] = monanimal
+                else:
+                    monanimal = Ours(self, id, x, y)
+                    self.biotopes["ours"][id] = monanimal
+
+                    # peut l'optimiser en callent la var monanimal.type dans biotope[][] voir abi
+
+                self.listebiotopes.append(monanimal)
                 n -= 1
         self.creer_biotope("arbre", "arbre", Arbre)
         self.creer_biotope("roche", "roche", Roche)
@@ -261,6 +268,10 @@ class Partie():
         # demander aux objets de s'activer
         for i in self.biotopes["daim"].keys():
             self.biotopes["daim"][i].deplacer()
+
+        for i in self.biotopes["ours"].keys():
+            self.biotopes["ours"][i].deplacer()
+        # Ajouter une liste des trucs a deplacer ? puis fair eune function? maybe ? :D
 
         for i in self.biotopes["eau"].keys():
             self.biotopes["eau"][i].jouer_prochain_coup()

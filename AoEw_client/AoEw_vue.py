@@ -282,6 +282,7 @@ class Vue():
         self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
+        self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
 
     def OnMouseWheel(self, evt):
         print(evt.keysym)
@@ -563,6 +564,11 @@ class Vue():
                 monitem = self.canevas.create_image(i.x, i.y, image=self.images[i.img], anchor=S,
                                                     tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("mobile","",i.id,)
+            elif i.montype == "ours":
+                monitem = self.canevas.create_image(i.x, i.y, image=self.images[i.img], anchor=S,
+                                                    tags=("mobile", "", i.id, "biotope", i.montype, ""))
+                # tags=("mobile","",i.id,)
+
             else:
                 monitem = self.canevas.create_image(i.x, i.y, image=self.images[i.img], anchor=S,
                                                     tags=("statique", "", i.id, "biotope", i.montype, ""))
@@ -705,6 +711,22 @@ class Vue():
                                           tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("",i.id,"artefact","daim","mobile"))
 
+        for j in self.modele.biotopes["ours"].keys():
+            i = self.modele.biotopes["ours"][j]
+            if i.etat == "mort":
+                self.canevas.create_image(i.x, i.y, image=self.images["oursMORT"],
+                                          tags=("mobile", "", i.id, "biotope", i.montype, ""))
+                # tags=("",i.id,"artefact","daim","mobile"))
+
+            else:
+                self.canevas.create_image(i.x, i.y, image=self.images[i.img],
+                                          tags=("mobile", "", i.id, "biotope", i.montype, ""))
+                # tags=("",i.id,"artefact","daim","mobile"))
+
+
+
+
+
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["eau"].keys():
             i = self.modele.biotopes["eau"][j]
@@ -807,6 +829,8 @@ class Vue():
     def chasser_ressource(self, evt):
         tag = self.canevas.gettags(CURRENT)
         if tag[1] == "" and self.action.persochoisi and tag[4] == "daim":
+            self.action.chasser_ressource(tag)
+        elif tag[1] == "" and self.action.persochoisi and tag[4] == "ours":
             self.action.chasser_ressource(tag)
         else:
             print(tag[3])
