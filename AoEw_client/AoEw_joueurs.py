@@ -1,5 +1,7 @@
 import random
 import math
+from tkinter import CURRENT
+
 from helper import Helper
 from AoEw_divers import *
 from AoEw_batiments import *
@@ -88,6 +90,7 @@ class Joueur():
         self.id = id
         self.x = x
         self.y = y
+        self.event = None
         self.couleur = couleur
         self.monchat = []
         self.chatneuf = 0
@@ -269,4 +272,9 @@ class Joueur():
 
                 self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                                sorteperso)
-
+        # else:
+        #     print("dans le else du creer_perso")
+        #     self.parent.parent.vue.ajouter_selection(self.event)
+            # mestags = self.parent.parent.vue.canevas.gettags(CURRENT)
+            # self.parent.parent.vue.action.ciblechoisi = mestags
+            # self.parent.parent.vue.action.attaquer()

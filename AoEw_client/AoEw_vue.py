@@ -437,7 +437,7 @@ class Vue():
         print(self.parent.nom_joueur_local)
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
-                                          "statique", self.parent.nom_joueur_local, batiment.id, "batiment", batiment.montype,
+                                          "statique", joueur, batiment.id, "batiment", batiment.montype,
                                           ""))
 
         x0, y0, x2, y2 = self.canevas.bbox(chose)
@@ -588,6 +588,11 @@ class Vue():
             self.action.ciblechoisi = mestags
             print(" self.action.ciblechoisi ",  self.action.ciblechoisi)
             self.action.attaquer()
+        else:
+            print("Dans le ELSE donc pas self.action.persochoixi != []")
+            self.action.ciblechoisi = mestags
+            print(" self.action.ciblechoisi ", self.action.ciblechoisi)
+            self.action.attaquer()
 
     # Methodes pour multiselect
     def debuter_selection(self, evt):
@@ -691,51 +696,48 @@ class Vue():
             self.action.continuer_construction(pos)
 
     def creer_entite(self, evt):
+
+        #celui qui se fait attaquer
         x, y = evt.x, evt.y
         mestags = self.canevas.gettags(CURRENT)
         print("test de creer entite : ", mestags)
-        # print(type(mestags))
-        # print(" if ",self.parent.nom_joueur_local, "in mestags and", mestags[1], "==", self.parent.nom_joueur_local)
-        # # sorteperso, batimentsource, idbatiment, pos = param
-        # # if idbatiment in self.batiments[batimentsource].keys():
-        # print("LES JOUEURS", self.parent.joueurs)
-        # print("Les batiments des joueurs" ,self.parent.joueurs.batiments)
-        # print("Les batiments du premier joueur:", self.parent.joueurs[0].batiments)
-
-        # if mestags[2] not in self.parent.joueurs.batiments[mestags[4]].keys():
-
-        # Ne pas checker explicitement le id ennemi. Checker le ID du batiment clicke et regarder sil est dans les miens.
-        # Sil ne lest pas, lattaquer
-        if True:
+        if self.parent.nom_joueur_local == mestags[1]:
+        # if mestags[2] in self.parent.partie.joueurs[mestags[1]].batiments[mestags[4]].keys():
             print("Dans Vue, creer_entite")
-            if "batiment" in mestags:
-                if "maison" in mestags:
-                    print("je viens de demander a maison")
-                    pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["ouvrier", mestags[4], mestags[2], pos]]
-                if "caserne" in mestags:
-                    print("je viens de demander a caserne")
-                    pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["soldat", mestags[4], mestags[2], pos]]
-                if "abri" in mestags:
-                    print("je viens de demander a a abri")
-                    pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["druide", mestags[4], mestags[2], pos]]
-                if "usineballiste" in mestags:
-                    print("je viens de demander a usine ballista de creer une balliste calice")
-                    pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
+            print("JOUEURS : ", self.parent.partie.joueurs)
+            # if mestags[2] not in self.parent.partie.joueurs[mestags[1]].batiments[mestags[4]].keys():
+            #     print("PAS MON BATIMENT!")
+            #     self.ajouter_selection(evt)
+            if True:
+                if "batiment" in mestags:
+                    if "maison" in mestags:
+                        print("je viens de demander a maison")
+                        pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                        action = [self.parent.nom_joueur_local, "creerperso", ["ouvrier", mestags[4], mestags[2], pos]]
+                    if "caserne" in mestags:
+                        print("je viens de demander a caserne")
+                        pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                        action = [self.parent.nom_joueur_local, "creerperso", ["soldat", mestags[4], mestags[2], pos]]
+                    if "abri" in mestags:
+                        print("je viens de demander a a abri")
+                        pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                        action = [self.parent.nom_joueur_local, "creerperso", ["druide", mestags[4], mestags[2], pos]]
+                    if "usineballiste" in mestags:
+                        print("je viens de demander a usine ballista de creer une balliste calice")
+                        pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                        action = [self.parent.nom_joueur_local, "creerperso", ["ballista", mestags[4], mestags[2], pos]]
 
-            try:
-                self.parent.actions_requises.append(action)
-            except:
-                print("action invalide")
-
+                try:
+                    print("append laction de creer entite")
+                    self.parent.actions_requises.append(action)
+                except:
+                    print("action invalide")
 
         elif self.action.persochoisi != []:
             print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
             self.action.attaquer()
+
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
@@ -753,6 +755,8 @@ class Action():
         self.aideon = 0
 
     def attaquer(self):
+        print("dans attaquer : persochoisi : ", self.persochoisi)
+        print("dans attaquer : ciblechoisi : ", self.ciblechoisi)
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
