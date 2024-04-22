@@ -9,6 +9,8 @@ from chargeurdimages import *
 
 class Vue():
     def __init__(self, parent, url_serveur, nom_joueur_local):  # , testdispo):
+
+        self.gagnant = "ARI"
         self.parent = parent
         self.root = Tk()
         self.root.title("Je suis " + nom_joueur_local)
@@ -20,6 +22,7 @@ class Vue():
         # # minicarte
         self.tailleminicarte = 220
         self.cadreactif = None
+        self.limbo = 0
         # # objet pour cumuler les manipulations du joueur pour generer une action de jeu
         self.action = Action(self)  # pour avoir une action fraiche. C,est comme un Singleton
         # cadre principal de l'application
@@ -41,8 +44,6 @@ class Vue():
         self.images = charger_images()
         self.gifs = charger_gifs()
 
-        self.gagnant = None
-
     ####### INTERFACES GRAPHIQUES
 
     def changer_cadre(self, nomcadre: str):
@@ -57,79 +58,42 @@ class Vue():
     def creer_cadres(self, url_serveur: str, nom_joueur_local: str, testdispo: str):
         self.cadres["splash"] = self.creer_cadre_splash(url_serveur, nom_joueur_local, testdispo)
         self.cadres["lobby"] = self.creer_cadre_lobby()
-        self.cadres["limbo"] = self.creer_cadre_jeu_limbo()
-        self.cadres["fin"] = self.creer_cadre_fin()
+
         self.cadres["jeu"] = self.creer_cadre_jeu()
 
     # le splash (ce qui 'splash' à l'écran lors du démarrage)
     # sera le cadre visuel initial lors du lancement de l'application
 
     def creer_cadre_fin(self):
-        self.cadreFin = Frame(self.cadreapp, bg="green", width=400, height=400)
-        self.cadreFin.pack(fill=tk.BOTH, expand=True)
+        self.cadreFin = Frame(self.cadreapp, bg="gold", width=500, height=400)
 
+        self.cadreFin.pack_propagate(False)
         label_text = "FIN DE LA PARTIE"
-        label = tk.Label(self.cadreFin, text=label_text)
-        gagnant = tk.Label(self.cadreFin, text="Gagnant:" + self.gagnant)
-        gagnant.pack(expand=True)
+        label = Label(self.cadreFin, text=label_text, bg=self.cadreFin['bg'], font=("arial", 12, "bold"))
+        label.config()
+        t1 = Label(self.cadreFin, text="Gagnant", bg=self.cadreFin['bg'], font=("arial", 14, "bold"))
+
+        gagnant = Label(self.cadreFin, text=self.gagnant, bg=self.cadreFin['bg'], font=("arial", 18, "bold"))
+        gagnant.config()
+
+
         label.pack(expand=True)
+        t1.pack(expand=True)
+        gagnant.pack(expand=True)
+        self.cadreFin.rowconfigure(0, weight=1)
+        self.cadreFin.columnconfigure(0, weight=1)
 
-        label.place(relx=0.5, rely=0.5, anchor=self.cadreFin.CENTER)
-
-        self.canevasFin = Canvas(self.cadreFin, width=600, height=480, bg="SlateBlue1")
-        self.canevasFin.pack()
+        # self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
+        #                             command=self.initialiser_splash_post_connection)
+        # self.btnurlconnect = Button(text="Connecter", font=("Arial", 12),
 
         return self.cadreFin
 
     def afficher_fin(self, gagnant):
-        print(gagnant)
+
         self.gagnant = gagnant
+        self.cadres["fin"] = self.creer_cadre_fin()
         self.changer_cadre("fin")
-        print("finis VUE")
-
-    # def afficher_limbo(self):
-    #     print("DANS LE LIMBO")
-    #     self.changer_cadre("limbo")
-
-    # def creer_cadre_jeu_limbo(self):
-    #     # le cadre principal du jeu, remplace le Lobby
-    #     self.cadrepartie = Frame(self.cadreapp, bg="green", width=400, height=400)
-    #     # cadre du jeu et ses scrollbars
-    #     self.creer_aire_de_jeu()
-    #     # cadre pour info sur les ressources du joueur en haut de l'aire de jeu
-    #     self.creer_HUD()
-    #     # cadre pour commandes et infos des objets de jeu, situe a droite
-    #     self.creer_cadre_jeu_action()
-    #     # configuration de la section qui s'etire lorsque la fenetre change de taille
-    #     self.cadrepartie.rowconfigure(0, weight=1)
-    #     self.cadrepartie.columnconfigure(0, weight=1)
-    #     # on retourne ce cadre pour l'insérer dans le dictionnaires des cadres
-    #     return self.cadrepartie
-
-    # def creer_aire_de_jeu_limbo(self):
-    #     # definition du cadre avec le canvas de jeu et les scrollbars
-    #     self.cadrecanevas = Frame(self.cadrepartie)
-    #     # on crée les scrollbar AVANT le canevas de jeu car le canevas est dépendant de leur
-    #     self.scrollV = Scrollbar(self.cadrecanevas, orient=VERTICAL)
-    #     self.scrollH = Scrollbar(self.cadrecanevas, orient=HORIZONTAL)
-    #     self.canevas = Canvas(self.cadrecanevas, width=400, height=400, bg="DarkOliveGreen2",
-    #                           yscrollcommand=self.scrollV.set,
-    #                           xscrollcommand=self.scrollH.set)
-    #     self.scrollV.config(command=self.canevas.yview)
-    #     self.scrollH.config(command=self.canevas.xview)
-    #     # on visualise utilisant grid (grille)
-    #     # le grid avec 'sticky' indique que l'objet doit s'acroitre pour coller aux 'points cardinaux' (anglais)
-    #
-    #     self.canevas.grid(row=1, column=0, sticky=N + S + E + W)
-    #     self.scrollV.grid(row=1, column=1, sticky=N + S)
-    #     self.scrollH.grid(row=2, column=0, sticky=E + W)
-    #
-    #     # visualise le cadre qui contient le canevas de jeu
-    #     self.cadrecanevas.grid(column=0, row=0, sticky=N + S + E + W)
-    #     # on doit preciser quelle partie de la grille (grid) va s'accroitre, colonne et rangée
-    #     # ici on precise que c'est le canevas et non les scrollbar qui doit s'agrandir
-    #     self.cadrecanevas.rowconfigure(1, weight=1)
-    #     self.cadrecanevas.columnconfigure(0, weight=1)
 
     def creer_cadre_splash(self, url_serveur: str, nom_joueur_local: str, testdispo: str) -> Frame:
         self.cadresplash = Frame(self.cadreapp)
@@ -194,21 +158,6 @@ class Vue():
         # on retourne ce cadre pour l'insérer dans le dictionnaires des cadres
         return self.cadrelobby
 
-    # def creer_cadre_limbo(self):
-    #     # le cadre principal du jeu, remplace le Lobby
-    #     self.cadrepartie = Frame(self.cadreapp, bg="green", width=400, height=400)
-    #     # cadre du jeu et ses scrollbars
-    #     self.creer_aire_de_jeu()
-    #     # cadre pour info sur les ressources du joueur en haut de l'aire de jeu
-    #     self.creer_HUD()
-    #     # cadre pour commandes et infos des objets de jeu, situe a droite
-    #     self.creer_cadre_jeu_action()
-    #     # configuration de la section qui s'etire lorsque la fenetre change de taille
-    #     self.cadrepartie.rowconfigure(0, weight=1)
-    #     self.cadrepartie.columnconfigure(0, weight=1)
-    #     # on retourne ce cadre pour l'insérer dans le dictionnaires des cadres
-    #     return self.cadrepartie
-
     def creer_cadre_jeu(self):
         # le cadre principal du jeu, remplace le Lobby
         self.cadrepartie = Frame(self.cadreapp, bg="green", width=400, height=400)
@@ -251,7 +200,9 @@ class Vue():
         self.connecter_event()
 
     def creer_HUD(self):
+
         self.cadrejeuinfo = Frame(self.cadrecanevas, bg="blue")
+        self.cadretemp = self.cadrejeuinfo
         # des etiquettes d'info
         self.infohud = {"Nourriture": None,
                         "Bois": None,
@@ -370,8 +321,8 @@ class Vue():
         self.canevas.tag_bind("roche", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
-        # self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
-        self.canevas.tag_bind("daim", "<Button-1>", self.test)
+        self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
+        # self.canevas.tag_bind("daim", "<Button-1>", self.afficher_fin)
 
         # self.canevas.bind("<space>", self.test)
 
@@ -394,6 +345,9 @@ class Vue():
         self.canevas.xview_moveto(rep)
 
         # cette méthode sert à changer le cadre (Frame) actif de la fenêtre, on n'a qu'à fournir le cadre requis
+
+    def test_HUD(self):
+        self.limbo = 1
 
     ##### FONCTION DU SPLASH #########################################################################
     def creer_partie(self):
@@ -561,7 +515,31 @@ class Vue():
         # commencer par les choses des joueurs
         for j in self.modele.joueurs.keys():
             # ajuster les infos du HUD
-            if j == self.parent.nom_joueur_local:
+            if self.limbo == 1:
+                self.cadrejeuinfo.destroy()
+                self.canevasaction.destroy()
+                self.canevasaction = Canvas(self.cadreaction, width=200, height=300, bg="lightblue",
+                                            yscrollcommand=self.scrollVaction.set)
+                self.canevasaction.grid(row=0, column=0, sticky=N + S)
+                self.canevasaction.create_text(100, 30, text="Vous êtes mort", font=("arial", 18, "bold"),
+                                               anchor=S,
+                                               tags=("nom"))
+                self.canevasaction.create_text(100, 60, text="Joueurs Restant", font=("arial", 12, "bold"),
+                                               anchor=S,
+                                               tags=("nom"))
+
+                # update lsit of dead for everyone bug
+                i = 30
+                for t in self.modele.joueurs.keys():
+                    if t != self.parent.nom_joueur_local:
+                        self.canevasaction.create_text(100, 80 + i, text=t, font=("arial", 10, "bold"),
+                                                       anchor=S,
+                                                       tags=("nom"))
+                        i += 30
+
+                self.canevasaction.rowconfigure(0, weight=1)
+
+            elif j == self.parent.nom_joueur_local:
                 self.infohud["Nourriture"][0].set(self.modele.joueurs[j].ressources["nourriture"])
                 self.infohud["Bois"][0].set(self.modele.joueurs[j].ressources["arbre"])
                 self.infohud["Roche"][0].set(self.modele.joueurs[j].ressources["roche"])
@@ -811,8 +789,7 @@ class Vue():
     def test(self, evt):
         # print("DANS TEST DE FIN")
 
-        test = self.parent.partie.joueurs[self.parent.nom_joueur_local]
-        test.test()
+        self.changer_cadre("fin")
 
     def unbind_joueur(self):
         # unbind tout ou juste le tick sur les joueur ?

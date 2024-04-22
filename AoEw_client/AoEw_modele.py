@@ -466,60 +466,29 @@ class Partie():
         self.eliminer_joueur()
 
     def eliminer_joueur(self):
-        print("liste mort avant")
-        print(self.mort)
+
         localaa = self.joueurs.get(self.parent.nom_joueur_local)
-        print(localaa)
-        try:
-            for key in self.joueurs.keys():
-                joueur = self.joueurs.get(key)
 
-                batiement = joueur.batiments.values
-                print("dans test fin " + key, joueur.id, batiement)
+        for key in self.joueurs.keys():
+            joueur = self.joueurs.get(key)
+            batiement = joueur.batiments.values
+            if joueur.batiments["maison"] == {} and joueur.batiments["abri"] == {} and joueur.batiments[
+                "caserne"] == {} and joueur.batiments["usineballiste"] == {}:
+                if joueur.id not in self.mort:
+                    self.mort.append(joueur.id)
+                    if joueur.id == localaa.id:
+                        self.parent.tuer_joueur()
+        self.fin_jeu()
 
-                if joueur.batiments["maison"] == {} and joueur.batiments["abri"] == {} and joueur.batiments[
-                    "caserne"] == {} and joueur.batiments["usineballiste"] == {}:
-                    if joueur.id not in self.mort:
-                        self.mort.append(joueur.id)
-                        if joueur.id == localaa.id:
-                            print("jeu suis mort" + joueur.id)
-                            self.parent.vue.unbind_joueur()
-                            # self.parent.vue.changer_cadre("limbo")
-                            print(self.mort)
-                            # ajouter afficher_mort
-            print(self.joueurs.keys())
-        except RuntimeError:
-            print("AJOUT DE DICTO")
-            pass
-        #
-        # if len(self.mort) - len(self.joueurs) == 1:
-        #     print("dans test de fin, 1 seul joueurs")
-        #     t = set(self.mort)
-        #     print(t)
-        #     j = set(self.joueurs.keys())
-        #     print(j)
-        #     self.parent.afficher_fin(list(j - t))
+    def fin_jeu(self):
+        temp = []
+        for key in self.joueurs.keys():
+            j = self.joueurs.get(key)
+            if j.id not in self.mort:
+                temp.append(j.nom)
 
-        # if joueur.id not in self.parent.mort:
-        #     if joueur.batiments["maison"] != {} or joueur.batiments["abri"] != {} or joueur.batiments["caserne"] != {} or joueur.batiments["usineballiste"] != {}:
-        #         # self.montrer_msggeneral("VOUS ETES vivant")
-        #         print("vivant")
-        #     else:
-        #         self.parent.mort.append(joueur.id)
-        #         print("JE SUIS MORT " + joueur.id)
-        #         self.montrer_msg_general("vous etes vivant")
-        #         self.parent.tuer_joueur()
-        #         self.parent.a
-        #
-        #         #creer action qui update tout le monde les morts
-        #         # action = [self.parent.nom_joueur_local, "abandonner",
-        #         #           [self.parent.nom_joueur_local + ": abandonne ", self.parent.mort]]
-        #
-        #         # self.parent.actions_requises.append(action)
-        #         # self.parent.tuer_joueur()
-        #         print("liste controlleur tous " )
-        #         print(self.parent.mort)
-        # del self.joueurs[key]
+        if len(temp) == 1:
+            self.parent.afficher_fin(temp[0])
 
     def retirer_batiment_minimap(self, id):
         self.parent.retirer_batiment_minimap(id)

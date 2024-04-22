@@ -352,19 +352,16 @@ class Ballista(Perso):
         y = self.cibleennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        print("DISTANCE CALCULEE", dist)
-        print(self.distancefeu)
+
         if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
+
         else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "ciblerennemi"
-            print("self.actioncourante = ciblerennemi")
+
 
     def attaquerennemi(self):
         self.delaifeu = self.delaifeu -1
-        print("KAWABUNGA BABY")
-        print(" DELAI FEU : ",self.delaifeu)
         if self.delaifeu == 0:
             id = get_prochain_id()
             try:
@@ -372,11 +369,11 @@ class Ballista(Perso):
                 self.fleches.append(fleche)
                 self.delaifeu = self.delaifeumax
             except AttributeError:
+
                 self.actioncourante = None
 
 
         for i in self.fleches:
-            print("fleches :  ", i)
             rep = i.bouger()
         # if rep:
             # self.cibleennemi.recevoir_coup(self.force)
@@ -507,7 +504,7 @@ class Ouvrier(Perso):
     def jouer_prochain_coup(self):
         if self.actioncourante:
             reponse = self.etats_et_actions[self.actioncourante]()
-            print("REPONSE==========================================================", type(reponse))
+            # print("REPONSE==========================================================", type(reponse))
             # lors dune attaque, ca fait un NonType not callable, mais tous les coups autre quune attaque donne NoneType et sont callés
 
     def lancer_javelot(self, proie):

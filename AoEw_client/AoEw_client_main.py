@@ -145,11 +145,8 @@ class Controleur():
                 mondict = self.appeler_serveur(url, data, method = "POST")
                 # verifie pour requete d'attente d'un joueur plus lent
                 if "ATTENTION" in mondict:
-                    print("SAUTER TOUR")
                     self.on_joue = 0
                 elif mondict:
-                    print("dicto")
-                    print(mondict)
                     self.partie.ajouter_actions_a_faire(self.iteration_boucle_jeu,mondict)
 
             except requests.exceptions.RequestException as e:
@@ -164,20 +161,8 @@ class Controleur():
             self.iteration_boucle_jeu -= 1
             self.on_joue = 1
 
-
-        # appel ulterieur de la meme fonction jusqu'a l'arret de la partie
-        # self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
-
-
-        # if self.partie.eliminer_joueur() and self.iteration_boucle_jeu > 5 and self.type > 1:
-        #     print("Controlleur FIN")
-        # #     for i in self.joueurs:
-        # #         print(i)
-        # #     self.vue.afficherFin()
         
         self.vue.root.after(self.delai_de_boucle_de_jeu, self.boucler_sur_jeu)
-
-
 
 
 
@@ -230,6 +215,7 @@ class Controleur():
     #ajoute Abi AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH
     def tuer_joueur(self):
         self.vue.unbind_joueur()
+        self.vue.test_HUD()
 
     def retirer_batiment_minimap(self, id):
         self.vue.minicarte.delete(id)
