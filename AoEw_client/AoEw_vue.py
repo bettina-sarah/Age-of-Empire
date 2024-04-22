@@ -329,7 +329,7 @@ class Vue():
         # self.canevas.bind("<space>", self.test)
 
     def OnMouseWheel(self, evt):
-        print(evt.keysym)
+        print("evt.keysym", evt.keysym)
         rep = self.scrollV.get()[0]
         if evt.delta < 0:
             rep = rep + 0.02
@@ -673,9 +673,9 @@ class Vue():
 
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
-                                              "statique", self.parent.nom_joueur_local, batiment.id, "batiment",
-                                              batiment.montype,
-                                              ""))
+                                          "statique", joueur, batiment.id, "batiment", batiment.montype,
+                                          ""))
+
 
         x0, y0, x2, y2 = self.canevas.bbox(chose)
 
@@ -849,15 +849,24 @@ class Vue():
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
-        print("MESTAGS", mestags)
+        print("AJOTUER SELECTION", mestags)
         if self.parent.nom_joueur_local == mestags[1]:
+            print(" if self.parent.nom_joueur_local == mestags[1]:", self.parent.nom_joueur_local)
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
             else:
+                print("else pas ouvrier", self.action.persochoisi)
                 self.action.persochoisi.append(mestags[2])
         elif self.action.persochoisi != []:
+            print("Dans le elif self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
+            print(" self.action.ciblechoisi ",  self.action.ciblechoisi)
+            self.action.attaquer()
+        else:
+            print("Dans le ELSE donc pas self.action.persochoixi != []")
+            self.action.ciblechoisi = mestags
+            print(" self.action.ciblechoisi ", self.action.ciblechoisi)
             self.action.attaquer()
 
     # Methodes pour multiselect
@@ -940,7 +949,7 @@ class Vue():
         self.action.btnactif = obj
 
         vals = self.parent.trouver_valeurs()
-        print(vals)
+        print("vals dans batier artefact ", vals)
         ok = 1
         for k, val in self.modele.joueurs[self.nom_joueur_local].ressources.items():
             if val <= vals[nomsorte][k]:
@@ -965,8 +974,11 @@ class Vue():
 
     # fonction crée pas une entité, envoye les params au bon cadre qui va créer entite via self.test_entite()
     def creer_entite(self, evt):
+
+        #celui qui se fait attaquer
         x, y = evt.x, evt.y
         mestags = self.canevas.gettags(CURRENT)
+
         coul = self.modele.joueurs[self.parent.nom_joueur_local].couleur
         if self.parent.nom_joueur_local in mestags:
             if "batiment" in mestags:
@@ -981,12 +993,12 @@ class Vue():
                     self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-
                     self.creer_cadre_usine(coul[0] + "_", ["archer","ballista", "catapulte"], mestags[4], mestags[2], pos)
                 if "champs_de_tir" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["chevalier-archer"], mestags[4], mestags[2], pos)
         elif self.action.persochoisi != []:
+            print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
             self.action.attaquer()
 
@@ -1030,6 +1042,7 @@ class Vue():
 
 
 
+
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
 # pour demander une action
 class Action():
@@ -1045,6 +1058,8 @@ class Action():
         self.aideon = 0
 
     def attaquer(self):
+        print("dans attaquer : persochoisi : ", self.persochoisi)
+        print("dans attaquer : ciblechoisi : ", self.ciblechoisi)
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]

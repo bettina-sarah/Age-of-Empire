@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
 <<<<<<< HEAD
+<<<<<<< HEAD
   <component name="Black">
     <option name="sdkName" value="Python 3.9" />
   </component>
@@ -19,4 +20,10 @@
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (2)" project-jdk-type="Python SDK" />
 >>>>>>> main
 >>>>>>> final_Abi
+=======
+  <component name="Black">
+    <option name="sdkName" value="Python 3.9" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (3)" project-jdk-type="Python SDK" />
+>>>>>>> combat2
 </project>

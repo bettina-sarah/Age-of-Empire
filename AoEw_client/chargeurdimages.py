@@ -41,4 +41,4 @@ if __name__ == '__main__':
     images=charger_images()
 
     for i in images.keys():
-            print(i,images[i])
+            print("images ", i,images[i])

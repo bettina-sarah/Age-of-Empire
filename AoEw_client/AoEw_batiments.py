@@ -31,7 +31,11 @@ class Batiment():
         print("Ouch Batiment")
         if self.mana < 1:
             print("MORTS")
-            self.parent.annoncer_mort_batiment(self)
+            try:
+                self.parent.parent.annoncer_mort_batiment(self)
+            except:
+                print("MAISON PRINCIPALE")
+                self.parent.annoncer_mort_batiment(self)
             return 1
 
 

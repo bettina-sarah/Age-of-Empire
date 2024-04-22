@@ -1,5 +1,7 @@
 import random
 import math
+from tkinter import CURRENT
+
 from helper import Helper
 from AoEw_divers import *
 from AoEw_batiments import *
@@ -101,6 +103,7 @@ class Joueur():
         self.id = id
         self.x = x
         self.y = y
+        self.event = None
         self.couleur = couleur
         self.monchat = []
         self.chatneuf = 0
@@ -263,8 +266,9 @@ class Joueur():
                 self.persos[j][i].jouer_prochain_coup()
 
     def creer_perso(self, param):
+        print("Dans creer perso")
         sorteperso, batimentsource, idbatiment, pos = param
-
+        # if idbatiment in self.batiments[batimentsource].keys():
         # le joueur a-t-il les ressources pour creer l'unité
         prix_perso = Joueur.prix_unite
         possede_les_ressources = True
@@ -277,7 +281,6 @@ class Joueur():
             # paye les ressources
             for k, val in self.ressources.items():
                 self.ressources[k] = val - prix_perso[sorteperso][k]
-
             id = get_prochain_id()
             batiment = self.batiments[batimentsource][idbatiment]
 
@@ -286,10 +289,22 @@ class Joueur():
 
             self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                            sorteperso)
-
     def test(self):
         self.batiments = {"maison": {},
                           "abri": {},
                           "caserne": {},
                           "usineballiste": {},
                           "siteconstruction": {}}
+
+        x = batiment.x + 100 + (random.randrange(50) - 15)
+        y = batiment.y + (random.randrange(50) - 15)
+
+        self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+                                                                               sorteperso)
+        # else:
+        #     print("dans le else du creer_perso")
+        #     self.parent.parent.vue.ajouter_selection(self.event)
+            # mestags = self.parent.parent.vue.canevas.gettags(CURRENT)
+            # self.parent.parent.vue.action.ciblechoisi = mestags
+            # self.parent.parent.vue.action.attaquer()
+

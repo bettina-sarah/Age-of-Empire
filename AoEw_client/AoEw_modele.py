@@ -272,8 +272,9 @@ class Partie():
         # ATTENTION : NE PAS TOUCHER 
         if cadrecourant in self.actions_a_faire:
             for i in self.actions_a_faire[cadrecourant]:
-                print(i)
+                print("i dans jouer prochain coup", i)
                 self.joueurs[i[0]].actions[i[1]](i[2])
+
         ##################################################################
 
         # demander aux objets de s'activer

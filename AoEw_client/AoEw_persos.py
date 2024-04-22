@@ -484,24 +484,23 @@ class Ballista(Perso):
 
 
     def attaquerennemi(self):
-        self.delaifeu = self.delaifeu -1
-        if self.delaifeu == 0:
-            id = get_prochain_id()
-            try:
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu -1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ",self.delaifeu)
+            if self.delaifeu == 0:
+
+                id = get_prochain_id()
                 fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
                 self.fleches.append(fleche)
                 self.delaifeu = self.delaifeumax
-            except AttributeError:
-
-                self.actioncourante = None
-
-        for i in self.fleches:
-            rep = i.bouger()
-        # if rep:
-        # self.cibleennemi.recevoir_coup(self.force)
-        # self.fleches.remove(rep)
-
-
+            if len(self.fleches) > 0:
+                for i in self.fleches:
+                    print("fleches :  ", i)
+                    rep = i.bouger()
+            # if rep:
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
 
 
 class Ouvrier(Perso):
@@ -611,7 +610,7 @@ class Ouvrier(Perso):
 
             try:
                 sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
-                print(sitecons)
+                print("sitecons", sitecons)
                 self.parent.installer_batiment(batiment)
             except:
                 print("batiment deja terminer")
