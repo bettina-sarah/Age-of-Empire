@@ -407,20 +407,23 @@ class Vue():
          "roche": self.images["roches1petit"],
          "aureus": self.images["aureusD_"]}
 
-        self.frame_generique(index)
+        #self.frame_generique(index)
 
         # FRAME NOURRITURE
+        row_counter = 0
+        col_counter = 0
         frame_nourriture = Frame(self.cadrebatiment)
         for key, image in self.self_dict_temp_ressources.items():
             image_nourriture = Label(frame_nourriture, image=image)
             lbl_nourriture = Label(frame_nourriture, text=self.modele.joueurs[self.parent.nom_joueur_local].prix_unite[index][key])
             frame_nourriture.pack()
-            image_nourriture.pack()
-            lbl_nourriture.pack()
 
-
-
-
+            image_nourriture.grid(row=row_counter, column=col_counter, padx=5, pady=5)
+            lbl_nourriture.grid(row=row_counter, column=col_counter + 1, padx=5, pady=5)
+            col_counter += 2
+            if col_counter >= 4:
+                col_counter = 0
+                row_counter += 1
 
 
     def creer_cadre_caserne(self, coul, persos, tag_batiment, id_joueur, pos):
