@@ -103,6 +103,10 @@ class Partie():
         self.creer_biotopes()
         self.creer_population(mondict)
 
+        self.taillecase = 20
+        self.demicase = self.taillecase / 2
+        self.taillecarte = int(self.aireX / self.taillecase)
+
     def trouver_valeurs(self):
         vals = Partie.valeurs
         return vals
@@ -115,7 +119,11 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
         for i in cartebatiment:
-            self.cartecase[i[1]][i[0]].montype = "batiment"
+            #pour contournement avec retour de ressource
+            if(batiment.montype == "maison"):
+                self.cartecase[i[1]][i[0]].montype = "batiment-m"
+            else:
+                self.cartecase[i[1]][i[0]].montype = "batiment"
         batiment.cartebatiment = cartebatiment
 
     def creer_biotopes(self):
@@ -326,7 +334,49 @@ class Partie():
                 t1.append(Caseregion(None, id, j, i))
             self.cartecase.append(t1)
 
-    def trouver_case(self, x, y):
+    # def trouver_case(self, x, y):
+    #
+    #     if x < 0:
+    #         x = 0
+    #     if y < 0:
+    #         y = 0
+    #
+    #     if x > (self.aireX - 1):
+    #         x = self.aireX - 1
+    #     if y > (self.aireY - 1):
+    #         y = self.aireY - 1
+    #
+    #     cx = int(x / self.taillecase)
+    #     cy = int(y / self.taillecase)
+    #     # if cx != 0 and x % self.taillecase > 0:
+    #     #     cx += 1
+    #     #
+    #     # if cy != 0 and y % self.taillecase > 0:
+    #     #     cy += 1
+    #
+    #     # possible d'etre dans une case trop loin
+    #     if cx == self.taillecarte:
+    #         cx -= 1
+    #     if cy == self.taillecarte:
+    #         cy -= 1
+    #     # print("--> carte",self.cartecase[cy][cx])
+    #     return self.cartecase[cy][cx]  # [cx,cy]
+
+    def trouver_case(self, x, y, dir="none"):
+        offsetX = 0
+        offsetY = 0
+        # if dir == "GH":
+        #     offsetX = -1
+        #     offsetY = -1
+        # elif dir == "DH":
+        #     offsetX = 1
+        #     offsetY = -1
+        # elif dir == "GB":
+        #     offsetX = -1
+        #     offsetY = 1
+        # elif dir == "DB":
+        #     offsetX = 1
+        #     offsetY = 1
 
         if x < 0:
             x = 0
@@ -340,11 +390,11 @@ class Partie():
 
         cx = int(x / self.taillecase)
         cy = int(y / self.taillecase)
-        if cx != 0 and x % self.taillecase > 0:
-            cx += 1
-
-        if cy != 0 and y % self.taillecase > 0:
-            cy += 1
+        # if cx != 0 and x % self.taillecase > 0:
+        #     cx += 1
+        #
+        # if cy != 0 and y % self.taillecase > 0:
+        #     cy += 1
 
         # possible d'etre dans une case trop loin
         if cx == self.taillecarte:
@@ -352,7 +402,7 @@ class Partie():
         if cy == self.taillecarte:
             cy -= 1
         # print(self.cartecase[cy][cx])
-        return self.cartecase[cy][cx]  # [cx,cy]
+        return self.cartecase[cy+offsetY][cx+offsetX]  # [cx,cy]
 
     def get_carte_bbox(self, x1, y1, x2, y2):  # case d'origine en cx et cy,  pour position pixels x, y
         # case d'origine en cx et cy,  pour position pixels x, y
@@ -384,9 +434,9 @@ class Partie():
         cx = int(x / self.taillecase)
         cy = int(y / self.taillecase)
         # possible d'etre dans une case trop loin
-        if cx == self.largeurcase:
+        if cx == self.taillecase:
             cx -= 1
-        if cy == self.hauteurcase:
+        if cy == self.taillecase:
             cy -= 1
 
         # le centre en pixels de la case d'origine
@@ -405,23 +455,64 @@ class Partie():
         casecoinx2 = cx + d
         casecoiny2 = cy + d
         # assure qu'on deborde pas
-        if casecoinx2 >= self.largeurcase:
-            casecoinx2 = self.largeurcase - 1
-        if casecoiny2 >= self.hauteurcase:
-            casecoiny2 = self.hauteurcase - 1
+        # if casecoinx2 >= self.taillecase:
+        #     casecoinx2 = self.taillecase - 1
+        # if casecoiny2 >= self.taillecase:
+        #     casecoiny2 = self.taillecase - 1
 
         distmax = (d * self.taillecase) + self.demicase
 
         t1 = []
         for i in range(casecoiny1, casecoiny2):
             for j in range(casecoinx1, casecoinx2):
-                case = self.carte[i][j]
+                case = self.cartecase[i][j]
                 pxcentrecasex = (j * self.taillecase) + self.demicase
                 pxcentrecasey = (i * self.taillecase) + self.demicase
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax:
                     t1.append(case)
         return t1
+
+    def get_carte_contournement(self, x, y, dx,dy):
+        cx = int(x / self.taillecase)
+        cy = int(y / self.taillecase)
+        # possible d'etre dans une case trop loin
+        if cx == self.taillecase:
+            cx -= 1
+        if cy == self.taillecase:
+            cy -= 1
+
+        # le centre en pixels de la case d'origine
+        pxcentrex = (cx * self.taillecase) + self.demicase
+        pxcentrey = (cy * self.taillecase) + self.demicase
+
+        # la case superieur gauche de la case d'origine
+        casecoinx1 = cx - dx
+        casecoiny1 = cy - dy
+        # assure qu'on deborde pas
+        if casecoinx1 < 0:
+            casecoinx1 = 0
+        if casecoiny1 < 0:
+            casecoiny1 = 0
+        # la case inferieur droite
+        casecoinx2 = cx + dx
+        casecoiny2 = cy + dy
+
+
+        distmax = (10 * self.taillecase) + self.demicase
+
+        t1 = []
+        for i in range(casecoiny1, casecoiny2):
+            for j in range(casecoinx1, casecoinx2):
+                case = self.cartecase[i][j]
+                pxcentrecasex = (j * self.taillecase) + self.demicase
+                pxcentrecasey = (i * self.taillecase) + self.demicase
+                distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
+                if distcase <= distmax:
+                    t1.append(case)
+        return t1
+        pass
+
 
     def eliminer_ressource(self, type, ress):
         if ress.idregion:

@@ -622,6 +622,7 @@ class Vue():
         self.canevas.delete(batiment.id)
 
         print(self.parent.nom_joueur_local)
+
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
                                           "statique", self.parent.nom_joueur_local, batiment.id, "batiment", batiment.montype,
