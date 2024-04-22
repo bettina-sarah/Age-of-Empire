@@ -302,6 +302,10 @@ class Chevalier(Perso):
 class Druide(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+        
+class DruideOurs(Perso):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
+        Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
 class Ingenieur(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):

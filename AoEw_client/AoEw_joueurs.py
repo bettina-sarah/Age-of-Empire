@@ -53,6 +53,11 @@ class Joueur():
                                  "roche": 35,
                                  "aureus": 31,
                                  "delai": 80},
+                  "druide-ours": {"nourriture": 15,
+                                 "arbre": 12,
+                                 "roche": 35,
+                                 "aureus": 34,
+                                 "delai": 80},
                "ballista": {"nourriture": 30,
                                  "arbre": 30,
                                  "roche": 30,
@@ -62,7 +67,13 @@ class Joueur():
                             "arbre": 30,
                             "roche": 30,
                             "aureus": 30,
-                            "delai": 30}
+                            "delai": 30},
+                  "archer": {"nourriture": 35,
+                                "arbre": 35,
+                                "roche": 35,
+                                "aureus": 30,
+                                "delai": 30},
+
                }
 
     classespersos = {"ouvrier": Ouvrier,
@@ -71,7 +82,8 @@ class Joueur():
                      "chevalier": Chevalier,
                      "druide": Druide,
                      "ballista": Ballista,
-                     "ingenieur": Ingenieur}
+                     "ingenieur": Ingenieur,
+                     "druide-ours": DruideOurs}
     ressources = {"Azteque": {"nourriture": 999,
                               "arbre": 200,
                               "roche": 200,

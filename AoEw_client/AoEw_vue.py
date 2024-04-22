@@ -399,6 +399,12 @@ class Vue():
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
                                                              window=self.cadrebatiment,
                                                              anchor=N))
+        self.root.update()
+        fh = self.cadrebatiment.winfo_height()
+        ch = int(self.canevasaction.cget("height"))
+        if fh + 60 > ch:
+            cl = int(self.canevasaction.cget("width"))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def afficher_labels_ressources(self, index):
         
@@ -440,10 +446,17 @@ class Vue():
                                                                                                                   id_joueur,
                                                                                                                   pos))
             btn.pack()
+            self.afficher_labels_ressources(i)
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
                                                                           window=self.cadrebatiment,
                                                                           anchor=N))
+        self.root.update()
+        fh = self.cadrebatiment.winfo_height()
+        ch = int(self.canevasaction.cget("height"))
+        if fh + 60 > ch:
+            cl = int(self.canevasaction.cget("width"))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def creer_cadre_abri(self, coul, persos, tag_batiment, id_joueur, pos):
         if self.action.widgetsactifs:
@@ -453,19 +466,28 @@ class Vue():
         for i in persos:
             if i=="druide-ours": # !! image a faire
                 btn = Button(self.cadrebatiment, text=i)
+                btn.pack()
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
-            btn.bind("<Button>",
+                btn.bind("<Button>",
                      lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
                                                                                                                   tag_batiment,
                                                                                                                   id_joueur,
                                                                                                                   pos))
             btn.pack()
+            self.afficher_labels_ressources(i)
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
                                                                           window=self.cadrebatiment,
                                                                           anchor=N))
+
+        self.root.update()
+        fh = self.cadrebatiment.winfo_height()
+        ch = int(self.canevasaction.cget("height"))
+        if fh + 60 > ch:
+            cl = int(self.canevasaction.cget("width"))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def creer_cadre_usine(self, coul, persos, tag_batiment, id_joueur, pos):
         if self.action.widgetsactifs:
@@ -475,19 +497,28 @@ class Vue():
         for i in persos:
             if i == "catapulte":  # !! image a faire
                 btn = Button(self.cadrebatiment, text=i)
+                btn.pack()
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
-            btn.bind("<Button>",
+                btn.bind("<Button>",
                      lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
                                                                                                                   tag_batiment,
                                                                                                                   id_joueur,
                                                                                                                   pos))
-            btn.pack()
+                btn.pack()
+                self.afficher_labels_ressources(i)
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
                                                                           window=self.cadrebatiment,
                                                                           anchor=N))
+
+        self.root.update()
+        fh = self.cadrebatiment.winfo_height()
+        ch = int(self.canevasaction.cget("height"))
+        if fh + 60 > ch:
+            cl = int(self.canevasaction.cget("width"))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def creer_cadre_champs_tir(self, coul, persos, tag_batiment, id_joueur, pos):
         if self.action.widgetsactifs:
@@ -503,10 +534,18 @@ class Vue():
                                                                                                                   id_joueur,
                                                                                                                   pos))
             btn.pack()
+            self.afficher_labels_ressources(i)
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
                                                                           window=self.cadrebatiment,
                                                                           anchor=N))
+
+        self.root.update()
+        fh = self.cadrebatiment.winfo_height()
+        ch = int(self.canevasaction.cget("height"))
+        if fh + 60 > ch:
+            cl = int(self.canevasaction.cget("width"))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def test_entite(self, type_perso, tag_batiment, id_joueur, pos):
         action = [self.parent.nom_joueur_local, "creerperso", [type_perso, tag_batiment, id_joueur, pos]]
@@ -837,7 +876,7 @@ class Vue():
             if "batiment" in mestags:
                 if "maison" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_maison(coul[0] + "_", ["ouvrier", "ouvrier"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_maison(coul[0] + "_", ["ouvrier"], mestags[4], mestags[2], pos)
                 if "caserne" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_caserne(coul[0] + "_", ["soldat", "chevalier"], mestags[4], mestags[2], pos)
@@ -847,10 +886,10 @@ class Vue():
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
 
-                    self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_usine(coul[0] + "_", ["archer","ballista", "catapulte"], mestags[4], mestags[2], pos)
                 if "champs_de_tir" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "chevalier-archer"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_champs_tir(coul[0] + "_", ["chevalier-archer"], mestags[4], mestags[2], pos)
         elif self.action.persochoisi != []:
             self.action.ciblechoisi = mestags
             self.action.attaquer()
