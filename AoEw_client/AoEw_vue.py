@@ -291,10 +291,11 @@ class Vue():
         self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
+        self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
 
         # ATTENTION POUR DES TEST A ENLEVER
         ##pour les trst de fin
-        self.canevas.tag_bind('ours', '<Button-1>', self.test)
+        #self.canevas.tag_bind('ours', '<Button-1>', self.test)
 
     def OnMouseWheel(self, evt):
         print(evt.keysym)
@@ -649,6 +650,8 @@ class Vue():
         tag = self.canevas.gettags(CURRENT)
         if tag[1] == "" and self.action.persochoisi and tag[4] == "daim":
             self.action.chasser_ressource(tag)
+        elif tag[1] == "" and self.action.persochoisi and tag[4] == "ours":
+            self.action.chasser_ressource(tag)
         else:
             print(tag[3])
 
@@ -727,12 +730,12 @@ class Vue():
 
         ##pour les trst de fin
 
-    def test(self, evt):
-        print("DANS TEST DE FIN")
-        first_key = list(self.parent.partie.joueurs.keys())[1]
-        test = self.parent.partie.joueurs[first_key]
-        test.test_LOSING()
-        del self.parent.partie.joueurs[first_key]
+    # def test(self, evt):
+    #     print("DANS TEST DE FIN")
+    #     first_key = list(self.parent.partie.joueurs.keys())[1]
+    #     test = self.parent.partie.joueurs[first_key]
+    #     test.test_LOSING()
+    #     del self.parent.partie.joueurs[first_key]
 
 
     def afficherFin(self):
