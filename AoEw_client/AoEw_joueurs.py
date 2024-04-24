@@ -140,14 +140,12 @@ class Joueur():
         self.creer_point_origine(x, y)
 
     def annoncer_mort(self, perso):
-        print("==================pop suite a mort")
         try:
             self.persos[perso.montype].pop(perso.id)
         except:
             print("Deja Mort")
     def annoncer_mort_batiment(self, perso):
-        
-        print("batiment mort!")
+
         # retirer de la minimap
         # placer les case à plaine
         # retirer de l'image de l'affichage
@@ -164,18 +162,16 @@ class Joueur():
 
 
     def attaquer(self, param):
-        print("PARAM", param)
         attaquants, attaque = param
-        print("Joueurs attaquants et attaque",attaquants, attaque)
 
         nomjoueur, idperso, sorte = attaque
 
         if sorte in self.batiments.keys():
             ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
-            print("ENNEMI BATIMENT: ", ennemi)
+
         else:
             ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
-            print("ENNEMI PERSO: ", ennemi)
+
         # print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
 
         # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
@@ -189,8 +185,6 @@ class Joueur():
     def abandonner(self, param):
         # ajouter parametre nom de l'Abandonneux, et si c'est moi, envoyer une action
         # quitter au serveur et faire destroy
-        print("param de abandonner")
-        print( param)
         msg = param[0]
 
         self.parent.mort = param[1]
@@ -268,7 +262,6 @@ class Joueur():
                 self.persos[j][i].jouer_prochain_coup()
 
     def creer_perso(self, param):
-        print("Dans creer perso")
         sorteperso, batimentsource, idbatiment, pos = param
         # if idbatiment in self.batiments[batimentsource].keys():
         # le joueur a-t-il les ressources pour creer l'unité

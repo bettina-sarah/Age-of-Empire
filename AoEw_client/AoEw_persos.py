@@ -31,7 +31,6 @@ class Fleche():
 
     def bouger(self):
         if not self.proie:
-            print("=============================empty parent fleches")
             self.parent.fleches = []
         self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
@@ -39,9 +38,7 @@ class Fleche():
             rep = self.proie.recevoir_coup(self.force)
             self.parent.fleches.remove(self)
             if rep == 1:
-                print("==========================fleches clear")
                 self.parent.fleches.clear()
-                print("Dans fleche vider le parent ciblennemi")
                 self.parent.cibleennemi = None;
 
             # return self
@@ -139,7 +136,6 @@ class Perso():
 
 #perso
     def attaquer_ennemi(self):
-        print("attquer")
         rep = self.cibleennemi.recevoir_coup(self.force)
         if rep == 1:
             self.cibleennemi = None
@@ -149,11 +145,7 @@ class Perso():
 
     def recevoir_coup(self, force):
         self.mana -= force
-        print("Ouch")
         if self.mana < 1:
-            print("MORT")
-            print("id du perso mort :", self.id)
-            print("proprio:", self.parent.id)
             self.parent.annoncer_mort(self)
             return 1
 
@@ -352,7 +344,6 @@ class Perso():
 
         if dist <= self.vitesse:
             self.cible_contournement = None
-            print("je veux: ", self.action_precedente)
             self.actioncourante = self.action_precedente
 
 
@@ -420,8 +411,6 @@ class Archer(Perso):
         y = self.cibleennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        print("DISTANCE CALCULEE", dist)
-        print(self.distancefeu)
 
         if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "ciblerennemi"
@@ -431,9 +420,6 @@ class Archer(Perso):
     def attaquerennemi(self):
         if self.cibleennemi:
             self.delaifeu = self.delaifeu - 1
-            print("KAWABUNGA BABY")
-            print(" DELAI FEU : ", self.delaifeu)
-
             if self.delaifeu == 0:
                 id = get_prochain_id()
                 fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
@@ -441,7 +427,6 @@ class Archer(Perso):
                 self.delaifeu = self.delaifeumax
             if len(self.fleches) > 0:
                 for i in self.fleches:
-                    print("fleches :  ", i)
                     rep = i.bouger()
                 # if rep:
                 # self.cibleennemi.recevoir_coup(self.force)
@@ -520,8 +505,6 @@ class Ballista(Perso):
     def attaquerennemi(self):
         if self.cibleennemi:
             self.delaifeu = self.delaifeu -1
-            print("KAWABUNGA BABY")
-            print(" DELAI FEU : ",self.delaifeu)
             if self.delaifeu == 0:
 
                 id = get_prochain_id()
@@ -530,7 +513,6 @@ class Ballista(Perso):
                 self.delaifeu = self.delaifeumax
             if len(self.fleches) > 0:
                 for i in self.fleches:
-                    print("fleches :  ", i)
                     rep = i.bouger()
             # if rep:
                 # self.cibleennemi.recevoir_coup(self.force)
@@ -604,7 +586,6 @@ class Ouvrier(Perso):
     def cibler_proie(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
-        print(reponse)
         if reponse == "contourne":
             return "contourne"
         if reponse == "rendu":
@@ -644,7 +625,6 @@ class Ouvrier(Perso):
 
             try:
                 sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
-                print("sitecons", sitecons)
                 self.parent.installer_batiment(batiment)
             except:
                 print("batiment deja terminer")
@@ -672,7 +652,6 @@ class Ouvrier(Perso):
             self.javelots.append(Javelot(self, id, proie))
 
     def chercher_nouvelle_ressource(self, typ, idreg):
-        print("Je cherche nouvelle ressource")
         if typ != "baie" and typ != "daim" and typ != "ours":
             reg = self.parent.parent.regions[typ]
             if idreg in reg:
