@@ -349,8 +349,8 @@ class Perso():
     def get_cible_contournement(self):
         cases = self.get_map_contournement()
         #choisi la direction une seule fois
-        if self.contournements == 1:
-            self.get_directon_vers_position_visee()
+        # if self.contournements == 1:
+        self.get_directon_vers_position_visee()
 
         taille = self.parent.parent.taillecase
         if cases:
