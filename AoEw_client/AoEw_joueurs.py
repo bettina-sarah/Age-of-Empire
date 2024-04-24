@@ -33,7 +33,13 @@ class Joueur():
                                  "arbre": 0,
                                  "roche": 0,
                                  "aureus": 0,
-                                 "delai": 0}
+                                 "delai": 0},
+               "champstir": {"nourriture": 10,
+                                    "arbre": 10,
+                                    "roche": 10,
+                                    "aureus": 10,
+                                    "delai": 20}
+
                }
 
     prix_unite = {"ouvrier": {"nourriture": 10,
@@ -126,7 +132,8 @@ class Joueur():
                           "abri": {},
                           "caserne": {},
                           "usineballiste": {},
-                          "siteconstruction": {}}
+                          "siteconstruction": {},
+                          "champstir": {}}
 
         self.actions = {"creerperso": self.creer_perso,
                         "deplacer": self.deplacer,

@@ -54,7 +54,12 @@ class Partie():
                                  "arbre": 10,
                                  "roche": 5,
                                  "aureus": 1,
-                                 "delai": 80}
+                                 "delai": 80},
+               "champstir": {"nourriture": 10,
+                             "arbre": 10,
+                             "roche": 10,
+                             "aureus": 10,
+                             "delai": 20}
                }
 
     def __init__(self, parent, mondict):
@@ -76,7 +81,8 @@ class Partie():
         self.classesbatiments = {"maison": Usineballiste,  # change back maison
                                  "caserne": Caserne,
                                  "abri": Abri,
-                                 "usineballiste": Maison}
+                                 "usineballiste": Maison,
+                                 "champstir":Champstir}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,
