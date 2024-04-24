@@ -154,11 +154,6 @@ class Perso():
             reponse = self.etats_et_actions[self.actioncourante]()
 
 
-
-
-
-
-
     def deplacer(self, pos):
         self.position_visee = pos
         self.actioncourante = "bouger"
