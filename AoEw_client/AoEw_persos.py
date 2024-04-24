@@ -140,7 +140,7 @@ class Perso():
 
 #perso
     def attaquer_ennemi(self):
-        rep = self.cibleennemi.recevoir_coup(self.force)
+        rep = self.cibleennemi.recevoir_coup(self.force, self)
         if rep == 1:
             self.cibleennemi = None
             self.cible = None
@@ -149,6 +149,7 @@ class Perso():
 
     def recevoir_coup(self, force):
         self.mana -= force
+        print("----------------------------TU MA FRAPPE!!!!!!")
         if self.mana < 1:
             self.parent.annoncer_mort(self)
             return 1

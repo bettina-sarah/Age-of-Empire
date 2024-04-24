@@ -194,6 +194,12 @@ class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
         Animal.__init__(self, parent, id, x, y, tem, 10000, 20000)
         self.force=10
+        self.distancefeumax = 10
+        self.delaifeu = 20
+        self.delaifeumax = 20
+        self.cibleennemi = None
+        self.position_visee = None
+        self.image = 'ours' + self.dir
 
 
 
@@ -209,63 +215,88 @@ class Ours(Animal):
 
     # verifier range fonction qui va dans
 
-    # ***** FONCTIONS PERSO:
+    # ***** FONCTIONS faites par moi:
+
+    # def attaquer(self, ennemi):
+    #     self.cibleennemi = ennemi
+    #     x = self.cibleennemi.x
+    #     y = self.cibleennemi.y
+    #     pos_cible = x, y
+    #     self.cibler(ennemi)
+    #     dist = Helper.calcDistance(self.x, self.y, x, y)
+    #     if dist <= self.vitesse:
+    #         self.attaquer_ennemi()
+    #     else:
+    #         self.cibler(ennemi)
+    #
+    # def cibler(self, ennemi):
+    #     self.cible = ennemi
+    #     if self.cible:
+    #         self.position_visee = [self.cible.x, self.cible.y]
+    #         if self.x < self.position_visee[0]:
+    #             self.dir = "D"
+    #         else:
+    #             self.dir = "G"
+    #     else:
+    #         self.position_visee = None
+    #
+    #
+    # def attaquer_ennemi(self):
+    #     print("attquer de lours !!!")
+    #     rep = self.cibleennemi.recevoir_coup(self.force)
+    #     if rep == 1:
+    #         self.cibleennemi = None
+    #         self.cible = None
+    #
+    #         self.deplacer()
+
+#------------------ fonctions melee:
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.attaquer_ennemi()
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
         x = self.cibleennemi.x
         y = self.cibleennemi.y
-        pos_cible = x, y
-        self.cibler(ennemi)
+        self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        if dist <= self.vitesse:
+
+        if dist <= self.distancefeumax:
             self.attaquer_ennemi()
         else:
-            self.cibler(ennemi)
-
-    def cibler(self, ennemi):
-        self.cible = ennemi
-        if self.cible:
-            self.position_visee = [self.cible.x, self.cible.y]
-            if self.x < self.position_visee[0]:
-                self.dir = "D"
-            else:
-                self.dir = "G"
-        else:
-            self.position_visee = None
-
+            self.cibler()
 
     def attaquer_ennemi(self):
-        print("attquer de lours !!!")
-        rep = self.cibleennemi.recevoir_coup(self.force)
-        if rep == 1:
-            self.cibleennemi = None
-            self.cible = None
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("ours attaque LALA")
+            print(" DELAI FEU : ", self.delaifeu)
 
-            self.deplacer()
+            if self.delaifeu == 0:
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
 
 
 
 
-    #***** FONCTIONS OUVRIER
 
-    # def chasser_ramasser(self, objetcible, sontype, actiontype):
-    #     self.cible = objetcible
-    #     self.typeressource = sontype
-    #     self.position_visee = [self.cible.x, self.cible.y]
-    #     self.actioncourante = actiontype
-    #
-    # def cibler_proie(self):
-    #     self.position_visee = [self.cible.x, self.cible.y]
-    #     reponse = self.bouger()
-    #     print("reponse de bouger dans cibler proie", reponse)
-    #     if reponse == "contourne":
-    #         return "contourne"
-    #     if reponse == "rendu":
-    #         if self.typeressource == "daim" or self.typeressource == "eau" or self.typeressource == "ours":
-    #             self.actioncourante = "ramasserressource"
-    #     elif reponse <= self.champchasse and self.cible.en_vie:
-    #         self.actioncourante = "validerjavelot"
+
+
+
+
+
+
+
 
 
 
