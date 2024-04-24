@@ -39,22 +39,29 @@ class Partie():
                           "arbre": 20,
                           "roche": 20,
                           "aureus": 2,
-                          "delai": 50},
+                          "delai": 50,
+                          "objet": 0},
                "abri": {"nourriture": 10,
                         "arbre": 10,
                         "roche": 5,
                         "aureus": 1,
-                        "delai": 30},
+                        "delai": 30,
+                        "objet": 0
+                        },
                "caserne": {"nourriture": 10,
                            "arbre": 10,
                            "roche": 5,
                            "aureus": 1,
-                           "delai": 60},
+                           "delai": 60,
+                           "objet": 0
+                           },
                "usineballiste": {"nourriture": 10,
                                  "arbre": 10,
                                  "roche": 5,
                                  "aureus": 1,
-                                 "delai": 80}
+                                 "delai": 80,
+                                 "objet": 0
+                                 }
                }
 
     def __init__(self, parent, mondict):
@@ -94,14 +101,16 @@ class Partie():
                          "aureus": {},
                          "eau": {},
                          "marais": {},
-                         "baie": {}}
+                         "baie": {},
+                         "objet": {}}
         self.regions = {}
-
+                                #    nbr iteration, min3, ??
         self.regionstypes = [["arbre", 50, 20, 5, "forest green"],
                              ["eau", 10, 20, 12, "light blue"],
                              ["marais", 3, 8, 8, "DarkSeaGreen3"],
                              ["roche", 8, 3, 6, "gray60"],
-                             ["aureus", 12, 3, 4, "gold2"], ]
+                             ["aureus", 12, 3, 4, "gold2"],
+                             ["objet", 6, 3, 1, "gold2"]]
         self.creer_regions()
         self.creer_biotopes()
         self.creer_population(mondict)
@@ -122,8 +131,8 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
         for i in cartebatiment:
-            #pour contournement avec retour de ressource
-            if(batiment.montype == "maison"):
+            # pour contournement avec retour de ressource
+            if (batiment.montype == "maison"):
                 self.cartecase[i[1]][i[0]].montype = "batiment-m"
             else:
                 self.cartecase[i[1]][i[0]].montype = "batiment"
@@ -154,6 +163,7 @@ class Partie():
         self.creer_biotope("eau", "eau", Eau)
         self.creer_biotope("marais", "marais", Marais)
         self.creer_biotope("aureus", "aureus", Aureus)
+        self.creer_biotope("objet", "objet", Objet)
 
     def creer_biotope(self, region, ressource, typeclasse):  # creation des forets
         typeressource = typeclasse.typeressource
@@ -406,7 +416,7 @@ class Partie():
         if cy == self.taillecarte:
             cy -= 1
         # print(self.cartecase[cy][cx])
-        return self.cartecase[cy+offsetY][cx+offsetX]  # [cx,cy]
+        return self.cartecase[cy + offsetY][cx + offsetX]  # [cx,cy]
 
     def get_carte_bbox(self, x1, y1, x2, y2):  # case d'origine en cx et cy,  pour position pixels x, y
         # case d'origine en cx et cy,  pour position pixels x, y
@@ -477,7 +487,7 @@ class Partie():
                     t1.append(case)
         return t1
 
-    def get_carte_contournement(self, x, y, dx,dy):
+    def get_carte_contournement(self, x, y, dx, dy):
         cx = int(x / self.taillecase)
         cy = int(y / self.taillecase)
         # possible d'etre dans une case trop loin
@@ -502,7 +512,6 @@ class Partie():
         casecoinx2 = cx + dx
         casecoiny2 = cy + dy
 
-
         distmax = (10 * self.taillecase) + self.demicase
 
         t1 = []
@@ -516,7 +525,6 @@ class Partie():
                     t1.append(case)
         return t1
         pass
-
 
     def eliminer_ressource(self, type, ress):
         if ress.idregion:
