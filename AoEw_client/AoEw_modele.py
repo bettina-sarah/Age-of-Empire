@@ -59,7 +59,17 @@ class Partie():
                              "arbre": 10,
                              "roche": 10,
                              "aureus": 10,
-                             "delai": 20}
+                             "delai": 20},
+               "mur_h": {"nourriture": 5,
+                             "arbre": 5,
+                             "roche": 5,
+                             "aureus": 5,
+                             "delai": 5},
+               "mur_v": {"nourriture": 5,
+                         "arbre": 5,
+                         "roche": 5,
+                         "aureus": 5,
+                         "delai": 5},
                }
 
     def __init__(self, parent, mondict):
@@ -82,7 +92,9 @@ class Partie():
                                  "caserne": Caserne,
                                  "abri": Abri,
                                  "usineballiste": Maison,
-                                 "champstir":Champstir}
+                                 "champstir":Champstir,
+                                 "mur_h":MurH,
+                                 "mur_v":MurV,}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,

@@ -30,60 +30,70 @@ class Joueur():
                                  "aureus": 1,
                                  "delai": 80},
                "siteconstruction": {"nourriture": 0,
-                                 "arbre": 0,
-                                 "roche": 0,
-                                 "aureus": 0,
-                                 "delai": 0},
+                                    "arbre": 0,
+                                    "roche": 0,
+                                    "aureus": 0,
+                                    "delai": 0},
                "champstir": {"nourriture": 10,
-                                    "arbre": 10,
-                                    "roche": 10,
-                                    "aureus": 10,
-                                    "delai": 20}
+                             "arbre": 10,
+                             "roche": 10,
+                             "aureus": 10,
+                             "delai": 20},
+               "mur_h": {"nourriture": 5,
+                         "arbre": 5,
+                         "roche": 5,
+                         "aureus": 5,
+                         "delai": 5},
+               "mur_v": {"nourriture": 5,
+                         "arbre": 5,
+                         "roche": 5,
+                         "aureus": 5,
+                         "delai": 5},
 
                }
 
     prix_unite = {"ouvrier": {"nourriture": 10,
-                          "arbre": 10,
-                          "roche": 10,
-                          "aureus": 2,
-                          "delai": 50},
-               "soldat": {"nourriture": 10,
-                        "arbre": 10,
-                        "roche": 5,
-                        "aureus": 1,
-                        "delai": 30},
-               "chevalier": {"nourriture": 10,
-                           "arbre": 10,
-                           "roche": 5,
-                           "aureus": 1,
-                           "delai": 60},
-               "druide": {"nourriture": 10,
-                                 "arbre": 10,
-                                 "roche": 35,
-                                 "aureus": 31,
-                                 "delai": 80},
+                              "arbre": 10,
+                              "roche": 10,
+                              "aureus": 2,
+                              "delai": 50},
+                  "soldat": {"nourriture": 10,
+                             "arbre": 10,
+                             "roche": 5,
+                             "aureus": 1,
+                             "delai": 30},
+                  "chevalier": {"nourriture": 10,
+                                "arbre": 10,
+                                "roche": 5,
+                                "aureus": 1,
+                                "delai": 60},
+                  "druide": {"nourriture": 10,
+                             "arbre": 10,
+                             "roche": 35,
+                             "aureus": 31,
+                             "delai": 80},
                   "druide-ours": {"nourriture": 15,
-                                 "arbre": 12,
-                                 "roche": 35,
-                                 "aureus": 34,
-                                 "delai": 80},
-               "ballista": {"nourriture": 30,
-                                 "arbre": 30,
-                                 "roche": 30,
-                                 "aureus": 30,
-                                 "delai": 30},
-               "ingenieur": {"nourriture": 30,
-                            "arbre": 30,
-                            "roche": 30,
-                            "aureus": 30,
-                            "delai": 30},
-                  "archer": {"nourriture": 35,
-                                "arbre": 35,
-                                "roche": 35,
+                                  "arbre": 12,
+                                  "roche": 35,
+                                  "aureus": 34,
+                                  "delai": 80},
+                  "ballista": {"nourriture": 30,
+                               "arbre": 30,
+                               "roche": 30,
+                               "aureus": 30,
+                               "delai": 30},
+                  "ingenieur": {"nourriture": 30,
+                                "arbre": 30,
+                                "roche": 30,
                                 "aureus": 30,
                                 "delai": 30},
+                  "archer": {"nourriture": 35,
+                             "arbre": 35,
+                             "roche": 35,
+                             "aureus": 30,
+                             "delai": 30},
 
-               }
+                  }
 
     classespersos = {"ouvrier": Ouvrier,
                      "soldat": Soldat,
@@ -127,13 +137,15 @@ class Joueur():
                        "ballista": {},
                        }
 
-
         self.batiments = {"maison": {},
                           "abri": {},
                           "caserne": {},
                           "usineballiste": {},
                           "siteconstruction": {},
-                          "champstir": {}}
+                          "champstir": {},
+                          "mur_h": {},
+                          "mur_v": {}
+                          }
 
         self.actions = {"creerperso": self.creer_perso,
                         "deplacer": self.deplacer,
@@ -151,7 +163,7 @@ class Joueur():
         self.persos[perso.montype].pop(perso.id)
 
     def annoncer_mort_batiment(self, perso):
-        
+
         print("batiment mort!")
         # retirer de la minimap
         # placer les case à plaine
@@ -161,17 +173,14 @@ class Joueur():
         self.parent.parent.supprimer_batiment(perso.id, self.nom)
         self.parent.reset_case_batiment(perso.cartebatiment)
 
-
     ##mourir handled par le joueur
     def eliminer_joueur(self):
-       self.parent.eliminer_joueur()
-
-
+        self.parent.eliminer_joueur()
 
     def attaquer(self, param):
         print("PARAM", param)
         attaquants, attaque = param
-        print("Joueurs attaquants et attaque",attaquants, attaque)
+        print("Joueurs attaquants et attaque", attaquants, attaque)
 
         nomjoueur, idperso, sorte = attaque
 
@@ -195,11 +204,11 @@ class Joueur():
         # ajouter parametre nom de l'Abandonneux, et si c'est moi, envoyer une action
         # quitter au serveur et faire destroy
         print("param de abandonner")
-        print( param)
+        print(param)
         msg = param[0]
 
         self.parent.mort = param[1]
-        #update everyone`s list
+        # update everyone`s list
 
         self.parent.montrer_msg_general(msg)
 
@@ -296,6 +305,7 @@ class Joueur():
 
             self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                            sorteperso)
+
     def test(self):
         self.batiments = {"maison": {},
                           "abri": {},
@@ -307,11 +317,10 @@ class Joueur():
         y = batiment.y + (random.randrange(50) - 15)
 
         self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
-                                                                               sorteperso)
+                                                                       sorteperso)
         # else:
         #     print("dans le else du creer_perso")
         #     self.parent.parent.vue.ajouter_selection(self.event)
-            # mestags = self.parent.parent.vue.canevas.gettags(CURRENT)
-            # self.parent.parent.vue.action.ciblechoisi = mestags
-            # self.parent.parent.vue.action.attaquer()
-
+        # mestags = self.parent.parent.vue.canevas.gettags(CURRENT)
+        # self.parent.parent.vue.action.ciblechoisi = mestags
+        # self.parent.parent.vue.action.attaquer()
