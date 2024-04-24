@@ -376,6 +376,56 @@ class Soldat(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
+        self.distancefeumax = 10
+        self.delaifeu = 20
+        self.delaifeumax = 20
+        self.cibleennemi = None
+        self.position_visee = None
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+
+        if dist <= self.distancefeumax: # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
 
 
 class Archer(Perso):
