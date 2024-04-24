@@ -141,8 +141,10 @@ class Joueur():
 
     def annoncer_mort(self, perso):
         print("==================pop suite a mort")
-        self.persos[perso.montype].pop(perso.id)
-
+        try:
+            self.persos[perso.montype].pop(perso.id)
+        except:
+            print("Deja Mort")
     def annoncer_mort_batiment(self, perso):
         
         print("batiment mort!")

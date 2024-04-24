@@ -396,8 +396,8 @@ class Archer(Perso):
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
-                                 "contourne": self.contourne
-
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
                                  }
 
     def cibler(self):
@@ -411,7 +411,8 @@ class Archer(Perso):
         # else:
         #     self.dir = self.dir + "H"
 
-        self.image = self.image[:-2] + self.dir
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
@@ -421,12 +422,11 @@ class Archer(Perso):
         dist = Helper.calcDistance(self.x, self.y, x, y)
         print("DISTANCE CALCULEE", dist)
         print(self.distancefeu)
-        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
-            self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
-        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+
+        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "ciblerennemi"
-            print("self.actioncourante = ciblerennemi")
+        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
 
     def attaquerennemi(self):
         if self.cibleennemi:
