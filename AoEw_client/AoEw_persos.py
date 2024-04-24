@@ -200,6 +200,37 @@ class Perso():
             else:
                 return dist
 
+    def bouger_vers_ennemi(self):
+        if self.cibleennemi:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.cibleennemi.x
+            y = self.cibleennemi.y
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.x, self.y = x1, y1
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.distancefeumax:
+                if self.actioncourante == "bougerversennemi":
+                    self.actioncourante = "ciblerennemi"
+                return "rendu"
+            else:
+                return dist
+
+
+
     def get_directon_vers_position_visee(self):
         if self.position_visee:
             if self.x < self.position_visee[0]:
@@ -274,7 +305,7 @@ class Perso():
             if i.montype == "batiment":
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
             else:
                 cases_cibles.append(i)
@@ -366,6 +397,7 @@ class Archer(Perso):
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne
+
                                  }
 
     def cibler(self):
@@ -454,7 +486,8 @@ class Ballista(Perso):
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
-                                 "contourne": self.contourne
+                                 "contourne": self.contourne,
+                                 "bougerversennemi":self.bouger_vers_ennemi
                                  }
 
     def cibler(self):
@@ -469,6 +502,7 @@ class Ballista(Perso):
             self.dir = self.dir + "H"
 
         self.image = self.image[:-2] + self.dir
+        self.actioncourante = "attaquerennemi"
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
@@ -478,9 +512,9 @@ class Ballista(Perso):
         dist = Helper.calcDistance(self.x, self.y, x, y)
 
         if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
-            self.actioncourante = "attaquerennemi"
-        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "ciblerennemi"
+        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
 
 
     def attaquerennemi(self):
