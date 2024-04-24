@@ -192,7 +192,84 @@ class Animal():
 
 class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
-        Animal.__init__(self, parent, id, x, y, tem, 100, 20)
+        Animal.__init__(self, parent, id, x, y, tem, 10000, 20000)
+        self.force=10
+
+
+
+    def recevoir_coup(self, dommage, ennemi):
+        self.vie -= dommage
+        self.etat == "aggressif"
+        self.attaquer(ennemi)
+        print("Ouch ours!")
+        if self.vie < 1:
+            print("MORT")
+            self.mourir()
+            return 1
+
+    # verifier range fonction qui va dans
+
+    # ***** FONCTIONS PERSO:
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        pos_cible = x, y
+        self.cibler(ennemi)
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        if dist <= self.vitesse:
+            self.attaquer_ennemi()
+        else:
+            self.cibler(ennemi)
+
+    def cibler(self, ennemi):
+        self.cible = ennemi
+        if self.cible:
+            self.position_visee = [self.cible.x, self.cible.y]
+            if self.x < self.position_visee[0]:
+                self.dir = "D"
+            else:
+                self.dir = "G"
+        else:
+            self.position_visee = None
+
+
+    def attaquer_ennemi(self):
+        print("attquer de lours !!!")
+        rep = self.cibleennemi.recevoir_coup(self.force)
+        if rep == 1:
+            self.cibleennemi = None
+            self.cible = None
+
+            self.deplacer()
+
+
+
+
+    #***** FONCTIONS OUVRIER
+
+    # def chasser_ramasser(self, objetcible, sontype, actiontype):
+    #     self.cible = objetcible
+    #     self.typeressource = sontype
+    #     self.position_visee = [self.cible.x, self.cible.y]
+    #     self.actioncourante = actiontype
+    #
+    # def cibler_proie(self):
+    #     self.position_visee = [self.cible.x, self.cible.y]
+    #     reponse = self.bouger()
+    #     print("reponse de bouger dans cibler proie", reponse)
+    #     if reponse == "contourne":
+    #         return "contourne"
+    #     if reponse == "rendu":
+    #         if self.typeressource == "daim" or self.typeressource == "eau" or self.typeressource == "ours":
+    #             self.actioncourante = "ramasserressource"
+    #     elif reponse <= self.champchasse and self.cible.en_vie:
+    #         self.actioncourante = "validerjavelot"
+
+
+
+
 class Daim(Animal):
     def __init__(self, parent, id, x, y, tem='daim'):
         Animal.__init__(self, parent, id, x, y, tem, 40, 10)

@@ -80,14 +80,14 @@ class Javelot():
         if dist <= self.demitaille:
             # tue daim
             self.parent.javelots.remove(self)
-            if self.proie.recevoir_coup(self.dommage) == 1:
+            if self.proie.recevoir_coup(self.dommage, self.parent) == 1:
                 self.parent.actioncourante = "ciblerressource"
 
 
         else:
             dist = Helper.calcDistance(self.x, self.y, self.proiex, self.proiey)
             if dist < self.vitesse:
-                self.proie.recevoir_coup(self.dommage)
+                self.proie.recevoir_coup(self.dommage, self.parent)
                 self.parent.javelots.remove(self)
                 self.parent.actioncourante = "ciblerproie"
 
