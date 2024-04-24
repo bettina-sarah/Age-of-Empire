@@ -175,12 +175,14 @@ class Perso():
             ang = Helper.calcAngle(self.x, self.y, x, y)
             x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
             # print("avant : ", self.x,"/", self.y )
             # self.x, self.y = self.test_etat_du_sol(x1, y1)
             if self.test_etat_du_sol(x1, y1):
                 self.action_precedente = self.actioncourante
                 self.actioncourante = "contourne"
+
+                self.contournements += 1
+                print("contournement #:",self.contournements)
                 return "contourne"
             self.x, self.y = x1,y1
             ######## FIN DE TEST POUR SURFACE MARCHEE
@@ -191,11 +193,13 @@ class Perso():
             if dist <= self.vitesse:
                 if self.actioncourante == "bouger":
                     self.actioncourante = None
+                self.contournements = 0
                 return "rendu"
             else:
                 return dist
 
     def get_directon_vers_position_visee(self):
+        # utilisé pour collision, demander permission avant DE BRISER MON CODE
         if self.position_visee:
             if self.x < self.position_visee[0]:
                 self.dir = "D"
@@ -269,7 +273,7 @@ class Perso():
             if i.montype == "batiment":
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
             else:
                 cases_cibles.append(i)
@@ -322,7 +326,10 @@ class Perso():
 
     def get_cible_contournement(self):
         cases = self.get_map_contournement()
-        self.get_directon_vers_position_visee()
+        #choisi la direction une seule fois
+        if self.contournements == 1:
+            self.get_directon_vers_position_visee()
+
         taille = self.parent.parent.taillecase
         if cases:
             if self.dir == "GH":
