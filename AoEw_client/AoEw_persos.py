@@ -79,7 +79,6 @@ class Javelot():
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
         if dist <= self.demitaille:
             # tue daim
-
             self.parent.javelots.remove(self)
             if self.proie.recevoir_coup(self.dommage) == 1:
                 self.parent.actioncourante = "ciblerressource"
@@ -392,8 +391,7 @@ class Archer(Perso):
         y = self.cibleennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
-        print("DISTANCE CALCULEE", dist)
-        print(self.distancefeu)
+
         if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
             print("self.actioncourante = attaquerennemi")
@@ -575,13 +573,13 @@ class Ouvrier(Perso):
     def cibler_proie(self):
         self.position_visee = [self.cible.x, self.cible.y]
         reponse = self.bouger()
-        print(reponse)
+        print("reponse de bouger dans cibler proie", reponse)
         if reponse == "contourne":
             return "contourne"
         if reponse == "rendu":
             if self.typeressource == "daim" or self.typeressource == "eau" or self.typeressource == "ours":
                 self.actioncourante = "ramasserressource"
-        elif reponse <= self.champchasse and self.cible.etat == "vivant":
+        elif reponse <= self.champchasse and self.cible.en_vie:
             self.actioncourante = "validerjavelot"
 
     def valider_javelot(self):

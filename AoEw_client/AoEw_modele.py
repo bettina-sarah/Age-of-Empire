@@ -163,7 +163,6 @@ class Partie():
             # for listecase in self.regions[region]:
             # nressource = random.randrange(int(len(listecases) / 3)) + int((len(listecases) / 5))
             nressource = int((random.randrange(len(listecases)) / 3) + 1)
-            print("RESSOURCES N", nressource)
             while nressource:
                 cases = list(listecases.keys())
                 pos = listecases[random.choice(cases)]

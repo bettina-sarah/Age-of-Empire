@@ -106,13 +106,13 @@ class Arbre(Biotope):
 
 
 class Animal():
-    def __init__(self, parent, id, x, y, imgdep, valeur, vie, notyperegion=-1, idregion=None, etat='vivant'):
+    def __init__(self, parent, id, x, y, imgdep, valeur, vie, notyperegion=-1, idregion=None):
         self.parent = parent
         self.id = id
         self.idregion = idregion
         self.x = x
         self.y = y
-        self.etat = etat
+        self.etat = "neutre"
         self.position_visee = None
         self.angle = None
         self.dir = "GB"
@@ -122,9 +122,11 @@ class Animal():
         self.montype = imgdep
         self.vie = vie
         self.valeur = valeur
+        self.en_vie = True
 
     def mourir(self):
-        self.etat = "mort"
+        #self.etat = "mort"
+        self.en_vie = False
         print("MORT!!!")
         self.position_visee = None
 
@@ -159,7 +161,7 @@ class Animal():
                 self.cible = None
                 self.position_visee = None
         else:
-            if self.etat == "vivant":
+            if self.en_vie:
                 self.trouver_cible()
 
     def trouver_cible(self):
@@ -191,7 +193,6 @@ class Animal():
 class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
         Animal.__init__(self, parent, id, x, y, tem, 100, 20)
-
 class Daim(Animal):
     def __init__(self, parent, id, x, y, tem='daim'):
         Animal.__init__(self, parent, id, x, y, tem, 40, 10)
