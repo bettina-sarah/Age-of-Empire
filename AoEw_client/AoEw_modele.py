@@ -70,6 +70,11 @@ class Partie():
                          "roche": 5,
                          "aureus": 5,
                          "delai": 5},
+               "tour": {"nourriture": 25,
+                        "arbre": 25,
+                        "roche": 25,
+                        "aureus": 25,
+                        "delai": 15},
                }
 
     def __init__(self, parent, mondict):
@@ -94,7 +99,8 @@ class Partie():
                                  "usineballiste": Maison,
                                  "champstir":Champstir,
                                  "mur_h":MurH,
-                                 "mur_v":MurV,}
+                                 "mur_v":MurV,
+                                 "tour":Tour}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,

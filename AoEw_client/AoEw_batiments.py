@@ -95,3 +95,11 @@ class MurV(Batiment):
         self.maxperso = 20
         self.perso = 0
 
+class Tour(Batiment):
+    def __init__(self, parent, id, couleur, x, y, montype):
+        Batiment.__init__(self, parent, id, x, y)
+        self.image = couleur[0] + "_" + montype
+        self.montype = montype
+        self.maxperso = 20
+        self.perso = 0
+

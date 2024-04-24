@@ -409,7 +409,7 @@ class Vue():
         coul = self.modele.joueurs[self.parent.nom_joueur_local].couleur
         self.cadrejeuinfo.config(bg=coul[1])
         self.creer_aide()
-        self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste", "champstir", "mur_h"])
+        self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste", "champstir", "mur_h", "tour"])
 
         self.creer_chatter()
         # on affiche les maisons, point de depart des divers joueurs

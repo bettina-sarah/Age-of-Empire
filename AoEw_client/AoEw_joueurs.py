@@ -49,6 +49,11 @@ class Joueur():
                          "roche": 5,
                          "aureus": 5,
                          "delai": 5},
+               "tour": {"nourriture": 25,
+                         "arbre": 25,
+                         "roche": 25,
+                         "aureus": 25,
+                         "delai": 15},
 
                }
 
@@ -144,8 +149,8 @@ class Joueur():
                           "siteconstruction": {},
                           "champstir": {},
                           "mur_h": {},
-                          "mur_v": {}
-                          }
+                          "mur_v": {},
+                          "tour":{}}
 
         self.actions = {"creerperso": self.creer_perso,
                         "deplacer": self.deplacer,
