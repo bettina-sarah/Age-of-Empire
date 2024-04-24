@@ -58,6 +58,7 @@ class Javelot():
         self.proie = proie
         self.proiex = self.proie.x
         self.proiey = self.proie.y
+        self.dommage = 2
         self.x = self.parent.x
         self.y = self.parent.y
         self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
@@ -78,12 +79,16 @@ class Javelot():
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
         if dist <= self.demitaille:
             # tue daim
-            self.parent.actioncourante = "ciblerressource"
+
             self.parent.javelots.remove(self)
-            self.proie.mourir()
+            if self.proie.recevoir_coup(self.dommage) == 1:
+                self.parent.actioncourante = "ciblerressource"
+
+
         else:
             dist = Helper.calcDistance(self.x, self.y, self.proiex, self.proiey)
             if dist < self.vitesse:
+                self.proie.recevoir_coup(self.dommage)
                 self.parent.javelots.remove(self)
                 self.parent.actioncourante = "ciblerproie"
 

@@ -106,7 +106,7 @@ class Arbre(Biotope):
 
 
 class Animal():
-    def __init__(self, parent, id, x, y, imgdep, valeur, notyperegion=-1, idregion=None, etat='vivant'):
+    def __init__(self, parent, id, x, y, imgdep, valeur, vie, notyperegion=-1, idregion=None, etat='vivant'):
         self.parent = parent
         self.id = id
         self.idregion = idregion
@@ -120,12 +120,21 @@ class Animal():
         self.img = self.nomimg + self.dir
         self.vitesse = random.randrange(3) + 3
         self.montype = imgdep
-
+        self.vie = vie
         self.valeur = valeur
 
     def mourir(self):
         self.etat = "mort"
+        print("MORT!!!")
         self.position_visee = None
+
+    def recevoir_coup(self,dommage):
+        self.vie -= dommage
+        print("Ouch")
+        if self.vie < 1:
+            print("MORT")
+            self.mourir()
+            return 1
 
     def deplacer(self):
         if self.position_visee:
@@ -181,92 +190,11 @@ class Animal():
 
 class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
-        Animal.__init__(self, parent, id, x, y, tem, 100)
+        Animal.__init__(self, parent, id, x, y, tem, 100, 20)
 
 class Daim(Animal):
     def __init__(self, parent, id, x, y, tem='daim'):
-        Animal.__init__(self, parent, id, x, y, tem, 40)
+        Animal.__init__(self, parent, id, x, y, tem, 40, 10)
 
-
-
-
-
-
-
-
-
-
-
-# class Daim():
-#     def __init__(self, parent, id, x, y, notyperegion=-1, idregion=None):
-#         self.parent = parent
-#         self.id = id
-#         self.etat = "vivant"
-#         self.nomimg = "daim"
-#         self.montype = "daim"
-#         self.idregion = idregion
-#         self.img = ""
-#         self.x = x
-#         self.y = y
-#         self.valeur = 40
-#         self.position_visee = None
-#         self.angle = None
-#         self.dir = "GB"
-#         self.img = self.nomimg + self.dir
-#         self.vitesse = random.randrange(3) + 3
-#
-#     def mourir(self):
-#         self.etat = "mort"
-#         self.position_visee = None
-#
-#     def deplacer(self):
-#         if self.position_visee:
-#             x = self.position_visee[0]
-#             y = self.position_visee[1]
-#             x1, y1 = Helper.getAngledPoint(self.angle, self.vitesse, self.x, self.y)
-#             # probleme potentiel de depasser la bordure et de ne pas trouver la case suivante
-#             case = self.parent.trouver_case(x1, y1)
-#             # if case[0]>self.parent.taillecarte or case[0]<0:
-#             #    self.cible=None
-#             # elif case[1]>self.parent.taillecarte or case[1]<0:
-#             #    self.cible=None
-#             # else:
-#             if case.montype != "plaine":
-#                 pass
-#                 # print("marche dans ",self.parent.regionstypes[self.parent.cartecase[case[1]][case[0]]])
-#             # changer la vitesse tant qu'il est sur un terrain irregulier
-#             # FIN DE TEST POUR SURFACE MARCHEE
-#             self.x, self.y = x1, y1
-#             dist = Helper.calcDistance(self.x, self.y, x, y)
-#             if dist <= self.vitesse:
-#                 self.cible = None
-#                 self.position_visee = None
-#         else:
-#             if self.etat == "vivant":
-#                 self.trouver_cible()
-#
-#     def trouver_cible(self):
-#         n = 1
-#         while n:
-#             x = (random.randrange(100) - 50) + self.x
-#             y = (random.randrange(100) - 50) + self.y
-#             case = self.parent.trouver_case(x, y)
-#             # if case[0]>self.parent.taillecarte or case[0]<0:
-#             #    continue
-#             # if case[1]>self.parent.taillecarte or case[1]<0:
-#             #    continue
-#
-#             if case.montype == "plaine":
-#                 self.position_visee = [x, y]
-#                 n = 0
-#         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
-#         if self.x < self.position_visee[0]:
-#             self.dir = "D"
-#         else:
-#             self.dir = "G"
-#         if self.y < self.position_visee[1]:
-#             self.dir = self.dir + "B"
-#         else:
-#             self.dir = self.dir + "H"
-#         self.img = self.nomimg + self.dir
+# a ajouter etat neutre/aggresif ! maintenant vivant mort...
 
