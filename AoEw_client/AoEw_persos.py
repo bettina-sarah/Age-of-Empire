@@ -375,10 +375,13 @@ class Perso():
 class Soldat(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        self.force = 20
-        self.distancefeumax = 10
+        self.force = 25
+        self.distancefeumax = 20
         self.delaifeu = 20
         self.delaifeumax = 20
+        self.champvision = 100
+        self.vitesse = 5
+        self.mana = 100
         self.cibleennemi = None
         self.position_visee = None
         self.etats_et_actions = {"bouger": self.bouger,
@@ -418,8 +421,10 @@ class Soldat(Perso):
             self.delaifeu = self.delaifeu - 1
             print("KAWABUNGA BABY")
             print(" DELAI FEU : ", self.delaifeu)
-
+            if not self.image[-1] == "A":
+                self.image = self.image + "A"
             if self.delaifeu == 0:
+                self.image = self.image[:-1]
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
                 if rep:
@@ -435,10 +440,13 @@ class Archer(Perso):
         self.dir = "D"
         # self.cible = None
         # self.angle = None
-        self.distancefeumax = 360
-        self.distancefeu = 360
-        self.delaifeu = 30
-        self.delaifeumax = 30
+        self.distancefeumax = 200
+        self.distancefeu = 200
+        self.delaifeu = 25
+        self.delaifeumax = 25
+        self.champvision = 100
+        self.vitesse = 5
+        self.mana = 80
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None
@@ -505,6 +513,9 @@ class Chevalier(Perso):
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
+        self.champvision = 150
+        self.vitesse = 10
+        self.mana = 150
         self.cibleennemi = None
         self.position_visee = None
         self.etats_et_actions = {"bouger": self.bouger,
@@ -682,8 +693,12 @@ class Ballista(Perso):
         self.angle = None
         self.distancefeumax = 360
         self.distancefeu = 360
-        self.delaifeu = 30
-        self.delaifeumax = 30
+        self.delaifeu = 90
+        self.force = 80
+        self.champvision = 100
+        self.vitesse = 3
+        self.mana = 200
+        self.delaifeumax = 90
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None
