@@ -239,6 +239,11 @@ class Joueur():
                     self.persos[i][j].attaquer(ennemi)
                     # j.attaquer(ennemi)
 
+    def soigner(self, param):
+        soigneur, cible= param
+        print("soigner ",soigneur)
+        print("cible ",cible)
+
     # changer a mort
     def abandonner(self, param):
         # ajouter parametre nom de l'Abandonneux, et si c'est moi, envoyer une action

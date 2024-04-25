@@ -10,7 +10,7 @@ class Fleche():
         self.id = id
         self.vitesse = 18
         self.taille = 20
-        self.force = 30 ##A REMMETTRE A 10
+        self.force = 30  ##A REMMETTRE A 10
         self.proie = proie
         self.proiex = self.proie.x
         self.proiey = self.proie.y
@@ -99,6 +99,7 @@ class Perso():
         self.cible = None
         self.position_visee = None
         self.cibleennemi = None
+        self.manaMax = 100
         self.mana = 100
         self.force = 100
         self.champvision = 100
@@ -109,7 +110,7 @@ class Perso():
                                  "ciblerennemi": None,
                                  "contourne": self.contourne}
 
-        #contournement
+        # contournement
         self.action_precedente = None
         self.cible_contournement = None
         self.cibles_contournement_precedentes = []
@@ -119,7 +120,6 @@ class Perso():
         self.contournement_range = 5
 
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
-
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
@@ -133,8 +133,7 @@ class Perso():
         else:
             self.actioncourante = "ciblerennemi"
 
-
-#perso
+    # perso
     def attaquer_ennemi(self):
         rep = self.cibleennemi.recevoir_coup(self.force)
         if rep == 1:
@@ -149,10 +148,16 @@ class Perso():
             self.parent.annoncer_mort(self)
             return 1
 
+    def recevoir_soin(self, soin):
+        if self.mana + soin >= self.manaMax:
+            self.mana = self.manaMax
+        else:
+            self.mana += soin
+            return 1
+
     def jouer_prochain_coup(self):
         if self.actioncourante:
             reponse = self.etats_et_actions[self.actioncourante]()
-
 
     def deplacer(self, pos):
         self.position_visee = pos
@@ -174,7 +179,7 @@ class Perso():
                 self.action_precedente = self.actioncourante
                 self.actioncourante = "contourne"
                 return "contourne"
-            self.x, self.y = x1,y1
+            self.x, self.y = x1, y1
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
@@ -216,8 +221,6 @@ class Perso():
             else:
                 return dist
 
-
-
     def get_directon_vers_position_visee(self):
         if self.position_visee:
             if self.x < self.position_visee[0]:
@@ -229,7 +232,6 @@ class Perso():
                 self.dir += "B"
             else:
                 self.dir += "H"
-
 
     def get_directon_contournement(self, x1, y1):
         # suis-je plus près de ma cible sur l'axe des x ou y
@@ -254,8 +256,6 @@ class Perso():
 
         # return  self.get_directon_contournement()
 
-
-
     def cibler(self, obj):
         self.cible = obj
         if obj:
@@ -267,7 +267,6 @@ class Perso():
             self.image = self.image[:-1] + self.dir
         else:
             self.position_visee = None
-
 
     def get_map_contournement(self):
         x1, y1 = self.x, self.y
@@ -283,10 +282,10 @@ class Perso():
 
         cases_cibles = []
         # trouve si on frappe un mur à l'horinzontal ou vertial
-        if self.get_directon_contournement(x1,y1): #horizontal
-            cases = self.parent.parent.get_carte_contournement(x1, y1, 1,self.contournement_range)
-        else: #vertical
-            cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
+        if self.get_directon_contournement(x1, y1):  # horizontal
+            cases = self.parent.parent.get_carte_contournement(x1, y1, 1, self.contournement_range)
+        else:  # vertical
+            cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range, 1)
 
         for i in cases:
             if i.montype == "batiment":
@@ -334,13 +333,12 @@ class Perso():
             return
 
         ang = Helper.calcAngle(self.x, self.y, x, y)
-        self.x, self.y  = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+        self.x, self.y = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, x, y)
 
         if dist <= self.vitesse:
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
-
 
     def get_cible_contournement(self):
         cases = self.get_map_contournement()
@@ -348,14 +346,13 @@ class Perso():
         taille = self.parent.parent.taillecase
         if cases:
             if self.dir == "GH":
-                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
+                self.cible_contournement = cases[0].x * taille, cases[0].y * taille
             elif self.dir == "DH":
-                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+                self.cible_contournement = cases[-1].x * taille, cases[-1].y * taille
             elif self.dir == "GB":
-                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
+                self.cible_contournement = cases[0].x * taille, cases[0].y * taille
             elif self.dir == "DB":
-                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
-
+                self.cible_contournement = cases[-1].x * taille, cases[-1].y * taille
 
 
 class Soldat(Perso):
@@ -395,7 +392,7 @@ class Soldat(Perso):
         dist = Helper.calcDistance(self.x, self.y, x, y)
         print("DISTANCE CALCULEE", dist)
 
-        if dist <= self.distancefeumax: # la distance fonctionne, mais augmenter la distancefeu
+        if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "attaquerennemi"
             print("self.actioncourante = attaquerennemi")
         else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
@@ -465,9 +462,9 @@ class Archer(Perso):
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
 
-        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "ciblerennemi"
-        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "bougerversennemi"
 
     def attaquerennemi(self):
@@ -549,6 +546,78 @@ class Druide(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
+        self.soin_mana = 1
+        self.distancefeumax = 10
+        self.delaifeu = 20
+        self.delaifeumax = 20
+
+        self.delaisoin = 5
+        self.delaisoinmax = 5
+        self.cibleennemi = None
+        self.cible_soin = None
+        self.position_visee = None
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+
+        if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
+
+    def soigner(self):
+        if self.cible_soin:
+            self.delaisoin = self.delaisoin - 1
+            print("dans soin")
+            print("delais soin:", self.delaisoin)
+            if self.delaisoin == 0:
+                rep = self.cible_soin.recevoir_soin(self.soin_force)
+                self.delaisoin = self.delaisoinmax
+                if rep:
+                    self.actioncourante = None
+
+
+class DruideOurs(Perso):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
+        Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+        self.force = 20
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
@@ -601,63 +670,6 @@ class Druide(Perso):
                 # self.fleches.remove(rep)
 
 
-class DruideOurs(Perso):
-    def __init__(self, parent, id, maison, couleur, x, y, montype):
-        Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        self.force = 20
-        self.distancefeumax = 10
-        self.delaifeu = 20
-        self.delaifeumax = 20
-        self.cibleennemi = None
-        self.position_visee = None
-        self.etats_et_actions = {"bouger": self.bouger,
-                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
-                                 "ciblerennemi": self.cibler,
-                                 "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
-                                 }
-
-    def cibler(self):
-        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
-        if self.x < self.position_visee[0]:
-            self.dir = "D"
-        else:
-            self.dir = "G"
-
-        self.image = self.image[:-1] + self.dir
-        self.actioncourante = "attaquerennemi"
-
-    def attaquer(self, ennemi):
-        self.cibleennemi = ennemi
-        x = self.cibleennemi.x
-        y = self.cibleennemi.y
-        self.position_visee = [x, y]
-        dist = Helper.calcDistance(self.x, self.y, x, y)
-        print("DISTANCE CALCULEE", dist)
-
-        if dist <= self.distancefeumax: # la distance fonctionne, mais augmenter la distancefeu
-            self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
-        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
-            self.actioncourante = "bougerversennemi"
-            print("self.actioncourante = ciblerennemi")
-
-    def attaquerennemi(self):
-        if self.cibleennemi:
-            self.delaifeu = self.delaifeu - 1
-            print("KAWABUNGA BABY")
-            print(" DELAI FEU : ", self.delaifeu)
-
-            if self.delaifeu == 0:
-                rep = self.cibleennemi.recevoir_coup(self.force)
-                self.delaifeu = self.delaifeumax
-                if rep:
-                    self.actioncourante = None
-                # self.cibleennemi.recevoir_coup(self.force)
-                # self.fleches.remove(rep)
-
-
-
 class Ingenieur(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
@@ -687,7 +699,7 @@ class Ballista(Perso):
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi":self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi
                                  }
 
     def cibler(self):
@@ -711,27 +723,25 @@ class Ballista(Perso):
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
 
-        if dist <= self.distancefeu: # la distance fonctionne, mais augmenter la distancefeu
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
             self.actioncourante = "ciblerennemi"
-        else: # si la distance est trop grande ca fait juste le cibler et ca arrete la
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "bougerversennemi"
-
 
     def attaquerennemi(self):
         if self.cibleennemi:
-            self.delaifeu = self.delaifeu -1
+            self.delaifeu = self.delaifeu - 1
             if self.delaifeu == 0:
-
                 id = get_prochain_id()
-                fleche = Fleche(self, id, self.cibleennemi) # avant cetait ciblennemi
+                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
                 self.fleches.append(fleche)
                 self.delaifeu = self.delaifeumax
             if len(self.fleches) > 0:
                 for i in self.fleches:
                     rep = i.bouger()
             # if rep:
-                # self.cibleennemi.recevoir_coup(self.force)
-                # self.fleches.remove(rep)
+            # self.cibleennemi.recevoir_coup(self.force)
+            # self.fleches.remove(rep)
 
 
 class Ouvrier(Perso):
