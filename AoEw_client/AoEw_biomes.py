@@ -133,6 +133,7 @@ class Animal():
         self.vie = vie
         self.valeur = valeur
         self.en_vie = True
+        self.ennemi = None
 
     def mourir(self):
         #self.etat = "mort"
@@ -149,22 +150,18 @@ class Animal():
             return 1
 
     def deplacer(self):
+        if self.etat=="agressif":
+            self.img = self.nomimg + self.dir + "A"
         if self.position_visee:
             x = self.position_visee[0]
             y = self.position_visee[1]
             x1, y1 = Helper.getAngledPoint(self.angle, self.vitesse, self.x, self.y)
             # probleme potentiel de depasser la bordure et de ne pas trouver la case suivante
             case = self.parent.trouver_case(x1, y1)
-            # if case[0]>self.parent.taillecarte or case[0]<0:
-            #    self.cible=None
-            # elif case[1]>self.parent.taillecarte or case[1]<0:
-            #    self.cible=None
-            # else:
+
             if case.montype != "plaine":
                 pass
-                # print("marche dans ",self.parent.regionstypes[self.parent.cartecase[case[1]][case[0]]])
-            # changer la vitesse tant qu'il est sur un terrain irregulier
-            # FIN DE TEST POUR SURFACE MARCHEE
+
             self.x, self.y = x1, y1
             dist = Helper.calcDistance(self.x, self.y, x, y)
             if dist <= self.vitesse:
@@ -180,10 +177,6 @@ class Animal():
             x = (random.randrange(100) - 50) + self.x
             y = (random.randrange(100) - 50) + self.y
             case = self.parent.trouver_case(x, y)
-            # if case[0]>self.parent.taillecarte or case[0]<0:
-            #    continue
-            # if case[1]>self.parent.taillecarte or case[1]<0:
-            #    continue
 
             if case.montype == "plaine":
                 self.position_visee = [x, y]
@@ -197,7 +190,12 @@ class Animal():
             self.dir = self.dir + "B"
         else:
             self.dir = self.dir + "H"
-        self.img = self.nomimg + self.dir
+        if self.etat == "agressif":
+            self.img = self.nomimg + self.dir + "A"
+            if self.ennemi:
+                self.attaquer()
+        else:
+            self.img = self.nomimg + self.dir
 
 
 class Ours(Animal):
@@ -205,20 +203,44 @@ class Ours(Animal):
         Animal.__init__(self, parent, id, x, y, tem, 10000, 20000)
         self.force = 40
         self.distancefeumax = 10
-        self.delaifeu = 20
-        self.delaifeumax = 20
+        self.delaifeu = 10
+        self.delaifeumax = 10
         self.cibleennemi = None
         self.position_visee = None
-        self.image = 'ours' + self.dir
         self.ennemi = None
 
 
+    def trouver_cible(self):
+        n = 1
+        while n:
+            x = (random.randrange(100) - 50) + self.x
+            y = (random.randrange(100) - 50) + self.y
+            case = self.parent.trouver_case(x, y)
+
+            if case.montype == "plaine":
+                self.position_visee = [x, y]
+                n = 0
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+        if self.y < self.position_visee[1]:
+            self.dir = self.dir + "B"
+        else:
+            self.dir = self.dir + "H"
+        if self.etat == "agressif":
+            self.img = self.nomimg + self.dir + "A"
+            if self.ennemi:
+                self.attaquer_ennemi()
+        else:
+            self.img = self.nomimg + self.dir
 
     def recevoir_coup(self, dommage, ennemi):
         self.vie -= dommage
-        self.etat == "aggressif"
+        self.etat = "agressif"
         self.ennemi = ennemi
-        #self.image = 'ours' + self.dir + "A"
+        self.img = self.nomimg + self.dir + "A"
         self.attaquer()
         print("Ouch ours!")
         if self.vie < 1:
@@ -226,21 +248,10 @@ class Ours(Animal):
             self.mourir()
             return 1
 
-
-    def cibler(self):
-        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
-        if self.x < self.position_visee[0]:
-            self.dir = "D"
-        else:
-            self.dir = "G"
-
-        self.image = self.image[:-1] + self.dir
-        self.attaquer_ennemi()
-
     def attaquer(self):
-        self.cibleennemi = self.ennemi
-        x = self.cibleennemi.x
-        y = self.cibleennemi.y
+        self.img = self.nomimg + self.dir + "A"
+        x = self.ennemi.x
+        y = self.ennemi.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
 
@@ -249,35 +260,32 @@ class Ours(Animal):
         else:
             self.cibler()
 
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+        if self.y < self.position_visee[1]:
+            self.dir = self.dir + "B"
+        else:
+            self.dir = self.dir + "H"
+        self.deplacer()
+
     def attaquer_ennemi(self):
-        if self.cibleennemi:
+        self.img = self.nomimg + self.dir + "A"
+        if self.ennemi:
             self.delaifeu = self.delaifeu - 1
-            print("ours attaque LALA")
-
             if self.delaifeu == 0:
-                rep = self.cibleennemi.recevoir_coup(self.force)
+                rep = self.ennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
-                if rep:
-                    self.actioncourante = None
-
-
-
-
-
-
-
-
-
-
-
-
-
+                if rep==1:
+                    self.ennemi = None
 
 
 
 class Daim(Animal):
     def __init__(self, parent, id, x, y, tem='daim'):
         Animal.__init__(self, parent, id, x, y, tem, 40, 10)
-
-# a ajouter etat neutre/aggresif ! maintenant vivant mort...
 
