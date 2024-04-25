@@ -299,10 +299,11 @@ class Perso():
                 self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
             else:
-                cases_cibles.append(i)
+                if i not in self.cibles_contournement_precedentes:
+                    cases_cibles.append(i)
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-                # xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
         # print("new map: ", len(cases_cibles))
         return cases_cibles
@@ -349,19 +350,22 @@ class Perso():
     def get_cible_contournement(self):
         cases = self.get_map_contournement()
         #choisi la direction une seule fois
-        # if self.contournements == 1:
-        self.get_directon_vers_position_visee()
-
+        if self.contournements == 1:
+            self.get_directon_vers_position_visee()
+        print(len(self.cibles_contournement_precedentes))
         taille = self.parent.parent.taillecase
-        if cases:
-            if self.dir == "GH":
-                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
-            elif self.dir == "DH":
-                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
-            elif self.dir == "GB":
-                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
-            elif self.dir == "DB":
-                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+        if self.dir == "GH":
+            self.cible_contournement = cases[0].x*taille, cases[0].y*taille
+            self.cibles_contournement_precedentes.append(cases[0])
+        elif self.dir == "DH":
+            self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+            self.cibles_contournement_precedentes.append(cases[-1])
+        elif self.dir == "GB":
+            self.cible_contournement = cases[0].x*taille, cases[0].y*taille
+            self.cibles_contournement_precedentes.append(cases[0])
+        elif self.dir == "DB":
+            self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+            self.cibles_contournement_precedentes.append(cases[-1])
 
 
 
