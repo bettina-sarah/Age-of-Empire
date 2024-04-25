@@ -333,7 +333,7 @@ class Perso():
         # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
         # affichage --------------------------------------------------------------------------------------------------
 
-        if self.actioncourante == "retourbatimentmere":
+        if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
             return case.montype == "batiment"
 
         return case.montype == "batiment" or case.montype == "batiment-m"
