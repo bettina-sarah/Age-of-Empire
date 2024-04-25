@@ -42,7 +42,7 @@ class Batiment():
         self.cartebatiment = cartebatiment;
         # modele
         # print(self.parent.parent.parent)
-        # self.parent.parent.parent.set_background_case_batiment(self.cartebatiment)
+        self.parent.parent.parent.set_background_case_batiment(self.cartebatiment)
         pass
 
 class Usineballiste(Batiment):

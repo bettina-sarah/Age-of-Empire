@@ -304,14 +304,18 @@ class Perso():
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
                 self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-            elif i.montype == "batiment-back":
+            elif i.montype == "coin":
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
                 self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="crimson", tags=("statique",))
+            elif i.montype == "batiment-back":
+                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="yellow",
+                                                                       tags=("statique",))
             else:
                 if i not in self.cibles_contournement_precedentes:
                     cases_cibles.append(i)
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                # xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
                 # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
 
@@ -321,6 +325,9 @@ class Perso():
             cases_cibles = self.get_map_contournement(not vertical)
 
         return cases_cibles
+
+    def trouver_coin_mur(self):
+        pass
 
     # def get_case_mur(self, x1, y1):
     #     if self.get_directon_contournement(x1,y1): #horizontal

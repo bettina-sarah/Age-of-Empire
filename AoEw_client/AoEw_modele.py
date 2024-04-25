@@ -152,6 +152,23 @@ class Partie():
             else:
                 self.cartecase[i[1]][i[0]].montype = "batiment"
 
+        x1, y1 = cartebatiment[0]
+        x4, y4 = cartebatiment[-1]
+        x2, y2 = x4, y1
+        x3, y3 = x1, y4
+
+        print(x1, "/", y1)
+        print(x2, "/", y2)
+        print(x3, "/", y3)
+        print(x4, "/", y4)
+
+        self.cartecase[[x1][y1]].montype = "coin"
+        self.cartecase[[x2][y2]].montype = "coin"
+        self.cartecase[[x3][y3]].montype = "coin"
+        self.cartecase[[x4][y4]].montype = "coin"
+
+        test =  self.cartecase[[x1][y1]]
+
         batiment.update_type_carte_batiment(cartebatiment)
 
 
@@ -625,6 +642,22 @@ class Partie():
         self.parent.retirer_batiment_minimap(id)
 
     def set_background_case_batiment(self,  cartebatiment):
+
+        x1, y1 = cartebatiment[0]
+        x4, y4 = cartebatiment[-1]
+        x2, y2 = x4, y1
+        x3, y3 = x1, y4
+
+        print(x1, "/", y1)
+        print(x2, "/", y2)
+        print(x3, "/", y3)
+        print(x4, "/", y4)
+
+        self.cartecase[[x1][y1]].montype = "coin"
+        self.cartecase[[x2][y2]].montype = "coin"
+        self.cartecase[[x3][y3]].montype = "coin"
+        self.cartecase[[x4][y4]].montype = "coin"
+
         y1 = 0;
         count = 0
         for casePos in cartebatiment:
@@ -636,8 +669,8 @@ class Partie():
                 self.cartecase[casePos[1]][casePos[0]].montype = "batiment-back"
 
         test = self.cartecase
-        print(self.cartecase)
-
+        for i in self.cartecase:
+            print(i.montype)
         pass
 
     def reset_case_batiment(self, cartebatiment):
