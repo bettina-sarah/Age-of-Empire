@@ -410,12 +410,7 @@ class Vue():
         coul = self.modele.joueurs[self.parent.nom_joueur_local].couleur
         self.cadrejeuinfo.config(bg=coul[1])
         self.creer_aide()
-        self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste"])
-        # self.creer_cadre_maison(coul[0] + "_", ["ouvrier", "ouvrier"])
-        # self.creer_cadre_caserne(coul[0] + "_", ["soldat", "chevalier"])
-        # self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"])
-        # self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"])
-        # self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "chevalier-archer"])
+        self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste", "champstir", "mur_h", "mur_v", "tour"])
 
         self.creer_chatter()
         # on affiche les maisons, point de depart des divers joueurs
@@ -998,8 +993,9 @@ class Vue():
                     self.creer_cadre_usine(coul[0] + "_", ["archer", "ballista", "catapulte"], mestags[4], mestags[2],
                                            pos)
                 if "champs_de_tir" in mestags:
+
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_champs_tir(coul[0] + "_", ["chevalier-archer"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
         elif self.action.persochoisi != []:
             print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags

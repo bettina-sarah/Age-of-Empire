@@ -61,7 +61,32 @@ class Partie():
                                  "aureus": 1,
                                  "delai": 80,
                                  "objet": 0
-                                 }
+                                 },
+               "champstir": {"nourriture": 10,
+                             "arbre": 10,
+                             "roche": 10,
+                             "aureus": 10,
+                             "delai": 20,
+                            "objet": 0},
+               "mur_h": {"nourriture": 5,
+                             "arbre": 5,
+                             "roche": 5,
+                             "aureus": 5,
+                             "delai": 5,
+                         "objet": 0},
+               "mur_v": {"nourriture": 5,
+                         "arbre": 5,
+                         "roche": 5,
+                         "aureus": 5,
+                         "delai": 5,
+                         "objet": 0},
+               "tour": {"nourriture": 25,
+                        "arbre": 25,
+                        "roche": 25,
+                        "aureus": 25,
+                        "delai": 15,
+                         "objet": 0}
+
                }
 
     def __init__(self, parent, mondict):
@@ -83,7 +108,11 @@ class Partie():
         self.classesbatiments = {"maison": Usineballiste,  # change back maison
                                  "caserne": Caserne,
                                  "abri": Abri,
-                                 "usineballiste": Maison}
+                                 "usineballiste": Maison,
+                                 "champstir":Champstir,
+                                 "mur_h":MurH,
+                                 "mur_v":MurV,
+                                 "tour":Tour}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,
