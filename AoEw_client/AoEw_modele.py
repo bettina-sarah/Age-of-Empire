@@ -305,8 +305,11 @@ class Partie():
             self.biotopes["daim"][i].deplacer()
 
         for i in self.biotopes["ours"].keys():
-            self.biotopes["ours"][i].deplacer()
-        # Ajouter une liste des trucs a deplacer ? puis fair eune function? maybe ? :D
+            if self.biotopes["ours"][i].etat == "neutre" or self.biotopes["ours"][i].ennemi is None:
+                self.biotopes["ours"][i].deplacer()
+            else:
+                self.biotopes["ours"][i].attaquer()
+
 
         for i in self.biotopes["eau"].keys():
             self.biotopes["eau"][i].jouer_prochain_coup()

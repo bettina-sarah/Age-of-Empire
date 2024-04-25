@@ -193,64 +193,29 @@ class Animal():
 class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
         Animal.__init__(self, parent, id, x, y, tem, 10000, 20000)
-        self.force=10
+        self.force = 40
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
         self.cibleennemi = None
         self.position_visee = None
         self.image = 'ours' + self.dir
+        self.ennemi = None
 
 
 
     def recevoir_coup(self, dommage, ennemi):
         self.vie -= dommage
         self.etat == "aggressif"
-        self.attaquer(ennemi)
+        self.ennemi = ennemi
+        #self.image = 'ours' + self.dir + "A"
+        self.attaquer()
         print("Ouch ours!")
         if self.vie < 1:
             print("MORT")
             self.mourir()
             return 1
 
-    # verifier range fonction qui va dans
-
-    # ***** FONCTIONS faites par moi:
-
-    # def attaquer(self, ennemi):
-    #     self.cibleennemi = ennemi
-    #     x = self.cibleennemi.x
-    #     y = self.cibleennemi.y
-    #     pos_cible = x, y
-    #     self.cibler(ennemi)
-    #     dist = Helper.calcDistance(self.x, self.y, x, y)
-    #     if dist <= self.vitesse:
-    #         self.attaquer_ennemi()
-    #     else:
-    #         self.cibler(ennemi)
-    #
-    # def cibler(self, ennemi):
-    #     self.cible = ennemi
-    #     if self.cible:
-    #         self.position_visee = [self.cible.x, self.cible.y]
-    #         if self.x < self.position_visee[0]:
-    #             self.dir = "D"
-    #         else:
-    #             self.dir = "G"
-    #     else:
-    #         self.position_visee = None
-    #
-    #
-    # def attaquer_ennemi(self):
-    #     print("attquer de lours !!!")
-    #     rep = self.cibleennemi.recevoir_coup(self.force)
-    #     if rep == 1:
-    #         self.cibleennemi = None
-    #         self.cible = None
-    #
-    #         self.deplacer()
-
-#------------------ fonctions melee:
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -262,8 +227,8 @@ class Ours(Animal):
         self.image = self.image[:-1] + self.dir
         self.attaquer_ennemi()
 
-    def attaquer(self, ennemi):
-        self.cibleennemi = ennemi
+    def attaquer(self):
+        self.cibleennemi = self.ennemi
         x = self.cibleennemi.x
         y = self.cibleennemi.y
         self.position_visee = [x, y]
@@ -278,7 +243,6 @@ class Ours(Animal):
         if self.cibleennemi:
             self.delaifeu = self.delaifeu - 1
             print("ours attaque LALA")
-            print(" DELAI FEU : ", self.delaifeu)
 
             if self.delaifeu == 0:
                 rep = self.cibleennemi.recevoir_coup(self.force)
