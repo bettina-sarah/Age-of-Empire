@@ -296,11 +296,13 @@ class Perso():
         else:
             cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
 
+        print("contourne: vertical",vertical, "avec une direction:",self.dir)
+
         for i in cases:
             if i.montype == "batiment":
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
             else:
                 if i not in self.cibles_contournement_precedentes:
@@ -370,7 +372,7 @@ class Perso():
             self.get_directon_vers_position_visee()
 
 
-        print(len(self.cibles_contournement_precedentes))
+
         taille = self.parent.parent.taillecase
         if self.dir == "GH":
             self.cible_contournement = cases[0].x*taille, cases[0].y*taille
