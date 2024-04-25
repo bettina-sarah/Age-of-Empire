@@ -301,6 +301,12 @@ class Perso():
             elif i.montype == "batiment-back":
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
                 self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="crimson", tags=("statique",))
+            elif i.montype == "coin":
+                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="yellow", tags=("statique",))
+            elif i.montype == "batiment-m":
+                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="goldenrod", tags=("statique",))
             else:
                 cases_cibles.append(i)
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
@@ -326,7 +332,11 @@ class Perso():
         # xa, ya, xb, yb = case.x * taille, case.y * taille, case.x * taille + taille, case.y * taille + taille
         # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
         # affichage --------------------------------------------------------------------------------------------------
-        return case.montype == "batiment"
+
+        if self.actioncourante == "retourbatimentmere":
+            return case.montype == "batiment"
+
+        return case.montype == "batiment" or case.montype == "batiment-m"
 
     def contourne(self):
         if not self.cible_contournement:
