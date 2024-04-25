@@ -151,7 +151,9 @@ class Partie():
                 self.cartecase[i[1]][i[0]].montype = "batiment-m"
             else:
                 self.cartecase[i[1]][i[0]].montype = "batiment"
-        batiment.cartebatiment = cartebatiment
+
+        batiment.update_type_carte_batiment(cartebatiment)
+
 
     def creer_biotopes(self):
         # creer des daims éparpillés
@@ -617,8 +619,26 @@ class Partie():
         if len(temp) == 1:
             self.parent.afficher_fin(temp[0])
 
-    def retirer_batiment_minimap(self, id):
+    def retirer_batiment_minimap(self, id, cartebatiment):
+        for i in cartebatiment:
+            self.cartecase[i[1]][i[0]].montype = "plaine"
         self.parent.retirer_batiment_minimap(id)
+
+    def set_background_case_batiment(self,  cartebatiment):
+        y1 = 0;
+        count = 0
+        for casePos in cartebatiment:
+            if y1 != casePos[1]:
+                y1 = casePos[1]
+                count += 1
+
+            if count < 5:
+                self.cartecase[casePos[1]][casePos[0]].montype = "batiment-back"
+
+        test = self.cartecase
+        print(self.cartecase)
+
+        pass
 
     def reset_case_batiment(self, cartebatiment):
         for i in cartebatiment:
