@@ -14,6 +14,16 @@ class Biotope():
         self.idregion = idregion
         self.idcaseregion = posid
 
+class Objet(Biotope):
+    typeressource = ['objet',
+                     'chest']
+
+    def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
+        Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
+        self.valeur = 1
+        
+    
+
 class Baie(Biotope):
     typeressource = ['arbustebaiesgrand',
                      'arbustebaiespetit',

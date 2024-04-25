@@ -366,7 +366,62 @@ class Perso():
 class Soldat(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        self.force = 20
+        self.force = 25
+        self.distancefeumax = 20
+        self.delaifeu = 20
+        self.delaifeumax = 20
+        self.champvision = 100
+        self.vitesse = 5
+        self.mana = 100
+        self.cibleennemi = None
+        self.position_visee = None
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+
+        if dist <= self.distancefeumax: # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+            if not self.image[-1] == "A":
+                self.image = self.image + "A"
+            if self.delaifeu == 0:
+                self.image = self.image[:-1]
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
 
 
 class Archer(Perso):
@@ -376,10 +431,13 @@ class Archer(Perso):
         self.dir = "D"
         # self.cible = None
         # self.angle = None
-        self.distancefeumax = 360
-        self.distancefeu = 360
-        self.delaifeu = 30
-        self.delaifeumax = 30
+        self.distancefeumax = 200
+        self.distancefeu = 200
+        self.delaifeu = 25
+        self.delaifeumax = 25
+        self.champvision = 100
+        self.vitesse = 5
+        self.mana = 80
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None
@@ -435,15 +493,173 @@ class Archer(Perso):
 class Chevalier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+        self.force = 20
+        self.distancefeumax = 10
+        self.delaifeu = 20
+        self.delaifeumax = 20
+        self.champvision = 150
+        self.vitesse = 10
+        self.mana = 150
+        self.cibleennemi = None
+        self.position_visee = None
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+
+        if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
 
 
 class Druide(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        
+        self.force = 20
+        self.distancefeumax = 10
+        self.delaifeu = 20
+        self.delaifeumax = 20
+        self.cibleennemi = None
+        self.position_visee = None
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+
+        if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
+
+
 class DruideOurs(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+        self.force = 20
+        self.distancefeumax = 10
+        self.delaifeu = 20
+        self.delaifeumax = 20
+        self.cibleennemi = None
+        self.position_visee = None
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+
+        self.image = self.image[:-1] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+        print("DISTANCE CALCULEE", dist)
+
+        if dist <= self.distancefeumax: # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "attaquerennemi"
+            print("self.actioncourante = attaquerennemi")
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+            print("self.actioncourante = ciblerennemi")
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            print("KAWABUNGA BABY")
+            print(" DELAI FEU : ", self.delaifeu)
+
+            if self.delaifeu == 0:
+                rep = self.cibleennemi.recevoir_coup(self.force)
+                self.delaifeu = self.delaifeumax
+                if rep:
+                    self.actioncourante = None
+                # self.cibleennemi.recevoir_coup(self.force)
+                # self.fleches.remove(rep)
+
 
 
 class Ingenieur(Perso):
@@ -461,8 +677,12 @@ class Ballista(Perso):
         self.angle = None
         self.distancefeumax = 360
         self.distancefeu = 360
-        self.delaifeu = 30
-        self.delaifeumax = 30
+        self.delaifeu = 90
+        self.force = 80
+        self.champvision = 100
+        self.vitesse = 3
+        self.mana = 200
+        self.delaifeumax = 90
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None

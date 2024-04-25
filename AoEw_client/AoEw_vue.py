@@ -76,7 +76,6 @@ class Vue():
         gagnant = Label(self.cadreFin, text=self.gagnant, bg=self.cadreFin['bg'], font=("arial", 18, "bold"))
         gagnant.config()
 
-
         label.pack(expand=True)
         t1.pack(expand=True)
         gagnant.pack(expand=True)
@@ -207,7 +206,8 @@ class Vue():
         self.infohud = {"Nourriture": None,
                         "Bois": None,
                         "Roche": None,
-                        "Aureus": None}
+                        "Aureus": None,
+                        "Objet": None}
 
         # fonction interne uniquement pour reproduire chaque item d'info
         def creer_champ_interne(listechamp):  # refactoriser pour etiquette au lieu de champ
@@ -323,6 +323,7 @@ class Vue():
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
         self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
+        self.canevas.tag_bind("objet", "<Button-1>", self.ramasser_ressource)
 
         # self.canevas.tag_bind("daim", "<Button-1>", self.afficher_fin)
 
@@ -433,7 +434,8 @@ class Vue():
         print(persos)
         for i in persos:
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
-            btn.bind("<Button>", lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
                                                                                                                   tag_batiment,
                                                                                                                   id_joueur,
                                                                                                                   pos))
@@ -441,8 +443,8 @@ class Vue():
             self.afficher_labels_ressources(i)
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
-                                                             window=self.cadrebatiment,
-                                                             anchor=N))
+                                                                          window=self.cadrebatiment,
+                                                                          anchor=N))
         self.root.update()
         fh = self.cadrebatiment.winfo_height()
         ch = int(self.canevasaction.cget("height"))
@@ -451,13 +453,16 @@ class Vue():
             self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def afficher_labels_ressources(self, index):
-        
-        self.self_dict_temp_ressources = {"nourriture": self.images["arbustebaiespetit"],
-         "arbre": self.images["bois-ressource"],
-         "roche": self.images["roches1petit"],
-         "aureus": self.images["aureusD_"]}
 
-        #self.frame_generique(index)
+        self.self_dict_temp_ressources = {
+            "nourriture": self.images["arbustebaiespetit"],
+            "arbre": self.images["bois-ressource"],
+            "roche": self.images["roches1petit"],
+            "aureus": self.images["aureusD_"],
+             "objet": self.images["objet"]
+        }
+
+        # self.frame_generique(index)
 
         # FRAME NOURRITURE
         row_counter = 0
@@ -465,7 +470,8 @@ class Vue():
         frame_nourriture = Frame(self.cadrebatiment)
         for key, image in self.self_dict_temp_ressources.items():
             image_nourriture = Label(frame_nourriture, image=image)
-            lbl_nourriture = Label(frame_nourriture, text=self.modele.joueurs[self.parent.nom_joueur_local].prix_unite[index][key])
+            lbl_nourriture = Label(frame_nourriture,
+                                   text=self.modele.joueurs[self.parent.nom_joueur_local].prix_unite[index][key])
             frame_nourriture.pack()
 
             image_nourriture.grid(row=row_counter, column=col_counter, padx=5, pady=5)
@@ -474,7 +480,6 @@ class Vue():
             if col_counter >= 4:
                 col_counter = 0
                 row_counter += 1
-
 
     def creer_cadre_caserne(self, coul, persos, tag_batiment, id_joueur, pos):
         if self.action.widgetsactifs:
@@ -508,17 +513,17 @@ class Vue():
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
-            if i=="druide-ours": # !! image a faire
+            if i == "druide-ours":  # !! image a faire
                 btn = Button(self.cadrebatiment, text=i)
                 btn.pack()
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
                 btn.bind("<Button>",
-                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
-                                                                                                                  tag_batiment,
-                                                                                                                  id_joueur,
-                                                                                                                  pos))
+                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                      tag_batiment,
+                                                                                                                      id_joueur,
+                                                                                                                      pos))
             btn.pack()
             self.afficher_labels_ressources(i)
 
@@ -546,10 +551,10 @@ class Vue():
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
                 btn.bind("<Button>",
-                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
-                                                                                                                  tag_batiment,
-                                                                                                                  id_joueur,
-                                                                                                                  pos))
+                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                      tag_batiment,
+                                                                                                                      id_joueur,
+                                                                                                                      pos))
                 btn.pack()
                 self.afficher_labels_ressources(i)
 
@@ -598,7 +603,6 @@ class Vue():
         except:
             print("action invalide")
 
-
     ##FONCTIONS D'AFFICHAGES##################################
     def afficher_depart(self):
         self.modele.listebiotopes.sort(key=lambda c: c.y)
@@ -624,7 +628,8 @@ class Vue():
                     "eau": "light blue",
                     "aureus": "tan",
                     "roche": "gray30",
-                    "marais": "orange"}
+                    "marais": "orange",
+                    "objet": "yellow"}
         for i, t in enumerate(self.modele.regions):
             if t != "plaine":
                 for j, c in enumerate(self.modele.regions[t]):
@@ -668,9 +673,8 @@ class Vue():
 
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
-                                          "statique", joueur, batiment.id, "batiment", batiment.montype,
-                                          ""))
-
+                                              "statique", joueur, batiment.id, "batiment", batiment.montype,
+                                              ""))
 
         x0, y0, x2, y2 = self.canevas.bbox(chose)
 
@@ -728,6 +732,7 @@ class Vue():
                 self.infohud["Bois"][0].set(self.modele.joueurs[j].ressources["arbre"])
                 self.infohud["Roche"][0].set(self.modele.joueurs[j].ressources["roche"])
                 self.infohud["Aureus"][0].set(self.modele.joueurs[j].ressources["aureus"])
+                self.infohud["Objet"][0].set(self.modele.joueurs[j].ressources["objet"])
                 self.infohud["msggeneral"][0].config(text=self.modele.msggeneral)
 
             # ajuster les constructions de chaque joueur
@@ -789,10 +794,6 @@ class Vue():
                 self.canevas.create_image(i.x, i.y, image=self.images[i.img],
                                           tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("",i.id,"artefact","daim","mobile"))
-
-
-
-
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["eau"].keys():
@@ -856,7 +857,7 @@ class Vue():
         elif self.action.persochoisi != []:
             print("Dans le elif self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
-            print(" self.action.ciblechoisi ",  self.action.ciblechoisi)
+            print(" self.action.ciblechoisi ", self.action.ciblechoisi)
             self.action.attaquer()
         else:
             print("Dans le ELSE donc pas self.action.persochoixi != []")
@@ -947,13 +948,14 @@ class Vue():
         print("vals dans batier artefact ", vals)
         ok = 1
         for k, val in self.modele.joueurs[self.nom_joueur_local].ressources.items():
-            if val <= vals[nomsorte][k]:
+            if val < vals[nomsorte][k]:
                 ok = 0
                 break
         if ok:
             self.action.prochaineaction = obj.cget("text")
             obj.config(bg="lightgreen")
         else:
+            print(val)
             print("VOUS N'AVEZ PAS ASSEZ DE", k)
 
     def construire_batiment(self, evt):
@@ -970,7 +972,7 @@ class Vue():
     # fonction crée pas une entité, envoye les params au bon cadre qui va créer entite via self.test_entite()
     def creer_entite(self, evt):
 
-        #celui qui se fait attaquer
+        # celui qui se fait attaquer
         x, y = evt.x, evt.y
         mestags = self.canevas.gettags(CURRENT)
 
@@ -988,8 +990,10 @@ class Vue():
                     self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_usine(coul[0] + "_", ["archer","ballista", "catapulte"], mestags[4], mestags[2], pos)
-                if "champstir" in mestags:
+                    self.creer_cadre_usine(coul[0] + "_", ["archer", "ballista", "catapulte"], mestags[4], mestags[2],
+                                           pos)
+                if "champs_de_tir" in mestags:
+
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
         elif self.action.persochoisi != []:
@@ -1034,8 +1038,6 @@ class Vue():
         # self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         # self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         # self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
-
-
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
