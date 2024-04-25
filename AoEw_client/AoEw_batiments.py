@@ -25,6 +25,10 @@ class Batiment():
         self.perso = 0
         self.cartebatiment = []
         self.mana = 200
+        self.coin_gh = None
+        self.coin_dh = None
+        self.coin_bg = None
+        self.coin_bd = None
 
     def recevoir_coup(self, force):
         self.mana -= force

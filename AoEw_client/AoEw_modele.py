@@ -29,6 +29,7 @@ class Caseregion():
         self.id = id
         self.montype = "plaine"
         self.ressources = {}
+        self.batiment = None
         self.x = x
         self.y = y
 
@@ -151,9 +152,10 @@ class Partie():
             #pour contournement avec retour de ressource
             if(batiment.montype == "maison"):
                 self.cartecase[i[1]][i[0]].montype = "batiment-m"
-
+                self.cartecase[i[1]][i[0]].batiment = batiment
             else:
                 self.cartecase[i[1]][i[0]].montype = "batiment"
+                self.cartecase[i[1]][i[0]].batiment = batiment
                 print("new batiment: ", i[1], "/", i[0])
 
         x1, y1 = cartebatiment[0]
@@ -161,16 +163,21 @@ class Partie():
         x2, y2 = x4, y1
         x3, y3 = x1, y4
 
-        print("new corner", y1, "/", x1)
-        print("new corner", y2, "/", x2)
-        print("new corner", y3, "/", x3)
-        print("new corner", y4, "/", x4)
 
-        self.cartecase[[y1][x1]].montype = "coin"
-        self.cartecase[[y2][x2]].montype = "coin"
-        self.cartecase[[y3][x3]].montype = "coin"
-        self.cartecase[[y4][x4]].montype = "coin"
+        # print("new corner", y1, "/", x1)
+        # print("new corner", y2, "/", x2)
+        # print("new corner", y3, "/", x3)
+        # print("new corner", y4, "/", x4)
+        #
+        # self.cartecase[[y1][x1]].montype = "coin"
+        # self.cartecase[[y2][x2]].montype = "coin"
+        # self.cartecase[[y3][x3]].montype = "coin"
+        # self.cartecase[[y4][x4]].montype = "coin"
 
+        batiment.coin_gh = (x1 * self.taillecase, y1 * self.taillecase)
+        batiment.coin_dh = (x2 * self.taillecase, y2 * self.taillecase)
+        batiment.coin_gb = (x3 * self.taillecase, y3 * self.taillecase)
+        batiment.coin_db = (x4 * self.taillecase, y4 * self.taillecase)
         batiment.cartebatiment = cartebatiment
         # batiment.update_type_carte_batiment(cartebatiment)
 

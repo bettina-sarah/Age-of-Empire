@@ -326,6 +326,7 @@ class Perso():
             casey = int(casey) + 1
 
         case = self.parent.parent.trouver_case(x1, y1, self.dir)
+
         # affichage --------------------------------------------------------------------------------------------------
         # taille = self.parent.parent.taillecase
 
