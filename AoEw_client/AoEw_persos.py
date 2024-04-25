@@ -186,6 +186,7 @@ class Perso():
                 if self.actioncourante == "bouger":
                     self.actioncourante = None
                 self.contournements = 0
+                self.cibles_contournement_precedentes = []
                 return "rendu"
             else:
                 return dist
@@ -273,7 +274,7 @@ class Perso():
             self.position_visee = None
 
 
-    def get_map_contournement(self):
+    def get_map_contournement(self, vertical=None):
         x1, y1 = self.x, self.y
 
         casex = x1 / self.parent.parent.taillecase
@@ -286,27 +287,42 @@ class Perso():
         taille = self.parent.parent.taillecase
 
         cases_cibles = []
-        # trouve si on frappe un mur à l'horinzontal ou vertial
-        if self.get_directon_contournement(x1,y1): #horizontal
+        # trouve si on frappe un mur à l'horinzontal ou vertical
+        if not vertical:
+            vertical = self.get_directon_contournement(x1,y1)
+
+        if vertical:
             cases = self.parent.parent.get_carte_contournement(x1, y1, 1,self.contournement_range)
-        else: #vertical
+        else:
             cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
 
         for i in cases:
             if i.montype == "batiment":
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
             else:
                 if i not in self.cibles_contournement_precedentes:
                     cases_cibles.append(i)
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
                 xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
                 # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-        # print("new map: ", len(cases_cibles))
+
+
+        if not cases_cibles:
+            self.get_directon_vers_position_visee()
+            cases_cibles = self.get_map_contournement(not vertical)
+
         return cases_cibles
+
+    # def get_case_mur(self, x1, y1):
+    #     if self.get_directon_contournement(x1,y1): #horizontal
+    #         cases = self.parent.parent.get_carte_contournement(x1, y1, 1,self.contournement_range)
+    #     else: #vertical
+    #         cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
+    #     return cases
 
     def test_etat_du_sol(self, x1, y1):
 
@@ -352,6 +368,8 @@ class Perso():
         #choisi la direction une seule fois
         if self.contournements == 1:
             self.get_directon_vers_position_visee()
+
+
         print(len(self.cibles_contournement_precedentes))
         taille = self.parent.parent.taillecase
         if self.dir == "GH":
