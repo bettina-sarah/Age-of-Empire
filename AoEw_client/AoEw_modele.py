@@ -173,11 +173,11 @@ class Partie():
         # self.cartecase[[y2][x2]].montype = "coin"
         # self.cartecase[[y3][x3]].montype = "coin"
         # self.cartecase[[y4][x4]].montype = "coin"
-
-        batiment.coin_gh = (x1 * self.taillecase, y1 * self.taillecase)
-        batiment.coin_dh = (x2 * self.taillecase, y2 * self.taillecase)
-        batiment.coin_gb = (x3 * self.taillecase, y3 * self.taillecase)
-        batiment.coin_db = (x4 * self.taillecase, y4 * self.taillecase)
+        batiment.set_coins(x1 * self.taillecase, y1* self.taillecase , x4* self.taillecase, y4* self.taillecase)
+        # batiment.coin_gh = (x1 * self.taillecase, y1 * self.taillecase)
+        # batiment.coin_dh = (x2 * self.taillecase, y2 * self.taillecase)
+        # batiment.coin_gb = (x3 * self.taillecase, y3 * self.taillecase)
+        # batiment.coin_db = (x4 * self.taillecase, y4 * self.taillecase)
         batiment.cartebatiment = cartebatiment
         # batiment.update_type_carte_batiment(cartebatiment)
 

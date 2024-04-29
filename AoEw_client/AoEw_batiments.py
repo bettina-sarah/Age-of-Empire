@@ -14,7 +14,7 @@ class SiteConstruction():
         self.delai -= 1
 
 class Batiment():
-    def __init__(self, parent, id, x, y):
+    def __init__(self, parent, id, x, y,coin_x1=0,coin_y1=0,coin_x2=0,coin_y2=0):
         self.parent = parent
         self.id = id
         self.x = x
@@ -25,10 +25,10 @@ class Batiment():
         self.perso = 0
         self.cartebatiment = []
         self.mana = 200
-        self.coin_gh = None
-        self.coin_dh = None
-        self.coin_bg = None
-        self.coin_bd = None
+        self.coin_gh = (x+coin_x1, y+coin_y1)
+        self.coin_dh = (x+coin_x2, y+coin_y1)
+        self.coin_bg = (x+coin_x1, y+coin_y2)
+        self.coin_bd = (x+coin_x2, y+coin_y2)
 
     def recevoir_coup(self, force):
         self.mana -= force
@@ -48,6 +48,17 @@ class Batiment():
         # print(self.parent.parent.parent)
         self.parent.parent.parent.set_background_case_batiment(self.cartebatiment)
         pass
+
+    def set_coins(self, coin_x1,coin_y1,coin_x2,coin_y2):
+        print("set coins")
+        self.coin_gh = (coin_x1-20, coin_y2+20)
+        self.coin_dh = (coin_x2+20, coin_y2+20)
+        self.coin_bg = (coin_x1-20, coin_y1-20)
+        self.coin_bd = (coin_x2+20, coin_y1-20)
+
+
+    def get_coins(self):
+        return self.coin_gh, self.coin_dh, self.coin_bg, self.coin_bd
 
 class Usineballiste(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -75,11 +86,12 @@ class Abri(Batiment):
 
 class Caserne(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
-        Batiment.__init__(self, parent, id, x, y)
+        Batiment.__init__(self, parent, id, x, y,-200,-200,200,200)
         self.image = couleur[0] + "_" + montype
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+
 
 class Champstir(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):

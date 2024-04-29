@@ -107,16 +107,15 @@ class Perso():
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
                                  "ciblerennemi": None,
-                                 "contourne": self.contourne}
+                                 "contourne": self.contourne_2}
 
         #contournement
         self.action_precedente = None
         self.cible_contournement = None
         self.cibles_contournement_precedentes = []
         self.contournements = 0
-        self.contournement_range_base = 5
-        self.contournement_range_offset = 0
         self.contournement_range = 5
+        self.case_coutournement = None
 
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
@@ -169,12 +168,9 @@ class Perso():
             ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
             # print("avant : ", self.x,"/", self.y )
             # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-
-                self.contournements += 1
-                print("contournement #:",self.contournements)
+            case_mur = self.test_etat_du_sol(x1, y1)
+            if case_mur:
+                self.nouveau_contournement(case_mur)
                 return "contourne"
             self.x, self.y = x1,y1
             ######## FIN DE TEST POUR SURFACE MARCHEE
@@ -186,9 +182,18 @@ class Perso():
                 if self.actioncourante == "bouger":
                     self.actioncourante = None
                 self.contournements = 0
+                self.cibles_contournement_precedentes = []
+                self.cible_contournement = None
                 return "rendu"
             else:
                 return dist
+
+    def nouveau_contournement(self, case):
+        self.action_precedente = self.actioncourante
+        self.actioncourante = "contourne"
+        self.contournements += 1
+        self.case_coutournement = case
+        print("contournement #:", self.contournements)
 
     def bouger_vers_ennemi(self):
         if self.cibleennemi:
@@ -334,10 +339,16 @@ class Perso():
         # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
         # affichage --------------------------------------------------------------------------------------------------
 
+        #si je un ouvrier déplace des ressources, retourne la case seulement si la case est batiment (ignore batiment-m)
         if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
-            return case.montype == "batiment"
+            if case.montype == "batiment":
+                return case
+        # retourne la case si c'est un batiment ou batiment-m
+        if case.montype == "batiment" or case.montype == "batiment-m":
+            return case
 
-        return case.montype == "batiment" or case.montype == "batiment-m"
+        # retourne rien si la case n'est pas un batiment
+        return None
 
     def contourne(self):
         if not self.cible_contournement:
@@ -358,6 +369,64 @@ class Perso():
         if dist <= self.vitesse:
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
+
+    def contourne_2(self):
+        # trouve les coins non-visités
+        if not self.cible_contournement:
+            self.get_cible_contournement_2()
+
+        #déplace vers la cible de contournement
+        # if not self.cible_contournement:
+        #     return
+        if not self.cible_contournement:
+            self.cible_contournement = None
+            self.actioncourante = self.action_precedente
+            return
+
+        x,y = self.cible_contournement[1]
+        ang = Helper.calcAngle(self.x, self.y, x, y)
+        self.x, self.y  = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+
+        if dist <= self.vitesse:
+            self.cible_contournement = None
+            self.actioncourante = self.action_precedente
+
+    def get_cible_contournement_2(self):
+        #reset la liste
+
+        cible_possibles = []
+        for coin in self.case_coutournement.batiment.get_coins():
+            if coin not in self.cibles_contournement_precedentes:
+                cible_possibles.append(coin)
+
+
+        print(cible_possibles)
+        # trouve le coin le plus proche
+        distance_coin = []
+        for coin in cible_possibles:
+            distance = ((coin[0] - self.x) ** 2 + (coin[1] - self.y) ** 2) ** 0.5
+            distance_coin.append((distance, coin))
+
+        # trouve le coin avec la plus petite distance avec le perso
+
+        if len(distance_coin) > 0:
+            self.cible_contournement = None
+            self.actioncourante = self.action_precedente
+
+
+            smallest_dist = distance_coin[0]
+            for d in distance_coin:
+                if smallest_dist[0] > d[0]:
+                    smallest_dist = d
+
+            # ce coin devient la cible de contournement, on l'ajoute au cible précédente pour éviter un repeat
+            self.cible_contournement = smallest_dist
+            self.cibles_contournement_precedentes.append(smallest_dist[1])
+        # print("je suis : (",self.x, ", "+self.y,") je vais vers ", self.cible_contournement[1][0],", ",self.cible_contournement[1][1])
+
+
+
 
 
     def get_cible_contournement(self):
@@ -403,7 +472,7 @@ class Archer(Perso):
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
-                                 "contourne": self.contourne,
+                                 "contourne": self.contourne_2,
                                  "bougerversennemi": self.bouger_vers_ennemi
                                  }
 
@@ -558,7 +627,7 @@ class Ouvrier(Perso):
                                  "ciblerressource": self.cibler_ressource,
                                  "retourbatimentmere": self.retour_batiment_mere,
                                  "validerjavelot": self.valider_javelot,
-                                 "contourne": self.contourne}
+                                 "contourne": self.contourne_2}
 
     def chasser_ramasser(self, objetcible, sontype, actiontype):
         self.cible = objetcible
