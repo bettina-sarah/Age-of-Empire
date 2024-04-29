@@ -376,7 +376,7 @@ class Soldat(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 25
-        self.distancefeumax = 20
+        self.distancefeumax = 50
         self.delai_verifier_champ = 30
         self.vision_cases = 10
         self.delaifeu = 20
@@ -620,7 +620,7 @@ class Chevalier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
-        self.distancefeumax = 10
+        self.distancefeumax = 50
         self.delaifeu = 20
         self.delaifeumax = 20
         self.delai_verifier_champ = 30
@@ -738,7 +738,7 @@ class Druide(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
-        self.distancefeumax = 10
+        self.distancefeumax = 50
         self.delaifeu = 20
         self.delaifeumax = 20
         self.delai_verifier_champ = 30
@@ -853,7 +853,7 @@ class DruideOurs(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 20
-        self.distancefeumax = 10
+        self.distancefeumax = 50
         self.delaifeu = 20
         self.delaifeumax = 20
         self.delai_verifier_champ = 30
