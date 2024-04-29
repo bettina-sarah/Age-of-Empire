@@ -77,6 +77,7 @@ class Joueur():
                   "soldat": {"nourriture": 10,
                              "arbre": 10,
                              "roche": 5,
+                             "aureus":10
                              "delai": 30,
                              "objet": 0
                              },
