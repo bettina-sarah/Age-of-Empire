@@ -107,7 +107,7 @@ class Perso():
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
                                  "ciblerennemi": None,
-                                 "contourne": self.contourne_2}
+                                 "contourne": self.contourne}
 
         #contournement
         self.action_precedente = None
@@ -193,7 +193,7 @@ class Perso():
         self.actioncourante = "contourne"
         self.contournements += 1
         self.case_coutournement = case
-        print("contournement #:", self.contournements)
+        # print("contournement #:", self.contournements)
 
     def bouger_vers_ennemi(self):
         if self.cibleennemi:
@@ -226,45 +226,6 @@ class Perso():
 
 
 
-    def get_directon_vers_position_visee(self):
-        # utilisé pour collision, demander permission avant DE BRISER MON CODE
-        if self.position_visee:
-            if self.x < self.position_visee[0]:
-                self.dir = "D"
-            else:
-                self.dir = "G"
-
-            if self.y < self.position_visee[1]:
-                self.dir += "B"
-            else:
-                self.dir += "H"
-
-
-    def get_directon_contournement(self, x1, y1):
-        # suis-je plus près de ma cible sur l'axe des x ou y
-        cases = self.parent.parent.get_carte_contournement(x1, y1, 1, 4)
-        # retourn vrai pour un mouvement vertical
-        if cases[3].montype == "batiment" and cases[5].montype == "batiment":
-            return False
-        if cases[4].montype == "batiment" and cases[6].montype == "batiment":
-            return False
-        if cases[-3].montype == "batiment" and cases[-5].montype == "batiment":
-            return False
-        if cases[-4].montype == "batiment" and cases[-6].montype == "batiment":
-            return False
-        else:
-            return True
-
-            # print("bad vertical")
-
-        # cases = self.parent.parent.get_carte_contournement(x1, y1, 4, 1)
-        # if cases[0].montype == "batiment" or cases[-1].montype == "batiment":
-        #     print("bad vertical")
-
-        # return  self.get_directon_contournement()
-
-
-
     def cibler(self, obj):
         self.cible = obj
         if obj:
@@ -278,48 +239,7 @@ class Perso():
             self.position_visee = None
 
 
-    def get_map_contournement(self):
-        x1, y1 = self.x, self.y
 
-        casex = x1 / self.parent.parent.taillecase
-        if casex != int(casex):
-            casex = int(casex) + 1
-        casey = y1 / self.parent.parent.taillecase
-        if casey != int(casey):
-            casey = int(casey) + 1
-
-        taille = self.parent.parent.taillecase
-
-        cases_cibles = []
-        # trouve si on frappe un mur à l'horinzontal ou vertial
-        if self.get_directon_contournement(x1,y1): #horizontal
-            cases = self.parent.parent.get_carte_contournement(x1, y1, 1,self.contournement_range)
-        else: #vertical
-            cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
-
-        for i in cases:
-            if i.montype == "batiment":
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-            elif i.montype == "batiment-back":
-                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="crimson", tags=("statique",))
-            elif i.montype == "coin":
-                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="yellow", tags=("statique",))
-            elif i.montype == "batiment-m":
-                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="goldenrod", tags=("statique",))
-            else:
-                cases_cibles.append(i)
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-                # xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-        # print("new map: ", len(cases_cibles))
-        return cases_cibles
 
     def test_etat_du_sol(self, x1, y1):
 
@@ -343,6 +263,8 @@ class Perso():
         if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
             if case.montype == "batiment":
                 return case
+            else:
+                return None
         # retourne la case si c'est un batiment ou batiment-m
         if case.montype == "batiment" or case.montype == "batiment-m":
             return case
@@ -350,30 +272,12 @@ class Perso():
         # retourne rien si la case n'est pas un batiment
         return None
 
+
+
     def contourne(self):
-        if not self.cible_contournement:
-            self.get_cible_contournement()
-
-        try:
-            x = self.cible_contournement[0]
-            y = self.cible_contournement[1]
-        except:
-            self.actioncourante = None
-            self.cibles_contournement_precedentes = []
-            return
-
-        ang = Helper.calcAngle(self.x, self.y, x, y)
-        self.x, self.y  = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-        dist = Helper.calcDistance(self.x, self.y, x, y)
-
-        if dist <= self.vitesse:
-            self.cible_contournement = None
-            self.actioncourante = self.action_precedente
-
-    def contourne_2(self):
         # trouve les coins non-visités
         if not self.cible_contournement:
-            self.get_cible_contournement_2()
+            self.get_cible_contournement()
 
         #déplace vers la cible de contournement
         # if not self.cible_contournement:
@@ -392,7 +296,7 @@ class Perso():
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
 
-    def get_cible_contournement_2(self):
+    def get_cible_contournement(self):
         #reset la liste
 
         cible_possibles = []
@@ -400,8 +304,6 @@ class Perso():
             if coin not in self.cibles_contournement_precedentes:
                 cible_possibles.append(coin)
 
-
-        print(cible_possibles)
         # trouve le coin le plus proche
         distance_coin = []
         for coin in cible_possibles:
@@ -423,28 +325,128 @@ class Perso():
             # ce coin devient la cible de contournement, on l'ajoute au cible précédente pour éviter un repeat
             self.cible_contournement = smallest_dist
             self.cibles_contournement_precedentes.append(smallest_dist[1])
-        # print("je suis : (",self.x, ", "+self.y,") je vais vers ", self.cible_contournement[1][0],", ",self.cible_contournement[1][1])
 
 
 
 
 
-    def get_cible_contournement(self):
-        cases = self.get_map_contournement()
-        #choisi la direction une seule fois
-        # if self.contournements == 1:
-        self.get_directon_vers_position_visee()
+    # LEGACY COLLiSION
 
-        taille = self.parent.parent.taillecase
-        if cases:
-            if self.dir == "GH":
-                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
-            elif self.dir == "DH":
-                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
-            elif self.dir == "GB":
-                self.cible_contournement = cases[0].x*taille, cases[0].y*taille
-            elif self.dir == "DB":
-                self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+    # def get_directon_vers_position_visee(self):
+    #     # utilisé pour collision, demander permission avant DE BRISER MON CODE
+    #     if self.position_visee:
+    #         if self.x < self.position_visee[0]:
+    #             self.dir = "D"
+    #         else:
+    #             self.dir = "G"
+    #
+    #         if self.y < self.position_visee[1]:
+    #             self.dir += "B"
+    #         else:
+    #             self.dir += "H"
+
+    # def contourne(self):
+    #     if not self.cible_contournement:
+    #         self.get_cible_contournement()
+    #
+    #     try:
+    #         x = self.cible_contournement[0]
+    #         y = self.cible_contournement[1]
+    #     except:
+    #         self.actioncourante = None
+    #         self.cibles_contournement_precedentes = []
+    #         return
+    #
+    #     ang = Helper.calcAngle(self.x, self.y, x, y)
+    #     self.x, self.y  = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #     dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #     if dist <= self.vitesse:
+    #         self.cible_contournement = None
+    #         self.actioncourante = self.action_precedente
+
+    # def get_cible_contournement(self):
+    #     cases = self.get_map_contournement()
+    #     #choisi la direction une seule fois
+    #     # if self.contournements == 1:
+    #     self.get_directon_vers_position_visee()
+    #
+    #     taille = self.parent.parent.taillecase
+    #     if cases:
+    #         if self.dir == "GH":
+    #             self.cible_contournement = cases[0].x*taille, cases[0].y*taille
+    #         elif self.dir == "DH":
+    #             self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+    #         elif self.dir == "GB":
+    #             self.cible_contournement = cases[0].x*taille, cases[0].y*taille
+    #         elif self.dir == "DB":
+    #             self.cible_contournement = cases[-1].x*taille, cases[-1].y*taille
+
+    # def get_map_contournement(self):
+    #     x1, y1 = self.x, self.y
+    #
+    #     casex = x1 / self.parent.parent.taillecase
+    #     if casex != int(casex):
+    #         casex = int(casex) + 1
+    #     casey = y1 / self.parent.parent.taillecase
+    #     if casey != int(casey):
+    #         casey = int(casey) + 1
+    #
+    #     taille = self.parent.parent.taillecase
+    #
+    #     cases_cibles = []
+    #     # trouve si on frappe un mur à l'horinzontal ou vertial
+    #     if self.get_directon_contournement(x1,y1): #horizontal
+    #         cases = self.parent.parent.get_carte_contournement(x1, y1, 1,self.contournement_range)
+    #     else: #vertical
+    #         cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range,1)
+    #
+    #     for i in cases:
+    #         if i.montype == "batiment":
+    #             # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
+    #             xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+    #             self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
+    #             # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
+    #         elif i.montype == "batiment-back":
+    #             xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+    #             self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="crimson", tags=("statique",))
+    #         elif i.montype == "coin":
+    #             xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+    #             self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="yellow", tags=("statique",))
+    #         elif i.montype == "batiment-m":
+    #             xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+    #             self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="goldenrod", tags=("statique",))
+    #         else:
+    #             cases_cibles.append(i)
+    #             # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
+    #             # xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
+    #             # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
+    #             # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
+    #     # print("new map: ", len(cases_cibles))
+    #     return cases_cibles
+
+    # def get_directon_contournement(self, x1, y1):
+    #     # suis-je plus près de ma cible sur l'axe des x ou y
+    #     cases = self.parent.parent.get_carte_contournement(x1, y1, 1, 4)
+    #     # retourn vrai pour un mouvement vertical
+    #     if cases[3].montype == "batiment" and cases[5].montype == "batiment":
+    #         return False
+    #     if cases[4].montype == "batiment" and cases[6].montype == "batiment":
+    #         return False
+    #     if cases[-3].montype == "batiment" and cases[-5].montype == "batiment":
+    #         return False
+    #     if cases[-4].montype == "batiment" and cases[-6].montype == "batiment":
+    #         return False
+    #     else:
+    #         return True
+
+            # print("bad vertical")
+
+        # cases = self.parent.parent.get_carte_contournement(x1, y1, 4, 1)
+        # if cases[0].montype == "batiment" or cases[-1].montype == "batiment":
+        #     print("bad vertical")
+
+        # return  self.get_directon_contournement()
 
 
 
@@ -472,7 +474,7 @@ class Archer(Perso):
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
-                                 "contourne": self.contourne_2,
+                                 "contourne": self.contourne,
                                  "bougerversennemi": self.bouger_vers_ennemi
                                  }
 
@@ -627,7 +629,7 @@ class Ouvrier(Perso):
                                  "ciblerressource": self.cibler_ressource,
                                  "retourbatimentmere": self.retour_batiment_mere,
                                  "validerjavelot": self.valider_javelot,
-                                 "contourne": self.contourne_2}
+                                 "contourne": self.contourne}
 
     def chasser_ramasser(self, objetcible, sontype, actiontype):
         self.cible = objetcible
