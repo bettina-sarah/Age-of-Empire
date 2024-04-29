@@ -326,9 +326,9 @@ class Vue():
         self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
-        # self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
+        self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
 
-        self.canevas.tag_bind("ours", "<Button-1>", self.test)
+        # self.canevas.tag_bind("ours", "<Button-1>", self.test)
         self.canevas.tag_bind("objet", "<Button-1>", self.ramasser_ressource)
 
         # self.canevas.tag_bind("daim", "<Button-1>", self.afficher_fin)
