@@ -619,10 +619,7 @@ class Vue():
             self.canevasaction.delete(self.action.widgetsactifs)
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
-        print("dans cadre tour")
         for i in artefacts:
-            print("dans for loop artefact: ", "coul = ", coul, " i = ", i)
-            print("faut avoir:J_mur_h pour limage:", coul+i)
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i])
             btn.bind("<Button>", lambda event: self.site_construction_mur(pos, i))
             btn.pack()
@@ -639,12 +636,23 @@ class Vue():
 
     def site_construction_mur(self, coordos_tour, type_mur):
         x,y = coordos_tour
-        x = x+70
-        y = y+70
+        nbr_murs = len(self.modele.joueurs[self.nom_joueur_local].batiments[type_mur])
+        if type_mur=="mur_h":
+            if nbr_murs > 0:
+                x = x-80*(nbr_murs+1)
+                y = y-90*(nbr_murs+1)
+            else:
+                x = x - 80
+                y = y - 90
+        if type_mur=="mur_v":
+            if nbr_murs > 0:
+                x = x+80*(nbr_murs+1)
+                y = y+90*(nbr_murs+1)
+            else:
+                x = x + 80
+                y = y + 90
         self.action.prochaineaction = type_mur
         self.construire_batiment(self, (x,y))
-
-
 
 
     ##FONCTIONS D'AFFICHAGES##################################
