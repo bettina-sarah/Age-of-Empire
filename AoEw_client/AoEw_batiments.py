@@ -43,7 +43,7 @@ class Batiment():
             return 1
 
     def update_type_carte_batiment(self, cartebatiment):
-        self.cartebatiment = cartebatiment;
+        # self.cartebatiment = cartebatiment;
         # modele
         # print(self.parent.parent.parent)
         self.parent.parent.parent.set_background_case_batiment(self.cartebatiment)

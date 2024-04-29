@@ -161,7 +161,6 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
 
-
         for i in cartebatiment:
             # pour contournement avec retour de ressource
             if (batiment.montype == "maison"):
@@ -174,26 +173,12 @@ class Partie():
 
         x1, y1 = cartebatiment[0]
         x4, y4 = cartebatiment[-1]
-        x2, y2 = x4, y1
-        x3, y3 = x1, y4
 
-
-        # print("new corner", y1, "/", x1)
-        # print("new corner", y2, "/", x2)
-        # print("new corner", y3, "/", x3)
-        # print("new corner", y4, "/", x4)
-        #
-        # self.cartecase[[y1][x1]].montype = "coin"
-        # self.cartecase[[y2][x2]].montype = "coin"
-        # self.cartecase[[y3][x3]].montype = "coin"
-        # self.cartecase[[y4][x4]].montype = "coin"
         batiment.set_coins(x1 * self.taillecase, y1* self.taillecase , x4* self.taillecase, y4* self.taillecase)
-        # batiment.coin_gh = (x1 * self.taillecase, y1 * self.taillecase)
-        # batiment.coin_dh = (x2 * self.taillecase, y2 * self.taillecase)
-        # batiment.coin_gb = (x3 * self.taillecase, y3 * self.taillecase)
-        # batiment.coin_db = (x4 * self.taillecase, y4 * self.taillecase)
         batiment.cartebatiment = cartebatiment
-        # batiment.update_type_carte_batiment(cartebatiment)
+
+        # self.set_background_case_batiment(batiment.cartebatiment)
+
 
 
     def creer_biotopes(self):
@@ -669,21 +654,6 @@ class Partie():
 
     def set_background_case_batiment(self,  cartebatiment):
 
-        # x1, y1 = cartebatiment[0]
-        # x4, y4 = cartebatiment[-1]
-        # x2, y2 = x4, y1
-        # x3, y3 = x1, y4
-        #
-        # print(x1, "/", y1)
-        # print(x2, "/", y2)
-        # print(x3, "/", y3)
-        # print(x4, "/", y4)
-        #
-        # self.cartecase[[x1][y1]].montype = "coin"
-        # self.cartecase[[x2][y2]].montype = "coin"
-        # self.cartecase[[x3][y3]].montype = "coin"
-        # self.cartecase[[x4][y4]].montype = "coin"
-
         y1 = 0;
         count = 0
         for casePos in cartebatiment:
@@ -691,7 +661,9 @@ class Partie():
                 y1 = casePos[1]
                 count += 1
 
-            if count < 5:
+            if count < 4:
+                xa, ya, xb, yb = casePos[0] * self.taillecase, casePos[1]  * self.taillecase, casePos[0] * self.taillecase + self.taillecase, casePos[1]  * self.taillecase + self.taillecase
+                self.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="crimson", tags=("statique",))
                 self.cartecase[casePos[1]][casePos[0]].montype = "batiment-back"
 
         test = self.cartecase
