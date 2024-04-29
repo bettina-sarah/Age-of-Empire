@@ -38,6 +38,18 @@ class Batiment():
                 self.parent.annoncer_mort_batiment(self)
             return 1
 
+    def recevoir_soin(self, soin):
+        print(" avant",self.mana)
+        print("soin rececois",self.force)
+
+        if self.mana + soin >= self.manaMax:
+            self.mana = self.manaMax
+        else:
+            self.mana += soin
+
+        print("soin recu",self.mana)
+        return 1
+
 
 class Usineballiste(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):

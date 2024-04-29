@@ -318,6 +318,8 @@ class Vue():
         # sinon on spécifie un tag particulier, exemple avec divers tag, attaché par divers événements
         self.canevas.tag_bind("batiment", "<Button-1>", self.creer_entite)
         self.canevas.tag_bind("perso", "<Button-1>", self.ajouter_selection)
+        self.canevas.tag_bind("perso", "<Button-3>", self.testSoin)
+
         self.canevas.tag_bind("arbre", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("aureus", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("roche", "<Button-1>", self.ramasser_ressource)
@@ -848,18 +850,35 @@ class Vue():
         self.textchat = None
         self.fenchat.destroy()
 
+    def testSoin(self, evt):
+
+        #A PROBLEM HERE !!:
+        mestags = self.canevas.gettags(CURRENT)
+        print(self.action.persochoisi[0])
+        print("Dans testSOIN")
+        self.action.ciblechoisi = mestags
+        print(" self.action.ciblechoisi ", self.action.ciblechoisi)
+        self.action.soigner()
+
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
         print("AJOTUER SELECTION", mestags)
+        # SELECTION('mobile', 'JAJA_942', 'id_44881', 'perso', 'druide', 'current')
         if self.parent.nom_joueur_local == mestags[1]:
-            print(" if self.parent.nom_joueur_local == mestags[1]:", self.parent.nom_joueur_local)
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
+            elif "druide" == mestags[4]:
+                print("dans DRUIDE")
+                if not self.action.persochoisi:
+                    self.action.persochoisi.append(mestags[2])
+                    print(" self.action.ciblechoisi ", self.action.ciblechoisi)
+                    print("pas de perso choisi", self.action.persochoisi)
+                    # self.action.soigner()
             else:
                 print("else pas ouvrier", self.action.persochoisi)
                 self.action.persochoisi.append(mestags[2])
-        elif self.action.persochoisi != []:
+        elif self.action.persochoisi:
             print("Dans le elif self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
             print(" self.action.ciblechoisi ", self.action.ciblechoisi)
@@ -1120,7 +1139,7 @@ class Action():
             self.parent.canevas.delete(self.aideon)
             self.aideon = 0
 
-##SEND ACTION TO SERVER !!!!!!!
+    ##SEND ACTION TO SERVER !!!!!!!
     def soigner(self):
         print("dans soigner : persochoisi : ", self.persochoisi)
         print("dans soigner : ciblechoisi : ", self.ciblechoisi)
@@ -1131,6 +1150,7 @@ class Action():
             print("Vue soigner, sorte, self.ciblechoisi", sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "soigner", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
+
     # //changer aort
     def abandonner(self, param):
         pass

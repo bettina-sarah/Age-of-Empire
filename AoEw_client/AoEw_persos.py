@@ -10,7 +10,7 @@ class Fleche():
         self.id = id
         self.vitesse = 18
         self.taille = 20
-        self.force = 30  ##A REMMETTRE A 10
+        self.force = 25  ##A REMMETTRE A 10
         self.proie = proie
         self.proiex = self.proie.x
         self.proiey = self.proie.y
@@ -101,14 +101,15 @@ class Perso():
         self.cibleennemi = None
         self.manaMax = 100
         self.mana = 100
-        self.force = 100
+        self.force = 25
         self.champvision = 100
-        self.vitesse = 5
+        self.vitesse = 30
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
                                  "ciblerennemi": None,
-                                 "contourne": self.contourne}
+                                 "contourne": self.contourne,
+                                 "soignercible":None}
 
         # contournement
         self.action_precedente = None
@@ -122,7 +123,7 @@ class Perso():
         # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
     def attaquer(self, ennemi):
-        self.cibleennemi = ennemi
+        self.cibleennemi = ennemi[0]
         x = self.cibleennemi.x
         y = self.cibleennemi.y
         pos_cible = x, y
@@ -149,11 +150,19 @@ class Perso():
             return 1
 
     def recevoir_soin(self, soin):
+        print(" avant",self.mana)
+        print("soin rececois",self.force)
+
         if self.mana + soin >= self.manaMax:
             self.mana = self.manaMax
+            print("soin recu", self.mana)
+            return 1
         else:
             self.mana += soin
-            return 1
+            print("soin recu", self.mana)
+            return 0
+
+
 
     def jouer_prochain_coup(self):
         if self.actioncourante:
@@ -560,10 +569,12 @@ class Druide(Perso):
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "soignercible": self.soignercible
                                  }
 
     def cibler(self):
+        ###?????????????????????????????????????
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
         if self.x < self.position_visee[0]:
             self.dir = "D"
@@ -571,29 +582,28 @@ class Druide(Perso):
             self.dir = "G"
 
         self.image = self.image[:-1] + self.dir
-        self.actioncourante = "attaquerennemi"
+        self.actioncourante = "soignercible"
 
-    def attaquer(self, ennemi):
-        self.cibleennemi = ennemi
-        x = self.cibleennemi.x
-        y = self.cibleennemi.y
+    def soigner(self, blesse):
+        print("dans soigne")
+        self.cible_soin = blesse
+        self.cibleennemi=blesse
+        x = self.cible_soin.x
+        y = self.cible_soin.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
         print("DISTANCE CALCULEE", dist)
 
         if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
-            self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
+            self.actioncourante = "soignercible"
+            print(self.actioncourante)
         else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "bougerversennemi"
-            print("self.actioncourante = ciblerennemi")
+            print(self.actioncourante)
 
     def attaquerennemi(self):
         if self.cibleennemi:
             self.delaifeu = self.delaifeu - 1
-            print("KAWABUNGA BABY")
-            print(" DELAI FEU : ", self.delaifeu)
-
             if self.delaifeu == 0:
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
@@ -602,13 +612,13 @@ class Druide(Perso):
                 # self.cibleennemi.recevoir_coup(self.force)
                 # self.fleches.remove(rep)
 
-    def soigner(self):
+    def soignercible(self):
         if self.cible_soin:
             self.delaisoin = self.delaisoin - 1
-            print("dans soin")
+            print("dans soincible")
             print("delais soin:", self.delaisoin)
             if self.delaisoin == 0:
-                rep = self.cible_soin.recevoir_soin(self.soin_force)
+                rep = self.cible_soin.recevoir_soin(self.soin_mana)
                 self.delaisoin = self.delaisoinmax
                 if rep:
                     self.actioncourante = None
