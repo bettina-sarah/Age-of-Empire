@@ -498,7 +498,7 @@ class Partie():
                 pxcentrecasex = (j * self.taillecase) + self.demicase
                 pxcentrecasey = (i * self.taillecase) + self.demicase
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
-                if distcase <= distmax and case.montype == "plaine" and case.persos:
+                if distcase <= distmax and case.persos:
                     t1.append(case)
                     # Assuming 'case.persos' is a dictionary
                     first_key, first_value = next(iter(case.persos.items()))

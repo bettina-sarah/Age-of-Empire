@@ -39,9 +39,15 @@ class Fleche():
             self.parent.fleches.remove(self)
             if rep == 1:
                 self.parent.fleches.clear()
+                try:
+                    self.parent.parent.parent.trouver_case(self.parent.cibleennemi.x, self.parent.cibleennemi.y).persos.pop(self.parent.cibleennemi.id)
+                except:
+                    pass
                 self.parent.cibleennemi = None;
+                self.parent.actioncourante = "verifierchampvision"
 
             # return self
+
 
 
 class Javelot():
@@ -337,8 +343,15 @@ class Perso():
             return
 
         ang = Helper.calcAngle(self.x, self.y, x, y)
+
+        self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+        print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
         self.x, self.y = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, x, y)
+        self.case = self.parent.parent.trouver_case(self.x, self.y)
+        self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+        print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+
 
         if dist <= self.vitesse:
             self.cible_contournement = None
@@ -364,6 +377,8 @@ class Soldat(Perso):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
         self.force = 25
         self.distancefeumax = 20
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
         self.delaifeu = 20
         self.delaifeumax = 20
         self.champvision = 100
@@ -375,8 +390,44 @@ class Soldat(Perso):
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier
                                  }
+        self.actioncourante = "verifierchampvision"
+
+    def bouger(self):
+        if self.position_visee:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.position_visee[0]
+            y = self.position_visee[1]
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.vitesse:
+                if self.actioncourante == "bouger":
+                    self.actioncourante = "verifierchampvision"
+                return "rendu"
+            else:
+                return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -415,9 +466,31 @@ class Soldat(Perso):
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
                 if rep:
-                    self.actioncourante = None
+                    self.actioncourante = "verifierchampvision"
+                    try:
+                        self.parent.parent.trouver_case(self.cibleennemi.x, self.cibleennemi.y).persos.pop(self.cibleennemi.id)
+                    except:
+                        pass
+
                 # self.cibleennemi.recevoir_coup(self.force)
                 # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
 
 
 class Archer(Perso):
@@ -428,7 +501,7 @@ class Archer(Perso):
         # self.cible = None
         # self.angle = None
         self.distancefeumax = 200
-        self.delai_verifier_champ = 100
+        self.delai_verifier_champ = 30
         self.vision_cases = 10
         self.distancefeu = 200
         self.delaifeu = 25
@@ -449,6 +522,40 @@ class Archer(Perso):
                                  }
 
         self.actioncourante = "verifierchampvision"
+
+    def bouger(self):
+        if self.position_visee:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.position_visee[0]
+            y = self.position_visee[1]
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.vitesse:
+                if self.actioncourante == "bouger":
+                    self.actioncourante = "verifierchampvision"
+                return "rendu"
+            else:
+                return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -496,8 +603,17 @@ class Archer(Perso):
     def verifier_champ_vision(self, x, y, radius):
         self.delai_verifier_champ -= 1
         if self.delai_verifier_champ == 0:
-            self.parent.parent.get_subcarte(x, y, radius)
-            self.delai_verifier_champ = 100
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases: # chaque case
+                cles = i.persos.values() #'objet'
+                for j in cles: # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
+
 
 
 class Chevalier(Perso):
@@ -507,6 +623,8 @@ class Chevalier(Perso):
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
         self.champvision = 150
         self.vitesse = 10
         self.mana = 150
@@ -516,8 +634,44 @@ class Chevalier(Perso):
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier
                                  }
+        self.actioncourante = "verifierchampvision"
+
+    def bouger(self):
+        if self.position_visee:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.position_visee[0]
+            y = self.position_visee[1]
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.vitesse:
+                if self.actioncourante == "bouger":
+                    self.actioncourante = "verifierchampvision"
+                return "rendu"
+            else:
+                return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -554,9 +708,30 @@ class Chevalier(Perso):
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
                 if rep:
-                    self.actioncourante = None
+                    self.actioncourante = "verifierchampvision"
+                    try:
+                        self.parent.parent.trouver_case(self.cibleennemi.x, self.cibleennemi.y).persos.pop(self.cibleennemi.id)
+                    except:
+                        pass
                 # self.cibleennemi.recevoir_coup(self.force)
                 # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
 
 
 class Druide(Perso):
@@ -566,14 +741,52 @@ class Druide(Perso):
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
         self.cibleennemi = None
         self.position_visee = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier
                                  }
+        self.actioncourante = "verifierchampvision"
+
+    def bouger(self):
+        if self.position_visee:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.position_visee[0]
+            y = self.position_visee[1]
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.vitesse:
+                if self.actioncourante == "bouger":
+                    self.actioncourante = "verifierchampvision"
+                return "rendu"
+            else:
+                return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -610,9 +823,30 @@ class Druide(Perso):
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
                 if rep:
-                    self.actioncourante = None
+                    self.actioncourante = "verifierchampvision"
+                    try:
+                        self.parent.parent.trouver_case(self.cibleennemi.x, self.cibleennemi.y).persos.pop(self.cibleennemi.id)
+                    except:
+                        pass
                 # self.cibleennemi.recevoir_coup(self.force)
                 # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
 
 
 class DruideOurs(Perso):
@@ -622,14 +856,52 @@ class DruideOurs(Perso):
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
         self.cibleennemi = None
         self.position_visee = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier
                                  }
+        self.actioncourante = "verifierchampvision"
+
+    def bouger(self):
+        if self.position_visee:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.position_visee[0]
+            y = self.position_visee[1]
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.vitesse:
+                if self.actioncourante == "bouger":
+                    self.actioncourante = "verifierchampvision"
+                return "rendu"
+            else:
+                return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -666,9 +938,30 @@ class DruideOurs(Perso):
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
                 if rep:
-                    self.actioncourante = None
+                    self.actioncourante = "verifierchampvision"
+                    try:
+                        self.parent.parent.trouver_case(self.cibleennemi.x, self.cibleennemi.y).persos.pop(self.cibleennemi.id)
+                    except:
+                        pass
                 # self.cibleennemi.recevoir_coup(self.force)
                 # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
 
 
 class Ingenieur(Perso):
@@ -686,6 +979,8 @@ class Ballista(Perso):
         self.angle = None
         self.distancefeumax = 360
         self.distancefeu = 360
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
@@ -700,8 +995,44 @@ class Ballista(Perso):
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier
                                  }
+        self.actioncourante = "verifierchampvision"
+
+    def bouger(self):
+        if self.position_visee:
+            # le if sert à savoir si on doit repositionner notre visee pour un objet
+            # dynamique comme le daim
+            x = self.position_visee[0]
+            y = self.position_visee[1]
+            ang = Helper.calcAngle(self.x, self.y, x, y)
+            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+            self.get_directon_vers_position_visee()
+            # print("avant : ", self.x,"/", self.y )
+            # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            if self.test_etat_du_sol(x1, y1):
+                self.action_precedente = self.actioncourante
+                self.actioncourante = "contourne"
+                return "contourne"
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+            ######## FIN DE TEST POUR SURFACE MARCHEE
+            # si tout ba bien on continue avec la nouvelle valeur
+            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+            dist = Helper.calcDistance(self.x, self.y, x, y)
+
+            if dist <= self.vitesse:
+                if self.actioncourante == "bouger":
+                    self.actioncourante = "verifierchampvision"
+                return "rendu"
+            else:
+                return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -743,6 +1074,23 @@ class Ballista(Perso):
             # if rep:
             # self.cibleennemi.recevoir_coup(self.force)
             # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
 
 
 class Ouvrier(Perso):
