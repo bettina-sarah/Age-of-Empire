@@ -410,7 +410,7 @@ class Vue():
         coul = self.modele.joueurs[self.parent.nom_joueur_local].couleur
         self.cadrejeuinfo.config(bg=coul[1])
         self.creer_aide()
-        self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste", "champstir", "mur_h", "mur_v", "tour"])
+        self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste", "champstir", "tour"])
 
         self.creer_chatter()
         # on affiche les maisons, point de depart des divers joueurs
@@ -602,6 +602,50 @@ class Vue():
             self.parent.actions_requises.append(action)
         except:
             print("action invalide")
+
+    #(self, coul, artefacts):
+
+        # self.cadreouvrier = Frame(self.canevasaction)
+        # for i in artefacts:
+        #     btn = Button(self.cadreouvrier, text=i, image=self.images[coul + i])
+        #     btn.bind("<Button>", self.batir_artefact)
+        #     btn.pack()
+
+
+
+
+    def creer_cadre_tour(self, coul, artefacts, pos):
+        if self.action.widgetsactifs:
+            self.canevasaction.delete(self.action.widgetsactifs)
+            self.action.widgetsactifs = []
+        self.cadrebatiment = Frame(self.canevasaction)
+        print("dans cadre tour")
+        for i in artefacts:
+            print("dans for loop artefact: ", "coul = ", coul, " i = ", i)
+            print("faut avoir:J_mur_h pour limage:", coul+i)
+            btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i])
+            btn.bind("<Button>", lambda event: self.site_construction_mur(pos, i))
+            btn.pack()
+
+        self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
+                                                                          window=self.cadrebatiment,
+                                                                          anchor=N))
+        self.root.update()
+        fh = self.cadrebatiment.winfo_height()
+        ch = int(self.canevasaction.cget("height"))
+        if fh + 60 > ch:
+            cl = int(self.canevasaction.cget("width"))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
+
+    def site_construction_mur(self, coordos_tour, type_mur):
+        x,y = coordos_tour
+        x = x+70
+        y = y+70
+        self.action.prochaineaction = type_mur
+        self.construire_batiment(self, (x,y))
+
+
+
 
     ##FONCTIONS D'AFFICHAGES##################################
     def afficher_depart(self):
@@ -935,35 +979,47 @@ class Vue():
         xl = self.canevas.winfo_width()
         yl = self.canevas.winfo_height()
 
-    def batir_artefact(self, evt):
-        obj = evt.widget
-        if self.action.btnactif:
-            if self.action.btnactif != obj:
-                self.action.btnactif.config(bg="SystemButtonFace")
+    def batir_artefact(self, evt, coordos_tour=None):
+        try:
+            obj = evt.widget
+            if self.action.btnactif:
+                if self.action.btnactif != obj:
+                    self.action.btnactif.config(bg="SystemButtonFace")
         # test de cout a cet endroit
-        nomsorte = obj.cget("text")
-        self.action.btnactif = obj
+            nomsorte = obj.cget("text")
+            self.action.btnactif = obj
+        except:
+            nomsorte = "mur_h"
 
         vals = self.parent.trouver_valeurs()
-        print("vals dans batier artefact ", vals)
         ok = 1
         for k, val in self.modele.joueurs[self.nom_joueur_local].ressources.items():
             if val < vals[nomsorte][k]:
                 ok = 0
                 break
         if ok:
-            self.action.prochaineaction = obj.cget("text")
-            obj.config(bg="lightgreen")
+            try:
+                self.action.prochaineaction = obj.cget("text")
+                print("obj cget: ", obj.cget("text"))
+                obj.config(bg="lightgreen")
+            except:
+                self.action.prochaineaction = "mur_h"
         else:
             print(val)
             print("VOUS N'AVEZ PAS ASSEZ DE", k)
 
-    def construire_batiment(self, evt):
+    def construire_batiment(self, evt, coordos_tour=None):
         mestags = self.canevas.gettags(CURRENT)
 
         if not mestags:
-            pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-            self.action.construire_batiment(pos)
+            if coordos_tour is not None:
+                #pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                print("construire batiment, voici coordos_tour: (x,y): ", coordos_tour)
+                self.action.construire_batiment(coordos_tour)
+            else:
+                pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                print("pos dans construire batiment (vue)", pos)
+                self.action.construire_batiment(pos)
         elif "SiteConstruction" in mestags:  # permet de continuer une constuction de site de construction
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
             self.action.prochaineaction = "siteconstruction"
@@ -993,9 +1049,11 @@ class Vue():
                     self.creer_cadre_usine(coul[0] + "_", ["archer", "ballista", "catapulte"], mestags[4], mestags[2],
                                            pos)
                 if "champs_de_tir" in mestags:
-
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
+                if "tour" in mestags:
+                    pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                    self.creer_cadre_tour(coul[0] + "_", ["mur_h", "mur_v"], pos)
         elif self.action.persochoisi != []:
             print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
@@ -1081,9 +1139,16 @@ class Action():
             self.parent.parent.actions_requises.append(action)
 
     def construire_batiment(self, pos):
-        self.btnactif.config(bg="SystemButtonFace")
-        self.btnactif = None
-        action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+        print(self.persochoisi)
+        if self.persochoisi:
+            #self.btnactif.config(bg="SystemButtonFace")
+            self.btnactif = None
+            if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
+                action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
+
+            else:
+                action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+
         self.parent.parent.actions_requises.append(action)
 
     def continuer_construction(self, pos):
