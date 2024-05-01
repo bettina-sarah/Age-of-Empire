@@ -530,10 +530,10 @@ class Partie():
         casecoinx2 = cx + d
         casecoiny2 = cy + d
         # assure qu'on deborde pas
-        # if casecoinx2 >= self.taillecase:
-        #     casecoinx2 = self.taillecase - 1
-        # if casecoiny2 >= self.taillecase:
-        #     casecoiny2 = self.taillecase - 1
+        if casecoinx2 >= self.taillecarte:
+            casecoinx2 = self.taillecarte - 1
+        if casecoiny2 >= self.taillecarte:
+            casecoiny2 = self.taillecarte - 1
 
         distmax = (d * self.taillecase) + self.demicase
 
@@ -546,10 +546,10 @@ class Partie():
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax and case.persos:
                     t1.append(case)
-                    first_key, first_value = next(iter(case.persos.items()))
-                    print(f"First key: {first_key}, First value: {first_value}")
-
-                    print(t1)
+                    # first_key, first_value = next(iter(case.persos.items()))
+                    # print(f"First key: {first_key}, First value: {first_value}")
+                    #
+                    # print(t1)
         return t1
 
     def get_carte_contournement(self, x, y, dx, dy):

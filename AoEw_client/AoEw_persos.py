@@ -221,12 +221,11 @@ class Perso():
             self.get_directon_vers_position_visee()
             # print("avant : ", self.x,"/", self.y )
             # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            self.update_cases(x1,y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
+            case_mur = self.test_etat_du_sol(x1, y1)
+            self.update_cases(x1, y1)
+            if case_mur:
+                self.nouveau_contournement(case_mur)
                 return "contourne"
-
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
@@ -1209,8 +1208,10 @@ class Ouvrier(Perso):
                 #     if self.id != rep.id:
                 #         self.cible=rep
         else:
+            self.parent.parent.trouver_case(self.x,self.y).persos.pop(self.id)
             self.x = self.x + random.randrange(4) - 2
             self.y = self.y + random.randrange(4) - 2
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
 
     def construire_batiment(self):
         self.cible.decremente_delai()
