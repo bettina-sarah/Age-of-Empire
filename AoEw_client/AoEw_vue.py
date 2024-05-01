@@ -607,17 +607,6 @@ class Vue():
         except:
             print("action invalide")
 
-    #(self, coul, artefacts):
-
-        # self.cadreouvrier = Frame(self.canevasaction)
-        # for i in artefacts:
-        #     btn = Button(self.cadreouvrier, text=i, image=self.images[coul + i])
-        #     btn.bind("<Button>", self.batir_artefact)
-        #     btn.pack()
-
-
-
-
     def creer_cadre_tour(self, coul, artefacts, tag_tour, pos):
         if self.action.widgetsactifs:
             self.canevasaction.delete(self.action.widgetsactifs)
@@ -642,14 +631,14 @@ class Vue():
         if type_mur == "mur_v":
             self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v += 1
             murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v
-            x = x + 55 * murv
-            y = y + 55 * murv
+            x = x + 60 * murv
+            y = y + 60 * murv
 
         else:
             self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h += 1
             murh = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h
-            x = x - 120 * murh
-            y = y + 40 * murh
+            x = x - 105 * murh
+            y = y + 35 * murh
 
         self.action.prochaineaction = type_mur
         self.construire_batiment(self, (x,y))
