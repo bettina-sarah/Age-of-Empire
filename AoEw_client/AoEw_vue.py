@@ -58,7 +58,6 @@ class Vue():
     def creer_cadres(self, url_serveur: str, nom_joueur_local: str, testdispo: str):
         self.cadres["splash"] = self.creer_cadre_splash(url_serveur, nom_joueur_local, testdispo)
         self.cadres["lobby"] = self.creer_cadre_lobby()
-
         self.cadres["jeu"] = self.creer_cadre_jeu()
 
     # le splash (ce qui 'splash' à l'écran lors du démarrage)
@@ -66,7 +65,6 @@ class Vue():
 
     def creer_cadre_fin(self):
         self.cadreFin = Frame(self.cadreapp, bg="gold", width=500, height=400)
-
         self.cadreFin.pack_propagate(False)
         label_text = "FIN DE LA PARTIE"
         label = Label(self.cadreFin, text=label_text, bg=self.cadreFin['bg'], font=("arial", 12, "bold"))
@@ -76,6 +74,10 @@ class Vue():
         gagnant = Label(self.cadreFin, text=self.gagnant, bg=self.cadreFin['bg'], font=("arial", 18, "bold"))
         gagnant.config()
 
+        btnMenu = Button(self.cadreFin, text="RELancer partie", command=self.parent.test)
+        # affichage des widgets dans le canevaslobby (similaire au splash)
+
+        btnMenu.pack()
         label.pack(expand=True)
         t1.pack(expand=True)
         gagnant.pack(expand=True)
@@ -316,6 +318,8 @@ class Vue():
         # sinon on spécifie un tag particulier, exemple avec divers tag, attaché par divers événements
         self.canevas.tag_bind("batiment", "<Button-1>", self.creer_entite)
         self.canevas.tag_bind("perso", "<Button-1>", self.ajouter_selection)
+        self.canevas.tag_bind("perso", "<Button-3>", self.testSoin)
+
         self.canevas.tag_bind("arbre", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("aureus", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("roche", "<Button-1>", self.ramasser_ressource)
@@ -323,6 +327,8 @@ class Vue():
         self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
         self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
         self.canevas.tag_bind("ours", "<Button-1>", self.chasser_ressource)
+
+        # self.canevas.tag_bind("ours", "<Button-1>", self.test)
         self.canevas.tag_bind("objet", "<Button-1>", self.ramasser_ressource)
 
         # self.canevas.tag_bind("daim", "<Button-1>", self.afficher_fin)
@@ -410,7 +416,6 @@ class Vue():
         self.cadrejeuinfo.config(bg=coul[1])
         self.creer_aide()
         self.creer_cadre_ouvrier(coul[0] + "_", ["maison", "caserne", "abri", "usineballiste", "champstir", "tour"])
-
         self.creer_chatter()
         # on affiche les maisons, point de depart des divers joueurs
         self.afficher_depart()
@@ -458,7 +463,7 @@ class Vue():
             "arbre": self.images["bois-ressource"],
             "roche": self.images["roches1petit"],
             "aureus": self.images["aureusD_"],
-             "objet": self.images["objet"]
+            "objet": self.images["objet"]
         }
 
         # self.frame_generique(index)
@@ -699,7 +704,7 @@ class Vue():
             for i in self.modele.joueurs[j].batiments["maison"].keys():
                 m = self.modele.joueurs[j].batiments["maison"][i]
                 coul = self.modele.joueurs[j].couleur[0]
-                self.canevas.create_image(m.x, m.y, image=self.images[coul + "_maison"],
+                self.canevas.create_image(m.x, m.y, image=self.images[coul + "_init"],
                                           tags=("statique", j, m.id, "batiment", m.montype, ""))
                 # tags=("mobile","",i.id,)
                 # afficher sur minicarte
@@ -804,6 +809,9 @@ class Vue():
                                               tags=("mobile", j, k, "perso", i.montype))
                     # tags=(j,k,"artefact","mobile","perso",p))
                     if k in self.action.persochoisi:
+                        health = (i.mana / 100) * 10
+                        self.canevas.create_rectangle(i.x - 10, i.y - 50, i.x + health, i.y - 45, fill="lime green",
+                                                      tags=("mobile", j, p, "perso", type(i).__name__, "persochoisi"))
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
                                                       tags=("mobile", j, p, "perso", type(i).__name__, "persochoisi"))
                         # tags=(j,k,"artefact","mobile","persochoisi"))
@@ -892,18 +900,35 @@ class Vue():
         self.textchat = None
         self.fenchat.destroy()
 
+    def testSoin(self, evt):
+
+        # A PROBLEM HERE !!:
+        mestags = self.canevas.gettags(CURRENT)
+        print(self.action.persochoisi[0])
+        print("Dans testSOIN")
+        self.action.ciblechoisi = mestags
+        print(" self.action.ciblechoisi ", self.action.ciblechoisi)
+        self.action.soigner()
+
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
         print("AJOTUER SELECTION", mestags)
+        # SELECTION('mobile', 'JAJA_942', 'id_44881', 'perso', 'druide', 'current')
         if self.parent.nom_joueur_local == mestags[1]:
-            print(" if self.parent.nom_joueur_local == mestags[1]:", self.parent.nom_joueur_local)
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
+            elif "druide" == mestags[4]:
+                print("dans DRUIDE")
+                if not self.action.persochoisi:
+                    self.action.persochoisi.append(mestags[2])
+                    print(" self.action.ciblechoisi ", self.action.ciblechoisi)
+                    print("pas de perso choisi", self.action.persochoisi)
+                    # self.action.soigner()
             else:
                 print("else pas ouvrier", self.action.persochoisi)
                 self.action.persochoisi.append(mestags[2])
-        elif self.action.persochoisi != []:
+        elif self.action.persochoisi:
             print("Dans le elif self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
             print(" self.action.ciblechoisi ", self.action.ciblechoisi)
@@ -1037,7 +1062,7 @@ class Vue():
         coul = self.modele.joueurs[self.parent.nom_joueur_local].couleur
         if self.parent.nom_joueur_local in mestags:
             if "batiment" in mestags:
-                if "maison" in mestags:
+                if "maison" in mestags or "init" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_maison(coul[0] + "_", ["ouvrier"], mestags[4], mestags[2], pos)
                 if "caserne" in mestags:
@@ -1065,39 +1090,12 @@ class Vue():
 
     def test(self, evt):
         # print("DANS TEST DE FIN")
-
+        self.gagnant = "MARI"
+        self.cadres["fin"] = self.creer_cadre_fin()
         self.changer_cadre("fin")
 
     def unbind_joueur(self):
-        # unbind tout ou juste le tick sur les joueur ?
-        # test sur self
-
         self.canevas.tag_unbind("perso", "<Button-1>")
-
-        # on attache (bind) desF événements soit aux objets eux même
-        # self.canevas.bind("<Button-1>", self.annuler_action)
-        # self.canevas.bind("<Button-3>", self.construire_batiment)
-        # # faire une multiselection
-        # self.canevas.bind("<Shift-Button-1>", self.debuter_selection)
-        # self.canevas.bind("<Shift-B1-Motion>", self.afficher_selection)
-        # self.canevas.bind("<Shift-ButtonRelease-1>", self.terminer_selection)
-        #
-        # self.canevas.bind("<Button-2>", self.indiquer_position)
-        #
-        # self.canevas.bind("<MouseWheel>", self.OnMouseWheel)
-        # self.canevas.bind("<Control-MouseWheel>", self.OnCtrlMouseWheel)
-        #
-        # # soit aux dessins, en vertu de leur tag (propriétés des objets dessinés)
-        # # ALL va réagir à n'importe quel dessin
-        # # sinon on spécifie un tag particulier, exemple avec divers tag, attaché par divers événements
-        # self.canevas.tag_bind("batiment", "<Button-1>", self.creer_entite)
-        # self.canevas.tag_bind("perso", "<Button-1>", self.ajouter_selection)
-        # self.canevas.tag_bind("arbre", "<Button-1>", self.ramasser_ressource)
-        # self.canevas.tag_bind("aureus", "<Button-1>", self.ramasser_ressource)
-        # self.canevas.tag_bind("roche", "<Button-1>", self.ramasser_ressource)
-        # self.canevas.tag_bind("baie", "<Button-1>", self.ramasser_ressource)
-        # self.canevas.tag_bind("eau", "<Button-1>", self.ramasser_ressource)
-        # self.canevas.tag_bind("daim", "<Button-1>", self.chasser_ressource)
 
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
@@ -1209,6 +1207,18 @@ class Action():
         else:
             self.parent.canevas.delete(self.aideon)
             self.aideon = 0
+
+    ##SEND ACTION TO SERVER !!!!!!!
+    def soigner(self):
+        print("dans soigner : persochoisi : ", self.persochoisi)
+        print("dans soigner : ciblechoisi : ", self.ciblechoisi)
+        if self.persochoisi:
+            qui = self.ciblechoisi[1]
+            cible = self.ciblechoisi[2]
+            sorte = self.ciblechoisi[4]
+            print("Vue soigner, sorte, self.ciblechoisi", sorte, self.ciblechoisi[4])
+            action = [self.parent.parent.nom_joueur_local, "soigner", [self.persochoisi, [qui, cible, sorte]]]
+            self.parent.parent.actions_requises.append(action)
 
     # //changer aort
     def abandonner(self, param):
