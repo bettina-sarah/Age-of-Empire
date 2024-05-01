@@ -129,7 +129,6 @@ class Perso():
         self.contournement_range = 5
         self.case_coutournement = None
 
-        # 08 avril rendu a delai feu ballista. attaquer_ennemi dans etat et actions de ballista doit etre call
 
     def attaquer(self, ennemi):
         self.cibleennemi = ennemi
@@ -179,15 +178,11 @@ class Perso():
             # print("avant : ", self.x,"/", self.y )
             # self.x, self.y = self.test_etat_du_sol(x1, y1)
             case_mur = self.test_etat_du_sol(x1, y1)
+            self.update_cases(x1,y1)
             if case_mur:
                 self.nouveau_contournement(case_mur)
                 return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
@@ -195,13 +190,17 @@ class Perso():
 
             if dist <= self.vitesse:
                 if self.actioncourante == "bouger":
-                    self.actioncourante = None
+                    if not self.montype == "ouvrier":
+                        self.actioncourante = "verifierchampvision"
+                    else :
+                        self.actioncourante = None
                 self.contournements = 0
                 self.cibles_contournement_precedentes = []
                 self.cible_contournement = None
                 return "rendu"
             else:
                 return dist
+
 
     def nouveau_contournement(self, case):
         self.action_precedente = self.actioncourante
@@ -222,16 +221,12 @@ class Perso():
             self.get_directon_vers_position_visee()
             # print("avant : ", self.x,"/", self.y )
             # self.x, self.y = self.test_etat_du_sol(x1, y1)
+            self.update_cases(x1,y1)
             if self.test_etat_du_sol(x1, y1):
                 self.action_precedente = self.actioncourante
                 self.actioncourante = "contourne"
                 return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+
             ######## FIN DE TEST POUR SURFACE MARCHEE
             # si tout ba bien on continue avec la nouvelle valeur
             # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
@@ -243,6 +238,12 @@ class Perso():
                 return "rendu"
             else:
                 return dist
+
+    def update_cases(self, x1, y1):
+        self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+        self.x, self.y = x1, y1
+        self.case = self.parent.parent.trouver_case(self.x, self.y)
+        self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
 
 
     def get_directon_vers_position_visee(self):
@@ -325,7 +326,7 @@ class Perso():
             return case
 
         # retourne rien si la case n'est pas un batiment
-        return None
+
 
 
 
@@ -413,39 +414,39 @@ class Soldat(Perso):
                                  }
         self.actioncourante = "verifierchampvision"
 
-    def bouger(self):
-        if self.position_visee:
-            # le if sert à savoir si on doit repositionner notre visee pour un objet
-            # dynamique comme le daim
-            x = self.position_visee[0]
-            y = self.position_visee[1]
-            ang = Helper.calcAngle(self.x, self.y, x, y)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
-            # print("avant : ", self.x,"/", self.y )
-            # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-                return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            ######## FIN DE TEST POUR SURFACE MARCHEE
-            # si tout ba bien on continue avec la nouvelle valeur
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-            dist = Helper.calcDistance(self.x, self.y, x, y)
-
-            if dist <= self.vitesse:
-                if self.actioncourante == "bouger":
-                    self.actioncourante = "verifierchampvision"
-                return "rendu"
-            else:
-                return dist
+    # def bouger(self):
+    #     if self.position_visee:
+    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+    #         # dynamique comme le daim
+    #         x = self.position_visee[0]
+    #         y = self.position_visee[1]
+    #         ang = Helper.calcAngle(self.x, self.y, x, y)
+    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+    #         self.get_directon_vers_position_visee()
+    #         # print("avant : ", self.x,"/", self.y )
+    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+    #         if self.test_etat_du_sol(x1, y1):
+    #             self.action_precedente = self.actioncourante
+    #             self.actioncourante = "contourne"
+    #             return "contourne"
+    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         self.x, self.y = x1, y1
+    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         ######## FIN DE TEST POUR SURFACE MARCHEE
+    #         # si tout ba bien on continue avec la nouvelle valeur
+    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+    #         dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #         if dist <= self.vitesse:
+    #             if self.actioncourante == "bouger":
+    #                 self.actioncourante = "verifierchampvision"
+    #             return "rendu"
+    #         else:
+    #             return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -541,39 +542,39 @@ class Archer(Perso):
 
         self.actioncourante = "verifierchampvision"
 
-    def bouger(self):
-        if self.position_visee:
-            # le if sert à savoir si on doit repositionner notre visee pour un objet
-            # dynamique comme le daim
-            x = self.position_visee[0]
-            y = self.position_visee[1]
-            ang = Helper.calcAngle(self.x, self.y, x, y)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
-            # print("avant : ", self.x,"/", self.y )
-            # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-                return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            ######## FIN DE TEST POUR SURFACE MARCHEE
-            # si tout ba bien on continue avec la nouvelle valeur
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-            dist = Helper.calcDistance(self.x, self.y, x, y)
-
-            if dist <= self.vitesse:
-                if self.actioncourante == "bouger":
-                    self.actioncourante = "verifierchampvision"
-                return "rendu"
-            else:
-                return dist
+    # def bouger(self):
+    #     if self.position_visee:
+    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+    #         # dynamique comme le daim
+    #         x = self.position_visee[0]
+    #         y = self.position_visee[1]
+    #         ang = Helper.calcAngle(self.x, self.y, x, y)
+    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+    #         self.get_directon_vers_position_visee()
+    #         # print("avant : ", self.x,"/", self.y )
+    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+    #         if self.test_etat_du_sol(x1, y1):
+    #             self.action_precedente = self.actioncourante
+    #             self.actioncourante = "contourne"
+    #             return "contourne"
+    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         self.x, self.y = x1, y1
+    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         ######## FIN DE TEST POUR SURFACE MARCHEE
+    #         # si tout ba bien on continue avec la nouvelle valeur
+    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+    #         dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #         if dist <= self.vitesse:
+    #             if self.actioncourante == "bouger":
+    #                 self.actioncourante = "verifierchampvision"
+    #             return "rendu"
+    #         else:
+    #             return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -659,39 +660,39 @@ class Chevalier(Perso):
                                  }
         self.actioncourante = "verifierchampvision"
 
-    def bouger(self):
-        if self.position_visee:
-            # le if sert à savoir si on doit repositionner notre visee pour un objet
-            # dynamique comme le daim
-            x = self.position_visee[0]
-            y = self.position_visee[1]
-            ang = Helper.calcAngle(self.x, self.y, x, y)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
-            # print("avant : ", self.x,"/", self.y )
-            # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-                return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            ######## FIN DE TEST POUR SURFACE MARCHEE
-            # si tout ba bien on continue avec la nouvelle valeur
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-            dist = Helper.calcDistance(self.x, self.y, x, y)
-
-            if dist <= self.vitesse:
-                if self.actioncourante == "bouger":
-                    self.actioncourante = "verifierchampvision"
-                return "rendu"
-            else:
-                return dist
+    # def bouger(self):
+    #     if self.position_visee:
+    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+    #         # dynamique comme le daim
+    #         x = self.position_visee[0]
+    #         y = self.position_visee[1]
+    #         ang = Helper.calcAngle(self.x, self.y, x, y)
+    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+    #         self.get_directon_vers_position_visee()
+    #         # print("avant : ", self.x,"/", self.y )
+    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+    #         if self.test_etat_du_sol(x1, y1):
+    #             self.action_precedente = self.actioncourante
+    #             self.actioncourante = "contourne"
+    #             return "contourne"
+    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         self.x, self.y = x1, y1
+    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         ######## FIN DE TEST POUR SURFACE MARCHEE
+    #         # si tout ba bien on continue avec la nouvelle valeur
+    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+    #         dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #         if dist <= self.vitesse:
+    #             if self.actioncourante == "bouger":
+    #                 self.actioncourante = "verifierchampvision"
+    #             return "rendu"
+    #         else:
+    #             return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -774,39 +775,39 @@ class Druide(Perso):
                                  }
         self.actioncourante = "verifierchampvision"
 
-    def bouger(self):
-        if self.position_visee:
-            # le if sert à savoir si on doit repositionner notre visee pour un objet
-            # dynamique comme le daim
-            x = self.position_visee[0]
-            y = self.position_visee[1]
-            ang = Helper.calcAngle(self.x, self.y, x, y)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
-            # print("avant : ", self.x,"/", self.y )
-            # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-                return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            ######## FIN DE TEST POUR SURFACE MARCHEE
-            # si tout ba bien on continue avec la nouvelle valeur
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-            dist = Helper.calcDistance(self.x, self.y, x, y)
-
-            if dist <= self.vitesse:
-                if self.actioncourante == "bouger":
-                    self.actioncourante = "verifierchampvision"
-                return "rendu"
-            else:
-                return dist
+    # def bouger(self):
+    #     if self.position_visee:
+    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+    #         # dynamique comme le daim
+    #         x = self.position_visee[0]
+    #         y = self.position_visee[1]
+    #         ang = Helper.calcAngle(self.x, self.y, x, y)
+    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+    #         self.get_directon_vers_position_visee()
+    #         # print("avant : ", self.x,"/", self.y )
+    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+    #         if self.test_etat_du_sol(x1, y1):
+    #             self.action_precedente = self.actioncourante
+    #             self.actioncourante = "contourne"
+    #             return "contourne"
+    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         self.x, self.y = x1, y1
+    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         ######## FIN DE TEST POUR SURFACE MARCHEE
+    #         # si tout ba bien on continue avec la nouvelle valeur
+    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+    #         dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #         if dist <= self.vitesse:
+    #             if self.actioncourante == "bouger":
+    #                 self.actioncourante = "verifierchampvision"
+    #             return "rendu"
+    #         else:
+    #             return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -889,39 +890,39 @@ class DruideOurs(Perso):
                                  }
         self.actioncourante = "verifierchampvision"
 
-    def bouger(self):
-        if self.position_visee:
-            # le if sert à savoir si on doit repositionner notre visee pour un objet
-            # dynamique comme le daim
-            x = self.position_visee[0]
-            y = self.position_visee[1]
-            ang = Helper.calcAngle(self.x, self.y, x, y)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
-            # print("avant : ", self.x,"/", self.y )
-            # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-                return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            ######## FIN DE TEST POUR SURFACE MARCHEE
-            # si tout ba bien on continue avec la nouvelle valeur
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-            dist = Helper.calcDistance(self.x, self.y, x, y)
-
-            if dist <= self.vitesse:
-                if self.actioncourante == "bouger":
-                    self.actioncourante = "verifierchampvision"
-                return "rendu"
-            else:
-                return dist
+    # def bouger(self):
+    #     if self.position_visee:
+    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+    #         # dynamique comme le daim
+    #         x = self.position_visee[0]
+    #         y = self.position_visee[1]
+    #         ang = Helper.calcAngle(self.x, self.y, x, y)
+    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+    #         self.get_directon_vers_position_visee()
+    #         # print("avant : ", self.x,"/", self.y )
+    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+    #         if self.test_etat_du_sol(x1, y1):
+    #             self.action_precedente = self.actioncourante
+    #             self.actioncourante = "contourne"
+    #             return "contourne"
+    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         self.x, self.y = x1, y1
+    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         ######## FIN DE TEST POUR SURFACE MARCHEE
+    #         # si tout ba bien on continue avec la nouvelle valeur
+    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+    #         dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #         if dist <= self.vitesse:
+    #             if self.actioncourante == "bouger":
+    #                 self.actioncourante = "verifierchampvision"
+    #             return "rendu"
+    #         else:
+    #             return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -1020,39 +1021,39 @@ class Ballista(Perso):
                                  }
         self.actioncourante = "verifierchampvision"
 
-    def bouger(self):
-        if self.position_visee:
-            # le if sert à savoir si on doit repositionner notre visee pour un objet
-            # dynamique comme le daim
-            x = self.position_visee[0]
-            y = self.position_visee[1]
-            ang = Helper.calcAngle(self.x, self.y, x, y)
-            x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-            ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-            self.get_directon_vers_position_visee()
-            # print("avant : ", self.x,"/", self.y )
-            # self.x, self.y = self.test_etat_du_sol(x1, y1)
-            if self.test_etat_du_sol(x1, y1):
-                self.action_precedente = self.actioncourante
-                self.actioncourante = "contourne"
-                return "contourne"
-            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            self.x, self.y = x1, y1
-            self.case = self.parent.parent.trouver_case(self.x, self.y)
-            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-            print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-            ######## FIN DE TEST POUR SURFACE MARCHEE
-            # si tout ba bien on continue avec la nouvelle valeur
-            # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-            dist = Helper.calcDistance(self.x, self.y, x, y)
-
-            if dist <= self.vitesse:
-                if self.actioncourante == "bouger":
-                    self.actioncourante = "verifierchampvision"
-                return "rendu"
-            else:
-                return dist
+    # def bouger(self):
+    #     if self.position_visee:
+    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+    #         # dynamique comme le daim
+    #         x = self.position_visee[0]
+    #         y = self.position_visee[1]
+    #         ang = Helper.calcAngle(self.x, self.y, x, y)
+    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+    #         self.get_directon_vers_position_visee()
+    #         # print("avant : ", self.x,"/", self.y )
+    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+    #         if self.test_etat_du_sol(x1, y1):
+    #             self.action_precedente = self.actioncourante
+    #             self.actioncourante = "contourne"
+    #             return "contourne"
+    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         self.x, self.y = x1, y1
+    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+    #         ######## FIN DE TEST POUR SURFACE MARCHEE
+    #         # si tout ba bien on continue avec la nouvelle valeur
+    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+    #         dist = Helper.calcDistance(self.x, self.y, x, y)
+    #
+    #         if dist <= self.vitesse:
+    #             if self.actioncourante == "bouger":
+    #                 self.actioncourante = "verifierchampvision"
+    #             return "rendu"
+    #         else:
+    #             return dist
 
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
@@ -1136,7 +1137,8 @@ class Ouvrier(Perso):
                                  "ciblerressource": self.cibler_ressource,
                                  "retourbatimentmere": self.retour_batiment_mere,
                                  "validerjavelot": self.valider_javelot,
-                                 "contourne": self.contourne}
+                                 "contourne": self.contourne
+                                  }
 
     def chasser_ramasser(self, objetcible, sontype, actiontype):
         self.cible = objetcible

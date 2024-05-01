@@ -546,7 +546,6 @@ class Partie():
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax and case.persos:
                     t1.append(case)
-                    # Assuming 'case.persos' is a dictionary
                     first_key, first_value = next(iter(case.persos.items()))
                     print(f"First key: {first_key}, First value: {first_value}")
 
