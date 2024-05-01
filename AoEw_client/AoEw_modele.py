@@ -145,9 +145,14 @@ class Partie():
         self.creer_biotopes()
         self.creer_population(mondict)
 
+
         self.taillecase = 20
         self.demicase = self.taillecase / 2
         self.taillecarte = int(self.aireX / self.taillecase)
+        self.case_batiment = ["batiment", "batiment-mur","batiment-maison"]
+
+    def get_case_batiment(self):
+        return self.case_batiment
 
     def trouver_valeurs(self):
         vals = Partie.valeurs
