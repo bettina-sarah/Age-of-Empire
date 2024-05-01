@@ -25,6 +25,10 @@ class Batiment():
         self.perso = 0
         self.cartebatiment = []
         self.mana = 200
+        self.coin_gh = None
+        self.coin_dh = None
+        self.coin_bg = None
+        self.coin_bd = None
 
     def recevoir_coup(self, force):
         self.mana -= force
@@ -38,6 +42,7 @@ class Batiment():
                 self.parent.annoncer_mort_batiment(self)
             return 1
 
+
     def recevoir_soin(self, soin):
         print(" avant",self.mana)
         print("soin rececois",self.force)
@@ -49,6 +54,24 @@ class Batiment():
 
         print("soin recu",self.mana)
         return 1
+
+    def update_type_carte_batiment(self, cartebatiment):
+        self.cartebatiment = cartebatiment;
+        # modele
+        # print(self.parent.parent.parent)
+        self.parent.parent.parent.set_background_case_batiment(self.cartebatiment)
+        pass
+
+    def set_coins(self, coin_x1,coin_y1,coin_x2,coin_y2):
+        print("set coins")
+        self.coin_gh = (coin_x1-20, coin_y2+20)
+        self.coin_dh = (coin_x2+20, coin_y2+20)
+        self.coin_bg = (coin_x1-20, coin_y1-20)
+        self.coin_bd = (coin_x2+20, coin_y1-20)
+
+
+    def get_coins(self):
+        return self.coin_gh, self.coin_dh, self.coin_bg, self.coin_bd
 
 
 class Usineballiste(Batiment):
@@ -82,6 +105,7 @@ class Caserne(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+
 
 class Champstir(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):

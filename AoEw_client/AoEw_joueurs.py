@@ -343,8 +343,8 @@ class Joueur():
 
     # transmet à tous ses persos de jouer
     def jouer_prochain_coup(self):
-        for j in self.persos.keys():
-            for i in self.persos[j].keys():
+        for j in list(self.persos.keys()):
+            for i in list(self.persos[j].keys()):
                 self.persos[j][i].jouer_prochain_coup()
 
     def creer_perso(self, param):

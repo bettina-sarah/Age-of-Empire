@@ -29,6 +29,7 @@ class Caseregion():
         self.id = id
         self.montype = "plaine"
         self.ressources = {}
+        self.batiment = None
         self.x = x
         self.y = y
 
@@ -159,13 +160,41 @@ class Partie():
         x1, y1, x2, y2 = self.parent.installer_batiment(nomjoueur, batiment)
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
+
+
         for i in cartebatiment:
             # pour contournement avec retour de ressource
             if (batiment.montype == "maison"):
                 self.cartecase[i[1]][i[0]].montype = "batiment-m"
+                self.cartecase[i[1]][i[0]].batiment = batiment
             else:
                 self.cartecase[i[1]][i[0]].montype = "batiment"
+                self.cartecase[i[1]][i[0]].batiment = batiment
+                print("new batiment: ", i[1], "/", i[0])
+
+        x1, y1 = cartebatiment[0]
+        x4, y4 = cartebatiment[-1]
+        x2, y2 = x4, y1
+        x3, y3 = x1, y4
+
+
+        # print("new corner", y1, "/", x1)
+        # print("new corner", y2, "/", x2)
+        # print("new corner", y3, "/", x3)
+        # print("new corner", y4, "/", x4)
+        #
+        # self.cartecase[[y1][x1]].montype = "coin"
+        # self.cartecase[[y2][x2]].montype = "coin"
+        # self.cartecase[[y3][x3]].montype = "coin"
+        # self.cartecase[[y4][x4]].montype = "coin"
+        batiment.set_coins(x1 * self.taillecase, y1* self.taillecase , x4* self.taillecase, y4* self.taillecase)
+        # batiment.coin_gh = (x1 * self.taillecase, y1 * self.taillecase)
+        # batiment.coin_dh = (x2 * self.taillecase, y2 * self.taillecase)
+        # batiment.coin_gb = (x3 * self.taillecase, y3 * self.taillecase)
+        # batiment.coin_db = (x4 * self.taillecase, y4 * self.taillecase)
         batiment.cartebatiment = cartebatiment
+        # batiment.update_type_carte_batiment(cartebatiment)
+
 
     def creer_biotopes(self):
         # creer des daims éparpillés
@@ -202,7 +231,6 @@ class Partie():
             # for listecase in self.regions[region]:
             # nressource = random.randrange(int(len(listecases) / 3)) + int((len(listecases) / 5))
             nressource = int((random.randrange(len(listecases)) / 3) + 1)
-            print("RESSOURCES N", nressource)
             while nressource:
                 cases = list(listecases.keys())
                 pos = listecases[random.choice(cases)]
@@ -321,8 +349,11 @@ class Partie():
             self.biotopes["daim"][i].deplacer()
 
         for i in self.biotopes["ours"].keys():
-            self.biotopes["ours"][i].deplacer()
-        # Ajouter une liste des trucs a deplacer ? puis fair eune function? maybe ? :D
+            if self.biotopes["ours"][i].etat == "neutre" or self.biotopes["ours"][i].ennemi is None:
+                self.biotopes["ours"][i].deplacer()
+            else:
+                self.biotopes["ours"][i].attaquer()
+
 
         for i in self.biotopes["eau"].keys():
             self.biotopes["eau"][i].jouer_prochain_coup()
@@ -549,6 +580,7 @@ class Partie():
                 case = self.cartecase[i][j]
                 pxcentrecasex = (j * self.taillecase) + self.demicase
                 pxcentrecasey = (i * self.taillecase) + self.demicase
+                print(self.cartecase[i][j].montype)
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax:
                     t1.append(case)
@@ -630,11 +662,44 @@ class Partie():
         if len(temp) == 1:
             self.parent.afficher_fin(temp[0])
 
-    def retirer_batiment_minimap(self, id):
+    def retirer_batiment_minimap(self, id, cartebatiment):
+        for i in cartebatiment:
+            self.cartecase[i[1]][i[0]].montype = "plaine"
         self.parent.retirer_batiment_minimap(id)
 
+    def set_background_case_batiment(self,  cartebatiment):
+
+        # x1, y1 = cartebatiment[0]
+        # x4, y4 = cartebatiment[-1]
+        # x2, y2 = x4, y1
+        # x3, y3 = x1, y4
+        #
+        # print(x1, "/", y1)
+        # print(x2, "/", y2)
+        # print(x3, "/", y3)
+        # print(x4, "/", y4)
+        #
+        # self.cartecase[[x1][y1]].montype = "coin"
+        # self.cartecase[[x2][y2]].montype = "coin"
+        # self.cartecase[[x3][y3]].montype = "coin"
+        # self.cartecase[[x4][y4]].montype = "coin"
+
+        y1 = 0;
+        count = 0
+        for casePos in cartebatiment:
+            if y1 != casePos[1]:
+                y1 = casePos[1]
+                count += 1
+
+            if count < 5:
+                self.cartecase[casePos[1]][casePos[0]].montype = "batiment-back"
+
+        test = self.cartecase
+        print(self.cartecase)
+
+        pass
+
     def reset_case_batiment(self, cartebatiment):
-        print("click")
         for i in cartebatiment:
             self.cartecase[i[1]][i[0]].montype = "plaine"
         pass

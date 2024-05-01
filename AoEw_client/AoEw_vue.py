@@ -780,7 +780,7 @@ class Vue():
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["daim"].keys():
             i = self.modele.biotopes["daim"][j]
-            if i.etat == "mort":
+            if not i.en_vie:
                 self.canevas.create_image(i.x, i.y, image=self.images["daimMORT"],
                                           tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("",i.id,"artefact","daim","mobile"))
@@ -792,7 +792,7 @@ class Vue():
 
         for j in self.modele.biotopes["ours"].keys():
             i = self.modele.biotopes["ours"][j]
-            if i.etat == "mort":
+            if not i.en_vie:
                 self.canevas.create_image(i.x, i.y, image=self.images["oursMORT"],
                                           tags=("mobile", "", i.id, "biotope", i.montype, ""))
                 # tags=("",i.id,"artefact","daim","mobile"))
