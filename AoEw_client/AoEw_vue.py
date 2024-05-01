@@ -634,10 +634,8 @@ class Vue():
                                                                           anchor=N))
         self.root.update()
         fh = self.cadrebatiment.winfo_height()
-        ch = int(self.canevasaction.cget("height"))
-        if fh + 30 > ch:
-            cl = int(self.canevasaction.cget("width"))
-            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 30))
+        cl = int(self.canevasaction.cget("width"))
+        self.canevasaction.config(scrollregion=(0, 0, cl, fh))
 
     def site_construction_mur(self, tag_tour, coordos_tour, type_mur):
         x,y = coordos_tour
