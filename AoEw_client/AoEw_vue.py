@@ -1148,6 +1148,9 @@ class Action():
 
             else:
                 action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+        else:
+            if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
+                action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
         self.parent.parent.actions_requises.append(action)
 
