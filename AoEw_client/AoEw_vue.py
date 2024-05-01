@@ -211,9 +211,17 @@ class Vue():
                         "Aureus": None,
                         "Objet": None}
 
+        self.self_dict_temp_ressources = {
+            "nourriture": self.images["arbustebaiespetit"],
+            "arbre": self.images["bois-ressource"],
+            "roche": self.images["roches1petit"],
+            "aureus": self.images["aureusD_"],
+            "objet": self.images["objet"]
+        }
+
         # fonction interne uniquement pour reproduire chaque item d'info
         def creer_champ_interne(listechamp):  # refactoriser pour etiquette au lieu de champ
-            titre = Champ(self.cadrejeuinfo, text=i, bg="red", fg="white")
+            titre = Champ(self.cadrejeuinfo, image=self.self_dict_temp_ressources[listechamp.lower()], bg="red", fg="white")
             varstr = StringVar()
             varstr.set(0)
             donnee = Champ(self.cadrejeuinfo, bg="red", fg="white", textvariable=varstr)
