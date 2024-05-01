@@ -349,6 +349,13 @@ class Perso():
 
         case_avec_collision = self.parent.parent.get_case_batiment()
 
+        # print(self.cibleennemi )
+        # if case.batiment:
+        #     print(case.batiment.id)
+        # if self.cibleennemi and not case.batiment:
+        #     if case.batiment.id == self.cibleennemi
+
+
         if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
             if case.montype != "batiment-maison" and case.montype in case_avec_collision:
                 return case
