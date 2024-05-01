@@ -161,16 +161,18 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
 
+        type_case = "batiment"
+
+        if batiment.montype == "maison":
+            type_case = "batiment-maison"
+        elif batiment.montype == "mur_h" or batiment.montype == "mur_v":
+            type_case = "batiment-mur"
 
         for i in cartebatiment:
             # pour contournement avec retour de ressource
-            if (batiment.montype == "maison"):
-                self.cartecase[i[1]][i[0]].montype = "batiment-m"
-                self.cartecase[i[1]][i[0]].batiment = batiment
-            else:
-                self.cartecase[i[1]][i[0]].montype = "batiment"
-                self.cartecase[i[1]][i[0]].batiment = batiment
-                print("new batiment: ", i[1], "/", i[0])
+            self.cartecase[i[1]][i[0]].montype = type_case
+            self.cartecase[i[1]][i[0]].batiment = batiment
+            print("new batiment: ", i[1], "/", i[0])
 
         x1, y1 = cartebatiment[0]
         x4, y4 = cartebatiment[-1]
