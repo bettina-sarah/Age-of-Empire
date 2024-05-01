@@ -762,6 +762,9 @@ class Vue():
                                               tags=("mobile", j, k, "perso", i.montype))
                     # tags=(j,k,"artefact","mobile","perso",p))
                     if k in self.action.persochoisi:
+                        health = (i.mana / 100) * 10
+                        self.canevas.create_rectangle(i.x - 10, i.y - 50, i.x + health, i.y - 45, fill="lime green",
+                                                      tags=("mobile", j, p, "perso", type(i).__name__, "persochoisi"))
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
                                                       tags=("mobile", j, p, "perso", type(i).__name__, "persochoisi"))
                         # tags=(j,k,"artefact","mobile","persochoisi"))
@@ -852,7 +855,7 @@ class Vue():
 
     def testSoin(self, evt):
 
-        #A PROBLEM HERE !!:
+        # A PROBLEM HERE !!:
         mestags = self.canevas.gettags(CURRENT)
         print(self.action.persochoisi[0])
         print("Dans testSOIN")

@@ -384,20 +384,6 @@ class Perso():
 
     def get_cible_contournement(self):
 
-        cases = self.get_map_contournement()
-        self.get_directon_vers_position_visee()
-        taille = self.parent.parent.taillecase
-        if cases:
-            if self.dir == "GH":
-                self.cible_contournement = cases[0].x * taille, cases[0].y * taille
-            elif self.dir == "DH":
-                self.cible_contournement = cases[-1].x * taille, cases[-1].y * taille
-            elif self.dir == "GB":
-                self.cible_contournement = cases[0].x * taille, cases[0].y * taille
-            elif self.dir == "DB":
-                self.cible_contournement = cases[-1].x * taille, cases[-1].y * taille
-
-        #reset la liste
 
         cible_possibles = []
         for coin in self.case_coutournement.batiment.get_coins():
@@ -415,7 +401,6 @@ class Perso():
         if len(distance_coin) > 0:
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
-
 
 
             smallest_dist = distance_coin[0]
