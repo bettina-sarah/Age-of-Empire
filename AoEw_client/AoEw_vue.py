@@ -330,7 +330,6 @@ class Vue():
         # self.canevas.bind("<space>", self.test)
 
     def OnMouseWheel(self, evt):
-        print("evt.keysym", evt.keysym)
         rep = self.scrollV.get()[0]
         if evt.delta < 0:
             rep = rep + 0.02
@@ -614,14 +613,15 @@ class Vue():
 
 
 
-    def creer_cadre_tour(self, coul, artefacts, pos):
+    def creer_cadre_tour(self, coul, artefacts, tag_tour, pos):
         if self.action.widgetsactifs:
             self.canevasaction.delete(self.action.widgetsactifs)
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in artefacts:
+            print()
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i])
-            btn.bind("<Button>", lambda event: self.site_construction_mur(pos, i))
+            btn.bind("<Button>", lambda event, i=i, tag_tour = tag_tour, pos = pos: self.site_construction_mur(tag_tour, pos, i))
             btn.pack()
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
@@ -630,27 +630,24 @@ class Vue():
         self.root.update()
         fh = self.cadrebatiment.winfo_height()
         ch = int(self.canevasaction.cget("height"))
-        if fh + 60 > ch:
+        if fh + 30 > ch:
             cl = int(self.canevasaction.cget("width"))
-            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
+            self.canevasaction.config(scrollregion=(0, 0, cl, fh + 30))
 
-    def site_construction_mur(self, coordos_tour, type_mur):
+    def site_construction_mur(self, tag_tour, coordos_tour, type_mur):
         x,y = coordos_tour
-        nbr_murs = len(self.modele.joueurs[self.nom_joueur_local].batiments[type_mur])
-        if type_mur=="mur_h":
-            if nbr_murs > 0:
-                x = x-80*(nbr_murs+1)
-                y = y-90*(nbr_murs+1)
-            else:
-                x = x - 80
-                y = y - 90
-        if type_mur=="mur_v":
-            if nbr_murs > 0:
-                x = x+80*(nbr_murs+1)
-                y = y+90*(nbr_murs+1)
-            else:
-                x = x + 80
-                y = y + 90
+        if type_mur == "mur_v":
+            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v += 1
+            murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v
+            x = x + 55 * murv
+            y = y + 55 * murv
+
+        else:
+            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h += 1
+            murh = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h
+            x = x - 120 * murh
+            y = y + 40 * murh
+
         self.action.prochaineaction = type_mur
         self.construire_batiment(self, (x,y))
 
@@ -1008,7 +1005,6 @@ class Vue():
         if ok:
             try:
                 self.action.prochaineaction = obj.cget("text")
-                print("obj cget: ", obj.cget("text"))
                 obj.config(bg="lightgreen")
             except:
                 self.action.prochaineaction = "mur_h"
@@ -1022,11 +1018,9 @@ class Vue():
         if not mestags:
             if coordos_tour is not None:
                 #pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                print("construire batiment, voici coordos_tour: (x,y): ", coordos_tour)
                 self.action.construire_batiment(coordos_tour)
             else:
                 pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                print("pos dans construire batiment (vue)", pos)
                 self.action.construire_batiment(pos)
         elif "SiteConstruction" in mestags:  # permet de continuer une constuction de site de construction
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
@@ -1061,7 +1055,7 @@ class Vue():
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_tour(coul[0] + "_", ["mur_h", "mur_v"], pos)
+                    self.creer_cadre_tour(coul[0] + "_", ["mur_h", "mur_v"], mestags[2], pos)
         elif self.action.persochoisi != []:
             print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
