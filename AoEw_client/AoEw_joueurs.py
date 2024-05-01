@@ -322,24 +322,31 @@ class Joueur():
         self.batiments["maison"][idmaison] = Maison(self, idmaison, self.couleur, x, y, "maison")
 
     def construire_batiment(self, param):
-        perso, sorte, pos = param
+        print("voici les params:", param)
+        if len(param) == 3:
+            perso, sorte, pos = param
+        else:
+            sorte, pos = param
 
         if sorte == "siteconstruction":
             siteconstruction = self.batiments["siteconstruction"][pos[2]]
         else:
+            print("construire batiment joueur: sorte = ", sorte)
             id = get_prochain_id()
             # payer batiment
             vals = Joueur.valeurs
             for k, val in self.ressources.items():
                 if k != "objet":
                     self.ressources[k] = val - vals[sorte][k]
+                    self.ressources[k] = val - vals[sorte][k]
 
             siteconstruction = SiteConstruction(self, id, pos[0], pos[1], sorte,
                                                 Joueur.valeurs[sorte]["delai"])
             self.batiments["siteconstruction"][id] = siteconstruction
 
-        for i in perso:
-            self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
+        if perso:
+            for i in perso:
+                self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
 
     def installer_batiment(self, batiment):
         self.parent.installer_batiment(self.nom, batiment)

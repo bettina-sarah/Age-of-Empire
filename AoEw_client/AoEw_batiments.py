@@ -138,4 +138,6 @@ class Tour(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+        self.nbr_mur_v = 0
+        self.nbr_mur_h = 0
 

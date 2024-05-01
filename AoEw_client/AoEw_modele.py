@@ -29,6 +29,7 @@ class Caseregion():
         self.id = id
         self.montype = "plaine"
         self.ressources = {}
+        self.persos = {}
         self.batiment = None
         self.x = x
         self.y = y
@@ -145,9 +146,14 @@ class Partie():
         self.creer_biotopes()
         self.creer_population(mondict)
 
+
         self.taillecase = 20
         self.demicase = self.taillecase / 2
         self.taillecarte = int(self.aireX / self.taillecase)
+        self.case_batiment = ["batiment", "batiment-mur","batiment-maison"]
+
+    def get_case_batiment(self):
+        return self.case_batiment
 
     def trouver_valeurs(self):
         vals = Partie.valeurs
@@ -161,16 +167,18 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
 
+        type_case = "batiment"
+
+        if batiment.montype == "maison":
+            type_case = "batiment-maison"
+        elif batiment.montype == "mur_h" or batiment.montype == "mur_v" or batiment.montype == "tour":
+            type_case = "batiment-mur"
 
         for i in cartebatiment:
             # pour contournement avec retour de ressource
-            if (batiment.montype == "maison"):
-                self.cartecase[i[1]][i[0]].montype = "batiment-m"
-                self.cartecase[i[1]][i[0]].batiment = batiment
-            else:
-                self.cartecase[i[1]][i[0]].montype = "batiment"
-                self.cartecase[i[1]][i[0]].batiment = batiment
-                print("new batiment: ", i[1], "/", i[0])
+            self.cartecase[i[1]][i[0]].montype = type_case
+            self.cartecase[i[1]][i[0]].batiment = batiment
+            print("new batiment: ", i[1], "/", i[0])
 
         x1, y1 = cartebatiment[0]
         x4, y4 = cartebatiment[-1]
@@ -529,10 +537,10 @@ class Partie():
         casecoinx2 = cx + d
         casecoiny2 = cy + d
         # assure qu'on deborde pas
-        # if casecoinx2 >= self.taillecase:
-        #     casecoinx2 = self.taillecase - 1
-        # if casecoiny2 >= self.taillecase:
-        #     casecoiny2 = self.taillecase - 1
+        if casecoinx2 >= self.taillecarte:
+            casecoinx2 = self.taillecarte - 1
+        if casecoiny2 >= self.taillecarte:
+            casecoiny2 = self.taillecarte - 1
 
         distmax = (d * self.taillecase) + self.demicase
 
@@ -543,8 +551,12 @@ class Partie():
                 pxcentrecasex = (j * self.taillecase) + self.demicase
                 pxcentrecasey = (i * self.taillecase) + self.demicase
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
-                if distcase <= distmax:
+                if distcase <= distmax and case.persos:
                     t1.append(case)
+                    # first_key, first_value = next(iter(case.persos.items()))
+                    # print(f"First key: {first_key}, First value: {first_value}")
+                    #
+                    # print(t1)
         return t1
 
     def get_carte_contournement(self, x, y, dx, dy):
