@@ -171,7 +171,7 @@ class Partie():
 
         if batiment.montype == "maison":
             type_case = "batiment-maison"
-        elif batiment.montype == "mur_h" or batiment.montype == "mur_v":
+        elif batiment.montype == "mur_h" or batiment.montype == "mur_v" or batiment.montype == "tour":
             type_case = "batiment-mur"
 
         for i in cartebatiment:

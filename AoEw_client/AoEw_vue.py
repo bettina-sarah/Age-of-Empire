@@ -1060,9 +1060,10 @@ class Vue():
                     self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_usine(coul[0] + "_", ["archer", "ballista", "catapulte"], mestags[4], mestags[2],
+                    self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"], mestags[4], mestags[2],
                                            pos)
-                if "champs_de_tir" in mestags:
+                if "champstir" in mestags:
+                    print("JE RENTRE CHAMPS TIRIIIRR")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
