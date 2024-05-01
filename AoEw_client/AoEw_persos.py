@@ -345,14 +345,22 @@ class Perso():
         # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
         # affichage --------------------------------------------------------------------------------------------------
 
-        #si je un ouvrier déplace des ressources, retourne la case seulement si la case est batiment (ignore batiment-m)
+        # si je un ouvrier déplace des ressources, retourne la case seulement si la case est batiment (ignore batiment-m)
         if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
             if case.montype == "batiment":
                 return case
             else:
                 return None
+
+        print("action: ", self.actioncourante+" case est none:", case.batiment == None)
+        if self.actioncourante == "ciblersiteconstruction":
+            if case.montype == "batiment":
+                return case
+            else:
+                return None
+
         # retourne la case si c'est un batiment ou batiment-m
-        if case.montype == "batiment" or case.montype == "batiment-m":
+        if case.montype == "batiment" or case.montype == "batiment-maison" or case.montype == "batiment-mur":
             return case
 
         # retourne rien si la case n'est pas un batiment
