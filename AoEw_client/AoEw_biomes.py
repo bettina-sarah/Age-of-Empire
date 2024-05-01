@@ -201,7 +201,7 @@ class Animal():
 class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
         Animal.__init__(self, parent, id, x, y, tem, 10000, 20000)
-        self.force = 40
+        self.force = 5
         self.distancefeumax = 10
         self.delaifeu = 10
         self.delaifeumax = 10

@@ -520,8 +520,13 @@ class Vue():
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
-            if i == "druide-ours":  # !! image a faire
-                btn = Button(self.cadrebatiment, text=i)
+            if i == "druideOurs":  # !! image a faire
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+                btn.bind("<Button>",
+                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                      tag_batiment,
+                                                                                                                      id_joueur,
+                                                                                                                      pos))
                 btn.pack()
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
@@ -871,7 +876,7 @@ class Vue():
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
-            elif "druide" == mestags[4]:
+            elif "druide" == mestags[4] or "druideOurs" == mestags[4]:
                 print("dans DRUIDE")
                 if not self.action.persochoisi:
                     self.action.persochoisi.append(mestags[2])
@@ -1014,7 +1019,7 @@ class Vue():
                     self.creer_cadre_caserne(coul[0] + "_", ["soldat", "chevalier"], mestags[4], mestags[2], pos)
                 if "abri" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_abri(coul[0] + "_", ["druide", "druideOurs"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_usine(coul[0] + "_", ["archer", "ballista", "catapulte"], mestags[4], mestags[2],
