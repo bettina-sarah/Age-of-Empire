@@ -141,7 +141,7 @@ class Animal():
         print("MORT!!!")
         self.position_visee = None
 
-    def recevoir_coup(self,dommage):
+    def recevoir_coup(self,dommage, ennemi):
         self.vie -= dommage
         print("Ouch")
         if self.vie < 1:

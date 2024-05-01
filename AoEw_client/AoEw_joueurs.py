@@ -59,10 +59,10 @@ class Joueur():
                          "delai": 5,
                          "objet": 0},
                "tour": {"nourriture": 25,
-                         "arbre": 25,
-                         "roche": 25,
-                         "aureus": 25,
-                         "delai": 15,
+                        "arbre": 25,
+                        "roche": 25,
+                        "aureus": 25,
+                        "delai": 15,
                         "objet": 0},
                }
 
@@ -82,8 +82,6 @@ class Joueur():
                              "objet": 0
                              },
 
-
-
                   "chevalier": {"nourriture": 10,
                                 "arbre": 10,
                                 "roche": 5,
@@ -91,7 +89,6 @@ class Joueur():
                                 "delai": 60,
                                 "objet": 0
                                 },
-
 
                   "druide": {"nourriture": 10,
                              "arbre": 10,
@@ -101,7 +98,6 @@ class Joueur():
                              "objet": 2
                              },
 
-
                   "druide-ours": {"nourriture": 15,
                                   "arbre": 12,
                                   "roche": 35,
@@ -110,7 +106,6 @@ class Joueur():
                                   "delai": 80,
                                   "objet": 5
                                   },
-
 
                   "ballista": {"nourriture": 30,
                                "arbre": 30,
@@ -123,6 +118,7 @@ class Joueur():
                   "ingenieur": {"nourriture": 30,
                                 "arbre": 30,
                                 "roche": 30,
+                                "aureus": 2,
                                 "delai": 30,
                                 "objet": 5},
 
@@ -132,7 +128,6 @@ class Joueur():
                              "aureus": 30,
                              "delai": 30,
                              "objet": 0}
-
 
                   }
 
@@ -165,11 +160,11 @@ class Joueur():
         self.monchat = []
         self.chatneuf = 0
         self.ressourcemorte = []
-        self.ressources = {"nourriture": 200,
-                           "arbre": 200,
-                           "roche": 200,
-                           "aureus": 200,
-                           "objet":0}
+        self.ressources = {"nourriture": 500,
+                           "arbre": 500,
+                           "roche": 500,
+                           "aureus": 500,
+                           "objet": 10}
         self.persos = {"ouvrier": {},
                        "soldat": {},
                        "archer": {},
@@ -187,7 +182,7 @@ class Joueur():
                           "champstir": {},
                           "mur_h": {},
                           "mur_v": {},
-                          "tour":{}}
+                          "tour": {}}
 
         self.actions = {"creerperso": self.creer_perso,
                         "deplacer": self.deplacer,
@@ -195,6 +190,7 @@ class Joueur():
                         "chasserressource": self.chasser_ressource,
                         "construirebatiment": self.construire_batiment,
                         "attaquer": self.attaquer,
+                        "soigner": self.soigner,
                         "chatter": self.chatter,
                         "abandonner": self.abandonner}
         # on va creer une maison comme centre pour le joueur
@@ -205,6 +201,7 @@ class Joueur():
             self.persos[perso.montype].pop(perso.id)
         except:
             print("Deja Mort")
+
     def annoncer_mort_batiment(self, perso):
         print("batiment mort!")
         # retirer de la minimap
@@ -222,12 +219,12 @@ class Joueur():
     def attaquer(self, param):
         attaquants, attaque = param
         print("Joueurs attaquants et attaque", attaquants, attaque)
+        # Joueurs attaquants et attaque['id_44859', 'id_44925']['JAJA_512', 'id_44868', 'ballista']
 
         nomjoueur, idperso, sorte = attaque
 
         if sorte in self.batiments.keys():
             ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
-
         else:
             ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
 
@@ -239,6 +236,33 @@ class Joueur():
                 if j in self.persos[i]:
                     self.persos[i][j].attaquer(ennemi)
                     # j.attaquer(ennemi)
+
+    def soigner(self, param):
+        soigneur, cible = param
+        print("soigner ", soigneur)
+        print(cible)
+        print("cible ", cible)
+
+        # soigner['id_44851']
+        # cible['JAJA_438', 'id_44858', 'soldat']
+
+        nomjoueur, idperso, sorte = cible
+
+        if sorte in self.batiments.keys():
+            cible = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
+        else:
+            cible = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+
+        # print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
+
+        # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+        try:
+            temp = self.persos["druide"].get(soigneur[0])
+            temp.soigner(cible)
+        except AttributeError:
+            print("error")
+            #trouver next ?
+
 
     # changer a mort
     def abandonner(self, param):
@@ -349,4 +373,3 @@ class Joueur():
 
             self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                            sorteperso)
-
