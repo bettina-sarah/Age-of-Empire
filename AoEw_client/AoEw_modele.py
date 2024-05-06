@@ -147,9 +147,14 @@ class Partie():
         self.creer_biotopes()
         self.creer_population(mondict)
 
+
         self.taillecase = 20
         self.demicase = self.taillecase / 2
         self.taillecarte = int(self.aireX / self.taillecase)
+        self.case_batiment = ["batiment", "batiment-mur","batiment-maison"]
+
+    def get_case_batiment(self):
+        return self.case_batiment
 
     def trouver_valeurs(self):
         vals = Partie.valeurs
@@ -163,16 +168,18 @@ class Partie():
 
         cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
 
+        type_case = "batiment"
+
+        if batiment.montype == "maison":
+            type_case = "batiment-maison"
+        elif batiment.montype == "mur_h" or batiment.montype == "mur_v" or batiment.montype == "tour":
+            type_case = "batiment-mur"
 
         for i in cartebatiment:
             # pour contournement avec retour de ressource
-            if (batiment.montype == "maison"):
-                self.cartecase[i[1]][i[0]].montype = "batiment-m"
-                self.cartecase[i[1]][i[0]].batiment = batiment
-            else:
-                self.cartecase[i[1]][i[0]].montype = "batiment"
-                self.cartecase[i[1]][i[0]].batiment = batiment
-                print("new batiment: ", i[1], "/", i[0])
+            self.cartecase[i[1]][i[0]].montype = type_case
+            self.cartecase[i[1]][i[0]].batiment = batiment
+            print("new batiment: ", i[1], "/", i[0])
 
         x1, y1 = cartebatiment[0]
         x4, y4 = cartebatiment[-1]
@@ -668,9 +675,9 @@ class Partie():
         if len(temp) == 1:
             self.parent.afficher_fin(temp[0])
 
-    def retirer_batiment_minimap(self, id, cartebatiment):
-        for i in cartebatiment:
-            self.cartecase[i[1]][i[0]].montype = "plaine"
+    def retirer_batiment_minimap(self, id):
+        # for i in cartebatiment:
+        #     self.cartecase[i[1]][i[0]].montype = "plaine"
         self.parent.retirer_batiment_minimap(id)
 
     def set_background_case_batiment(self,  cartebatiment):

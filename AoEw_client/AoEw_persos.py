@@ -400,14 +400,43 @@ class Perso():
         # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="magenta", tags=("statique",))
         # affichage --------------------------------------------------------------------------------------------------
 
-        #si je un ouvrier déplace des ressources, retourne la case seulement si la case est batiment (ignore batiment-m)
+        # si je un ouvrier déplace des ressources, retourne la case seulement si la case est batiment (ignore batiment-m)
+
+        case_avec_collision = self.parent.parent.get_case_batiment()
+
+        # print(self.cibleennemi )
+        # if case.batiment:
+        #     print(case.batiment.id)
+        # if self.cibleennemi and not case.batiment:
+        #     if case.batiment.id == self.cibleennemi
+
+        # print(self.actioncourante)
+        # print(case)
+
+        if self.actioncourante == "bougerversennemi" or self.actioncourante == "ciblerennemi" or self.actioncourante == "attaquerennemi":
+            print(self.actioncourante)
+            if case.batiment and self.cibleennemi:
+                print("meurt batiment?")
+                print(case.batiment.id)
+                print(self.cibleennemi.id)
+                if self.cibleennemi.id == case.batiment.id:
+                    print("pas collision")
+                    return None
+
         if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
-            if case.montype == "batiment":
+            if case.montype != "batiment-maison" and case.montype in case_avec_collision:
                 return case
             else:
                 return None
+
+        if self.actioncourante == "ciblersiteconstruction":
+            if case.montype != "batiment-mur" and case.montype in case_avec_collision:
+                return case
+            else:
+                return None
+
         # retourne la case si c'est un batiment ou batiment-m
-        if case.montype == "batiment" or case.montype == "batiment-m":
+        if case.montype in case_avec_collision:
             return case
 
         # retourne rien si la case n'est pas un batiment
@@ -432,12 +461,12 @@ class Perso():
         ang = Helper.calcAngle(self.x, self.y, x, y)
 
         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-        print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+        # print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
         self.x, self.y = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, x, y)
         self.case = self.parent.parent.trouver_case(self.x, self.y)
         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-        print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+        # print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
 
 
         if dist <= self.vitesse:
@@ -923,19 +952,26 @@ class Druide(Perso):
 class DruideOurs(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        self.force = 20
+        self.force = 30
+        self.soin_mana = 4
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
+        self.delaisoin = 5
+        self.delaisoinmax = 5
         self.delai_verifier_champ = 30
         self.vision_cases = 10
         self.cibleennemi = None
+        self.cible_soin = None
         self.position_visee = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
                                  "bougerversennemi": self.bouger_vers_ennemi,
+
+                                 "soignercible": self.soignercible,
+
                                  "verifierchampvision": self.verifier
                                  }
         self.actioncourante = "verifierchampvision"
@@ -975,6 +1011,7 @@ class DruideOurs(Perso):
     #             return dist
 
     def cibler(self):
+        ###?????????????????????????????????????
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
         if self.x < self.position_visee[0]:
             self.dir = "D"
@@ -982,29 +1019,28 @@ class DruideOurs(Perso):
             self.dir = "G"
 
         self.image = self.image[:-1] + self.dir
-        self.actioncourante = "attaquerennemi"
+        self.actioncourante = "soignercible"
 
-    def attaquer(self, ennemi):
-        self.cibleennemi = ennemi
-        x = self.cibleennemi.x
-        y = self.cibleennemi.y
+    def soigner(self, blesse):
+        print("dans soigne")
+        self.cible_soin = blesse
+        self.cibleennemi=blesse
+        x = self.cible_soin.x
+        y = self.cible_soin.y
         self.position_visee = [x, y]
         dist = Helper.calcDistance(self.x, self.y, x, y)
         print("DISTANCE CALCULEE", dist)
 
         if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
-            self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
+            self.actioncourante = "soignercible"
+            print(self.actioncourante)
         else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
             self.actioncourante = "bougerversennemi"
-            print("self.actioncourante = ciblerennemi")
+            print(self.actioncourante)
 
     def attaquerennemi(self):
         if self.cibleennemi:
             self.delaifeu = self.delaifeu - 1
-            print("KAWABUNGA BABY")
-            print(" DELAI FEU : ", self.delaifeu)
-
             if self.delaifeu == 0:
                 rep = self.cibleennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
@@ -1016,6 +1052,18 @@ class DruideOurs(Perso):
                         pass
                 # self.cibleennemi.recevoir_coup(self.force)
                 # self.fleches.remove(rep)
+
+    def soignercible(self):
+        if self.cible_soin:
+            self.delaisoin = self.delaisoin - 1
+            print("dans soincible")
+            print("delais soin:", self.delaisoin)
+            if self.delaisoin == 0:
+                rep = self.cible_soin.recevoir_soin(self.soin_mana)
+                self.delaisoin = self.delaisoinmax
+                if rep:
+                    self.actioncourante = None
+
 
     def verifier(self):
         self.verifier_champ_vision(self.x, self.y, self.vision_cases)
@@ -1033,120 +1081,121 @@ class DruideOurs(Perso):
                         print("============== DETECTION ENNEMI============")
                         self.attaquer(j)
             self.delai_verifier_champ = 30
+#
+# class DruideOurs(Perso):
+#     def __init__(self, parent, id, maison, couleur, x, y, montype):
+#         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+#         self.force = 20
+#         self.distancefeumax = 50
+#         self.delaifeu = 20
+#         self.delaifeumax = 20
+#         self.delai_verifier_champ = 30
+#         self.vision_cases = 10
+#         self.cibleennemi = None
+#         self.position_visee = None
+#         self.etats_et_actions = {"bouger": self.bouger,
+#                                  "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+#                                  "ciblerennemi": self.cibler,
+#                                  "contourne": self.contourne,
+#                                  "bougerversennemi": self.bouger_vers_ennemi,
+#                                  "verifierchampvision": self.verifier
+#                                  }
+#         self.actioncourante = "verifierchampvision"
+#
+#     # def bouger(self):
+#     #     if self.position_visee:
+#     #         # le if sert à savoir si on doit repositionner notre visee pour un objet
+#     #         # dynamique comme le daim
+#     #         x = self.position_visee[0]
+#     #         y = self.position_visee[1]
+#     #         ang = Helper.calcAngle(self.x, self.y, x, y)
+#     #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
+#     #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
+#     #         self.get_directon_vers_position_visee()
+#     #         # print("avant : ", self.x,"/", self.y )
+#     #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
+#     #         if self.test_etat_du_sol(x1, y1):
+#     #             self.action_precedente = self.actioncourante
+#     #             self.actioncourante = "contourne"
+#     #             return "contourne"
+#     #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+#     #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+#     #         self.x, self.y = x1, y1
+#     #         self.case = self.parent.parent.trouver_case(self.x, self.y)
+#     #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+#     #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+#     #         ######## FIN DE TEST POUR SURFACE MARCHEE
+#     #         # si tout ba bien on continue avec la nouvelle valeur
+#     #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
+#     #         dist = Helper.calcDistance(self.x, self.y, x, y)
+#     #
+#     #         if dist <= self.vitesse:
+#     #             if self.actioncourante == "bouger":
+#     #                 self.actioncourante = "verifierchampvision"
+#     #             return "rendu"
+#     #         else:
+#     #             return dist
+#
+#     def cibler(self):
+#         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+#         if self.x < self.position_visee[0]:
+#             self.dir = "D"
+#         else:
+#             self.dir = "G"
+#
+#         self.image = self.image[:-1] + self.dir
+#         self.actioncourante = "attaquerennemi"
+#
+#     def attaquer(self, ennemi):
+#         self.cibleennemi = ennemi
+#         x = self.cibleennemi.x
+#         y = self.cibleennemi.y
+#         self.position_visee = [x, y]
+#         dist = Helper.calcDistance(self.x, self.y, x, y)
+#         print("DISTANCE CALCULEE", dist)
+#
+#         if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
+#             self.actioncourante = "attaquerennemi"
+#             print("self.actioncourante = attaquerennemi")
+#         else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+#             self.actioncourante = "bougerversennemi"
+#             print("self.actioncourante = ciblerennemi")
+#
+#     def attaquerennemi(self):
+#         if self.cibleennemi:
+#             self.delaifeu = self.delaifeu - 1
+#             print("KAWABUNGA BABY")
+#             print(" DELAI FEU : ", self.delaifeu)
+#
+#             if self.delaifeu == 0:
+#                 rep = self.cibleennemi.recevoir_coup(self.force)
+#                 self.delaifeu = self.delaifeumax
+#                 if rep:
+#                     self.actioncourante = "verifierchampvision"
+#                     try:
+#                         self.parent.parent.trouver_case(self.cibleennemi.x, self.cibleennemi.y).persos.pop(self.cibleennemi.id)
+#                     except:
+#                         pass
+#                 # self.cibleennemi.recevoir_coup(self.force)
+#                 # self.fleches.remove(rep)
+#
+#     def verifier(self):
+#         self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+#
+#     def verifier_champ_vision(self, x, y, radius):
+#         self.delai_verifier_champ -= 1
+#         if self.delai_verifier_champ == 0:
+#             cases = self.parent.parent.get_subcarte(x, y, radius)
+#             print("CASES", cases)
+#             for i in cases:  # chaque case
+#                 cles = i.persos.values()  # 'objet'
+#                 for j in cles:  # pour chaque objet
+#                     print(j.parent.nom)
+#                     if j.parent.nom != self.parent.nom:
+#                         print("============== DETECTION ENNEMI============")
+#                         self.attaquer(j)
+#             self.delai_verifier_champ = 30
 
-class DruideOurs(Perso):
-    def __init__(self, parent, id, maison, couleur, x, y, montype):
-        Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
-        self.force = 20
-        self.distancefeumax = 50
-        self.delaifeu = 20
-        self.delaifeumax = 20
-        self.delai_verifier_champ = 30
-        self.vision_cases = 10
-        self.cibleennemi = None
-        self.position_visee = None
-        self.etats_et_actions = {"bouger": self.bouger,
-                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
-                                 "ciblerennemi": self.cibler,
-                                 "contourne": self.contourne,
-                                 "bougerversennemi": self.bouger_vers_ennemi,
-                                 "verifierchampvision": self.verifier
-                                 }
-        self.actioncourante = "verifierchampvision"
-
-    # def bouger(self):
-    #     if self.position_visee:
-    #         # le if sert à savoir si on doit repositionner notre visee pour un objet
-    #         # dynamique comme le daim
-    #         x = self.position_visee[0]
-    #         y = self.position_visee[1]
-    #         ang = Helper.calcAngle(self.x, self.y, x, y)
-    #         x1, y1 = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
-    #         ######## ICI METTRE TEST PROCHAIN PAS POUR VOIR SI ON PEUT AVANCER
-    #         self.get_directon_vers_position_visee()
-    #         # print("avant : ", self.x,"/", self.y )
-    #         # self.x, self.y = self.test_etat_du_sol(x1, y1)
-    #         if self.test_etat_du_sol(x1, y1):
-    #             self.action_precedente = self.actioncourante
-    #             self.actioncourante = "contourne"
-    #             return "contourne"
-    #         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-    #         self.x, self.y = x1, y1
-    #         self.case = self.parent.parent.trouver_case(self.x, self.y)
-    #         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-    #         print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
-    #         ######## FIN DE TEST POUR SURFACE MARCHEE
-    #         # si tout ba bien on continue avec la nouvelle valeur
-    #         # ici on test pour vori si nous rendu a la cible (en deca de la longueur de notre pas)
-    #         dist = Helper.calcDistance(self.x, self.y, x, y)
-    #
-    #         if dist <= self.vitesse:
-    #             if self.actioncourante == "bouger":
-    #                 self.actioncourante = "verifierchampvision"
-    #             return "rendu"
-    #         else:
-    #             return dist
-
-    def cibler(self):
-        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
-        if self.x < self.position_visee[0]:
-            self.dir = "D"
-        else:
-            self.dir = "G"
-
-        self.image = self.image[:-1] + self.dir
-        self.actioncourante = "attaquerennemi"
-
-    def attaquer(self, ennemi):
-        self.cibleennemi = ennemi
-        x = self.cibleennemi.x
-        y = self.cibleennemi.y
-        self.position_visee = [x, y]
-        dist = Helper.calcDistance(self.x, self.y, x, y)
-        print("DISTANCE CALCULEE", dist)
-
-        if dist <= self.distancefeumax:  # la distance fonctionne, mais augmenter la distancefeu
-            self.actioncourante = "attaquerennemi"
-            print("self.actioncourante = attaquerennemi")
-        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
-            self.actioncourante = "bougerversennemi"
-            print("self.actioncourante = ciblerennemi")
-
-    def attaquerennemi(self):
-        if self.cibleennemi:
-            self.delaifeu = self.delaifeu - 1
-            print("KAWABUNGA BABY")
-            print(" DELAI FEU : ", self.delaifeu)
-
-            if self.delaifeu == 0:
-                rep = self.cibleennemi.recevoir_coup(self.force)
-                self.delaifeu = self.delaifeumax
-                if rep:
-                    self.actioncourante = "verifierchampvision"
-                    try:
-                        self.parent.parent.trouver_case(self.cibleennemi.x, self.cibleennemi.y).persos.pop(self.cibleennemi.id)
-                    except:
-                        pass
-                # self.cibleennemi.recevoir_coup(self.force)
-                # self.fleches.remove(rep)
-
-    def verifier(self):
-        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
-
-    def verifier_champ_vision(self, x, y, radius):
-        self.delai_verifier_champ -= 1
-        if self.delai_verifier_champ == 0:
-            cases = self.parent.parent.get_subcarte(x, y, radius)
-            print("CASES", cases)
-            for i in cases:  # chaque case
-                cles = i.persos.values()  # 'objet'
-                for j in cles:  # pour chaque objet
-                    print(j.parent.nom)
-                    if j.parent.nom != self.parent.nom:
-                        print("============== DETECTION ENNEMI============")
-                        self.attaquer(j)
-            self.delai_verifier_champ = 30
 
 class Ingenieur(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
