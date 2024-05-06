@@ -172,6 +172,7 @@ class Joueur():
                        "druide": {},
                        "ingenieur": {},
                        "ballista": {},
+                       "cavalierarcher": {}
                        }
 
         self.batiments = {"maison": {},

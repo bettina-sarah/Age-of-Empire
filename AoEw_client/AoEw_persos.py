@@ -716,6 +716,17 @@ class Archer(Perso):
             self.delai_verifier_champ = 30
 
 
+class CavalierArcher(Archer):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
+        Archer.__init__(self, parent, id, maison, couleur, x, y, montype)
+        self.distancefeumax = 250
+        self.delai_verifier_champ = 30
+        self.distancefeu = 250
+        self.champvision = 350
+        self.vitesse = 35
+        self.mana = 120
+
+
 
 class Chevalier(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
