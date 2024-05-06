@@ -98,14 +98,13 @@ class Joueur():
                              "objet": 2
                              },
 
-                  "druide-ours": {"nourriture": 15,
-                                  "arbre": 12,
-                                  "roche": 35,
-                                  "aureus": 34,
-
-                                  "delai": 80,
-                                  "objet": 5
-                                  },
+                  "druideOurs": {"nourriture": 15,
+                                 "arbre": 12,
+                                 "roche": 35,
+                                 "aureus": 34,
+                                 "delai": 80,
+                                 "objet": 5
+                                 },
 
                   "ballista": {"nourriture": 30,
                                "arbre": 30,
@@ -138,7 +137,7 @@ class Joueur():
                      "druide": Druide,
                      "ballista": Ballista,
                      "ingenieur": Ingenieur,
-                     "druide-ours": DruideOurs}
+                     "druideOurs": DruideOurs}
     ressources = {"Azteque": {"nourriture": 999,
                               "arbre": 200,
                               "roche": 200,
@@ -170,6 +169,7 @@ class Joueur():
                        "archer": {},
                        "chevalier": {},
                        "druide": {},
+                       "druideOurs": {},
                        "ingenieur": {},
                        "ballista": {},
                        }
@@ -257,12 +257,15 @@ class Joueur():
 
         # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
         try:
+
             temp = self.persos["druide"].get(soigneur[0])
+            if temp == None:
+                temp = self.persos["druideOurs"].get(soigneur[0])
+
             temp.soigner(cible)
         except AttributeError:
             print("error")
-            #trouver next ?
-
+            # trouver next ?
 
     # changer a mort
     def abandonner(self, param):

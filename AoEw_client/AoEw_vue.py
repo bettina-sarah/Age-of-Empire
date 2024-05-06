@@ -517,8 +517,13 @@ class Vue():
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
-            if i == "druide-ours":  # !! image a faire
-                btn = Button(self.cadrebatiment, text=i)
+            if i == "druideOurs":  # !! image a faire
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+                btn.bind("<Button>",
+                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                      tag_batiment,
+                                                                                                                      id_joueur,
+                                                                                                                      pos))
                 btn.pack()
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
@@ -607,17 +612,6 @@ class Vue():
         except:
             print("action invalide")
 
-    #(self, coul, artefacts):
-
-        # self.cadreouvrier = Frame(self.canevasaction)
-        # for i in artefacts:
-        #     btn = Button(self.cadreouvrier, text=i, image=self.images[coul + i])
-        #     btn.bind("<Button>", self.batir_artefact)
-        #     btn.pack()
-
-
-
-
     def creer_cadre_tour(self, coul, artefacts, tag_tour, pos):
         if self.action.widgetsactifs:
             self.canevasaction.delete(self.action.widgetsactifs)
@@ -642,14 +636,14 @@ class Vue():
         if type_mur == "mur_v":
             self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v += 1
             murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v
-            x = x + 55 * murv
-            y = y + 55 * murv
+            x = x + 60 * murv
+            y = y + 60 * murv
 
         else:
             self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h += 1
             murh = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h
-            x = x - 120 * murh
-            y = y + 40 * murh
+            x = x - 105 * murh
+            y = y + 35 * murh
 
         self.action.prochaineaction = type_mur
         self.construire_batiment(self, (x,y))
@@ -916,7 +910,7 @@ class Vue():
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
-            elif "druide" == mestags[4]:
+            elif "druide" == mestags[4] or "druideOurs" == mestags[4]:
                 print("dans DRUIDE")
                 if not self.action.persochoisi:
                     self.action.persochoisi.append(mestags[2])
@@ -1068,12 +1062,13 @@ class Vue():
                     self.creer_cadre_caserne(coul[0] + "_", ["soldat", "chevalier"], mestags[4], mestags[2], pos)
                 if "abri" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_abri(coul[0] + "_", ["druide", "druide-ours"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_abri(coul[0] + "_", ["druide", "druideOurs"], mestags[4], mestags[2], pos)
                 if "usineballiste" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_usine(coul[0] + "_", ["archer", "ballista", "catapulte"], mestags[4], mestags[2],
+                    self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"], mestags[4], mestags[2],
                                            pos)
-                if "champs_de_tir" in mestags:
+                if "champstir" in mestags:
+                    print("JE RENTRE CHAMPS TIRIIIRR")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
