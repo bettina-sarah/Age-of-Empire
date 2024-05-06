@@ -740,6 +740,7 @@ class Vue():
     def afficher_jeu(self):
 
         # On efface tout ce qui est 'mobile' (un tag)
+
         self.canevas.delete("mobile")
 
         # on se debarrasse des choses mortes (disparues), le id est dans le tag du dessin
