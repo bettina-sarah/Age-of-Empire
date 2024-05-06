@@ -1326,6 +1326,96 @@ class Ballista(Perso):
                         self.attaquer(j)
             self.delai_verifier_champ = 30
 
+class Catapulte(Perso):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
+        Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+
+        self.dir = "DH"
+        self.image = couleur[0] + "_" + montype + self.dir
+        self.cible = None
+        self.angle = None
+        self.distancefeumax = 360
+        self.distancefeu = 360
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
+        self.delaifeu = 90
+        self.force = 80
+        self.champvision = 100
+        self.vitesse = 3
+        self.mana = 200
+        self.delaifeumax = 90
+        self.fleches = []
+        self.cibleennemi = None
+        self.position_visee = None
+        # self.nomimg="ballista"
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+        self.actioncourante = "verifierchampvision"
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+        if self.y < self.position_visee[1]:
+            self.dir = self.dir + "B"
+        else:
+            self.dir = self.dir + "H"
+
+        self.image = self.image[:-2] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "ciblerennemi"
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            if self.delaifeu == 0:
+                id = get_prochain_id()
+                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.fleches.append(fleche)
+                self.delaifeu = self.delaifeumax
+            if len(self.fleches) > 0:
+                for i in self.fleches:
+                    rep = i.bouger()
+            # if rep:
+            # self.cibleennemi.recevoir_coup(self.force)
+            # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
+
 
 
 class Ouvrier(Perso):

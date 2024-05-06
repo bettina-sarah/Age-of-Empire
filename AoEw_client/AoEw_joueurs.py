@@ -113,6 +113,14 @@ class Joueur():
 
                                "delai": 30,
                                "objet": 0},
+                  
+                  "catapulte": {"nourriture": 30,
+                               "arbre": 30,
+                               "roche": 30,
+                               "aureus": 30,
+
+                               "delai": 30,
+                               "objet": 0},
 
                   "ingenieur": {"nourriture": 30,
                                 "arbre": 30,
@@ -122,6 +130,13 @@ class Joueur():
                                 "objet": 5},
 
                   "archer": {"nourriture": 35,
+                             "arbre": 35,
+                             "roche": 35,
+                             "aureus": 30,
+                             "delai": 30,
+                             "objet": 0},
+
+                  "cavalierarcher": {"nourriture": 35,
                              "arbre": 35,
                              "roche": 35,
                              "aureus": 30,
@@ -137,7 +152,9 @@ class Joueur():
                      "druide": Druide,
                      "ballista": Ballista,
                      "ingenieur": Ingenieur,
-                     "druideOurs": DruideOurs}
+                     "druideOurs": DruideOurs,
+                     "cavalierarcher": CavalierArcher,
+                     "catapulte": Catapulte}
     ressources = {"Azteque": {"nourriture": 999,
                               "arbre": 200,
                               "roche": 200,
@@ -172,7 +189,8 @@ class Joueur():
                        "druideOurs": {},
                        "ingenieur": {},
                        "ballista": {},
-                       "cavalierarcher": {}
+                       "cavalierarcher": {},
+                       "catapulte":{}
                        }
 
         self.batiments = {"maison": {},

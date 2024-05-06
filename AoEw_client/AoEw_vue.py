@@ -554,8 +554,14 @@ class Vue():
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             if i == "catapulte":  # !! image a faire
-                btn = Button(self.cadrebatiment, text=i)
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+                btn.bind("<Button>",
+                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                      tag_batiment,
+                                                                                                                      id_joueur,
+                                                                                                                      pos))
                 btn.pack()
+                self.afficher_labels_ressources(i)
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
@@ -1070,7 +1076,7 @@ class Vue():
                 if "champstir" in mestags:
                     print("JE RENTRE CHAMPS TIRIIIRR")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "cavalierarcher"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_tour(coul[0] + "_", ["mur_h", "mur_v"], mestags[2], pos)
