@@ -127,6 +127,11 @@ class MurH(Batiment):
         self.maxperso = 20
         self.perso = 0
 
+
+    def get_coins(self):
+        # UN MUR N'A PAS DE COIN
+        return []
+
 class MurV(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
@@ -134,6 +139,10 @@ class MurV(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+
+    def get_coins(self):
+        # UN MUR N'A PAS DE COIN
+        return []
 
 class Tour(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
