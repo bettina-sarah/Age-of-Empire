@@ -391,7 +391,7 @@ class Perso():
         if not self.cible_contournement:
             print("contoure")
             self.cible_contournement = None
-            self.actioncourante = None
+            self.actioncourante = self.action_precedente
             return
 
         x,y = self.cible_contournement[1]
