@@ -38,8 +38,12 @@ class Batiment():
             try:
                 self.parent.parent.annoncer_mort_batiment(self)
             except:
-                print("MAISON PRINCIPALE")
-                self.parent.annoncer_mort_batiment(self)
+                try:
+                    print("MAISON PRINCIPALE")
+                    self.parent.annoncer_mort_batiment(self)
+                except:
+                    print("plusieur unité cant")
+
             return 1
 
 

@@ -674,9 +674,9 @@ class Partie():
         if len(temp) == 1:
             self.parent.afficher_fin(temp[0])
 
-    def retirer_batiment_minimap(self, id, cartebatiment):
-        for i in cartebatiment:
-            self.cartecase[i[1]][i[0]].montype = "plaine"
+    def retirer_batiment_minimap(self, id):
+        # for i in cartebatiment:
+        #     self.cartecase[i[1]][i[0]].montype = "plaine"
         self.parent.retirer_batiment_minimap(id)
 
     def set_background_case_batiment(self,  cartebatiment):

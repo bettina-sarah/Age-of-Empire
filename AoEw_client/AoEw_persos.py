@@ -410,6 +410,18 @@ class Perso():
         # if self.cibleennemi and not case.batiment:
         #     if case.batiment.id == self.cibleennemi
 
+        # print(self.actioncourante)
+        # print(case)
+
+        if self.actioncourante == "bougerversennemi" or self.actioncourante == "ciblerennemi" or self.actioncourante == "attaquerennemi":
+            print(self.actioncourante)
+            if case.batiment and self.cibleennemi:
+                print("meurt batiment?")
+                print(case.batiment.id)
+                print(self.cibleennemi.id)
+                if self.cibleennemi.id == case.batiment.id:
+                    print("pas collision")
+                    return None
 
         if self.actioncourante == "retourbatimentmere" or self.actioncourante == "ciblerressource":
             if case.montype != "batiment-maison" and case.montype in case_avec_collision:
@@ -449,12 +461,12 @@ class Perso():
         ang = Helper.calcAngle(self.x, self.y, x, y)
 
         self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-        print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+        # print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
         self.x, self.y = Helper.getAngledPoint(ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, x, y)
         self.case = self.parent.parent.trouver_case(self.x, self.y)
         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
-        print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
+        # print("Dans perso cases: ", self.parent.parent.trouver_case(self.x, self.y).persos)
 
 
         if dist <= self.vitesse:
