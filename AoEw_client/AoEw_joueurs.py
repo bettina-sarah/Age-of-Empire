@@ -199,6 +199,7 @@ class Joueur():
     def annoncer_mort(self, perso):
         try:
             self.persos[perso.montype].pop(perso.id)
+            self.parent.trouver_case(perso.x, perso.y).persos.pop(perso.id)
         except:
             print("Deja Mort")
 
@@ -236,6 +237,7 @@ class Joueur():
                 if j in self.persos[i]:
                     self.persos[i][j].attaquer(ennemi)
                     # j.attaquer(ennemi)
+        
 
     def soigner(self, param):
         soigneur, cible = param
@@ -356,6 +358,9 @@ class Joueur():
         for j in list(self.persos.keys()):
             for i in list(self.persos[j].keys()):
                 self.persos[j][i].jouer_prochain_coup()
+        
+        for i in list(self.batiments["tour"].keys()):
+            self.batiments["tour"][i].jouer_prochain_coup()
 
     def creer_perso(self, param):
         sorteperso, batimentsource, idbatiment, pos = param

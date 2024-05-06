@@ -1,4 +1,7 @@
 import random
+from AoEw_persos import Fleche
+from AoEw_divers import *
+
 
 class SiteConstruction():
     def __init__(self, parent: object, id: str, x: int, y: int, sorte: str, delai: int):
@@ -8,10 +11,11 @@ class SiteConstruction():
         self.y = y
         self.etat = "attente"
         self.sorte = sorte
-        self.delai = delai #artie.valeurs[self.sorte]["delai"]
+        self.delai = delai  # artie.valeurs[self.sorte]["delai"]
 
     def decremente_delai(self):
         self.delai -= 1
+
 
 class Batiment():
     def __init__(self, parent, id, x, y):
@@ -42,17 +46,16 @@ class Batiment():
                 self.parent.annoncer_mort_batiment(self)
             return 1
 
-
     def recevoir_soin(self, soin):
-        print(" avant",self.mana)
-        print("soin rececois",self.force)
+        print(" avant", self.mana)
+        print("soin rececois", self.force)
 
         if self.mana + soin >= self.manaMax:
             self.mana = self.manaMax
         else:
             self.mana += soin
 
-        print("soin recu",self.mana)
+        print("soin recu", self.mana)
         return 1
 
     def update_type_carte_batiment(self, cartebatiment):
@@ -62,13 +65,12 @@ class Batiment():
         self.parent.parent.parent.set_background_case_batiment(self.cartebatiment)
         pass
 
-    def set_coins(self, coin_x1,coin_y1,coin_x2,coin_y2):
+    def set_coins(self, coin_x1, coin_y1, coin_x2, coin_y2):
         print("set coins")
-        self.coin_gh = (coin_x1-20, coin_y2+20)
-        self.coin_dh = (coin_x2+20, coin_y2+20)
-        self.coin_bg = (coin_x1-20, coin_y1-20)
-        self.coin_bd = (coin_x2+20, coin_y1-20)
-
+        self.coin_gh = (coin_x1 - 20, coin_y2 + 20)
+        self.coin_dh = (coin_x2 + 20, coin_y2 + 20)
+        self.coin_bg = (coin_x1 - 20, coin_y1 - 20)
+        self.coin_bd = (coin_x2 + 20, coin_y1 - 20)
 
     def get_coins(self):
         return self.coin_gh, self.coin_dh, self.coin_bg, self.coin_bd
@@ -82,6 +84,7 @@ class Usineballiste(Batiment):
         self.maxperso = 10
         self.perso = 0
 
+
 class Maison(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
@@ -90,6 +93,7 @@ class Maison(Batiment):
         self.maxperso = 10
         self.perso = 0
 
+
 class Abri(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
@@ -97,6 +101,7 @@ class Abri(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+
 
 class Caserne(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -115,6 +120,7 @@ class Champstir(Batiment):
         self.maxperso = 20
         self.perso = 0
 
+
 class MurH(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
@@ -122,6 +128,7 @@ class MurH(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+
 
 class MurV(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -131,9 +138,11 @@ class MurV(Batiment):
         self.maxperso = 20
         self.perso = 0
 
+
 class Tour(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
+        # Archer.__init__(self, parent, id, couleur, x, y, montype)
         self.image = couleur[0] + "_" + montype
         self.montype = montype
         self.maxperso = 20
@@ -141,3 +150,65 @@ class Tour(Batiment):
         self.nbr_mur_v = 0
         self.nbr_mur_h = 0
 
+        # de ARCHER
+        self.cibleennemi = None
+        self.distancefeumax = 200
+        self.delai_verifier_champ = 5
+        self.vision_cases = 10
+        self.distancefeu = 200
+        self.delaifeu = 2
+        self.delaifeumax = 2
+        self.fleches = []
+
+        self.etats_et_actions = {
+            "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+            "verifierchampvision": self.verifier
+        }
+
+        self.actioncourante = "verifierchampvision"
+
+    def jouer_prochain_coup(self):
+        if self.actioncourante:
+            reponse = self.etats_et_actions[self.actioncourante]()
+
+    def attaquerennemi(self):
+        print("Aattaque cible")
+        # self.cibleennemi=cible
+        self.delaifeu = self.delaifeu - 1
+        print(self.delaifeu)
+        if self.delaifeu == 0:
+            try:
+                id = get_prochain_id()
+                print("AVNT creer fleche")
+                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.fleches.append(fleche)
+                self.delaifeu = self.delaifeumax
+            except:
+                print("mort cible")
+                #self.actioncourante= "verifierchampvision"
+
+        if len(self.fleches) > 0:
+            for i in self.fleches:
+                print( "fleche bougger")
+                rep = i.bouger()
+            # if rep:
+            # self.cibleennemi.recevoir_coup(self.force)
+            # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.parent.get_subcarte(x, y, radius)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in list(cles):  # pour chaque objet
+                    if j.parent.nom != self.parent.parent.nom:
+                        print("DANS TOUR")
+                        print("============== DETECTION ENNEMI============")
+                        self.cibleennemi= j
+                        self.actioncourante="attaquerennemi"
+                        self.attaquerennemi()
+            self.delai_verifier_champ = 30

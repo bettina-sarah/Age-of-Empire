@@ -155,7 +155,7 @@ class Controleur():
                     "actions_requises": actions}
             try:
                 mondict = self.appeler_serveur(url, data, method="POST")
-                print(mondict)
+        
                 # verifie pour requete d'attente d'un joueur plus lent
                 if "ATTENTION" in mondict:
                     self.on_joue = 0

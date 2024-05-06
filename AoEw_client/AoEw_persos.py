@@ -606,7 +606,7 @@ class Soldat(Perso):
 
 
 class Archer(Perso):
-    def __init__(self, parent, id, maison, couleur, x, y, montype):
+    def __init__(self, parent, id, couleur, x, y, montype,  maison=None):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
         self.dir = "D"
@@ -1187,7 +1187,7 @@ class Ballista(Perso):
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
-        self.vitesse = 3
+        self.vitesse = 25
         self.mana = 200
         self.delaifeumax = 90
         self.fleches = []
