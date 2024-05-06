@@ -1358,13 +1358,18 @@ class Ouvrier(Perso):
 
     def construire_batiment(self):
         self.cible.decremente_delai()
+
+        if self.cible.sorte == "siteconstruction":
+            return
+
         if self.cible.delai < 1:
-            batiment = self.parent.parent.classesbatiments[self.cible.sorte](self, self.cible.id, self.parent.couleur,
+            try:
+                batiment = self.parent.parent.classesbatiments[self.cible.sorte](self, self.cible.id, self.parent.couleur,
                                                                              self.cible.x, self.cible.y,
                                                                              self.cible.sorte)
-            self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
+                self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
 
-            try:
+
                 sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
                 self.parent.installer_batiment(batiment)
             except:
