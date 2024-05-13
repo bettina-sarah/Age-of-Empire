@@ -52,6 +52,76 @@ class Fleche():
 
 
 
+
+
+class Boulet():
+    def __init__(self, parent, id, proie):
+        self.parent = parent
+        self.id = id
+        self.vitesse = 18
+        self.taille = 20
+
+        self.force = 25  ##A REMMETTRE A 10
+
+        self.proie = proie
+        self.proiex = self.proie.x
+        self.proiey = self.proie.y
+        self.x = self.parent.x
+        self.y = self.parent.y
+        self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
+        angquad = math.degrees(self.ang)
+        dir = "DB"
+        if 0 <= angquad <= 89:
+            dir = "DB"
+        elif -90 <= angquad <= -1:
+            dir = "DH"
+        if 90 <= angquad <= 179:
+            dir = "GB"
+        elif -180 <= angquad <= -91:
+            dir = "GH"
+        self.image = "boulet" + dir
+
+    def bouger(self):
+        if not self.proie:
+            self.parent.boulets = []
+        self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
+        dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
+        if dist <= self.taille:
+            if not self.parent.montype == "tour":
+                carte = self.parent.parent.parent.get_subcarte(self.x, self.y, 4)
+            else:
+                carte = self.parent.parent.parent.parent.get_subcarte(self.x, self.y, 4)
+            persos_a_attaquer = []
+
+            for i in range(len(carte)):
+                persos_a_attaquer.append(carte[i].persos)
+            for i in range(len(persos_a_attaquer)):
+                values = persos_a_attaquer[i].values()
+                for j in list(values):
+                    if not self.parent.montype == "tour":
+                        if j.parent.nom != self.parent.parent.nom:
+                            rep = j.recevoir_coup(self.force)
+
+                    else:
+                        if j.parent.nom != self.parent.parent.parent.nom:
+                            rep = j.recevoir_coup(self.force)
+
+
+                # rep = self.proie.recevoir_coup(self.force)
+            self.parent.boulets.remove(self)
+            if rep == 1:
+                self.parent.boulets.clear()
+                try:
+                    self.parent.parent.parent.trouver_case(self.parent.cibleennemi.x, self.parent.cibleennemi.y).persos.pop(self.parent.cibleennemi.id)
+                except:
+                    pass
+                self.parent.cibleennemi = None;
+                self.parent.actioncourante = "verifierchampvision"
+
+            # return self
+
+
+
 class Javelot():
     def __init__(self, parent, id, proie):
         self.parent = parent
@@ -566,7 +636,7 @@ class Soldat(Perso):
 
 
 class Archer(Perso):
-    def __init__(self, parent, id, maison, couleur, x, y, montype):
+    def __init__(self, parent, id, couleur, x, y, montype,  maison=None):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
         self.dir = "D"
@@ -684,6 +754,17 @@ class Archer(Perso):
                         print("============== DETECTION ENNEMI============")
                         self.attaquer(j)
             self.delai_verifier_champ = 30
+
+
+class CavalierArcher(Archer):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
+        Archer.__init__(self, parent, id, maison, couleur, x, y, montype)
+        self.distancefeumax = 250
+        self.delai_verifier_champ = 30
+        self.distancefeu = 250
+        self.champvision = 350
+        self.vitesse = 35
+        self.mana = 120
 
 
 
@@ -1147,7 +1228,7 @@ class Ballista(Perso):
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
-        self.vitesse = 3
+        self.vitesse = 25
         self.mana = 200
         self.delaifeumax = 90
         self.fleches = []
@@ -1234,6 +1315,96 @@ class Ballista(Perso):
                 self.delaifeu = self.delaifeumax
             if len(self.fleches) > 0:
                 for i in self.fleches:
+                    rep = i.bouger()
+            # if rep:
+            # self.cibleennemi.recevoir_coup(self.force)
+            # self.fleches.remove(rep)
+
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
+
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
+
+class Catapulte(Perso):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
+        Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
+
+        self.dir = "DH"
+        self.image = couleur[0] + "_" + montype + self.dir
+        self.cible = None
+        self.angle = None
+        self.distancefeumax = 360
+        self.distancefeu = 360
+        self.delai_verifier_champ = 30
+        self.vision_cases = 10
+        self.delaifeu = 90
+        self.force = 80
+        self.champvision = 100
+        self.vitesse = 80
+        self.mana = 200
+        self.delaifeumax = 90
+        self.boulets = []
+        self.cibleennemi = None
+        self.position_visee = None
+        # self.nomimg="ballista"
+        self.etats_et_actions = {"bouger": self.bouger,
+                                 "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
+                                 "ciblerennemi": self.cibler,
+                                 "contourne": self.contourne,
+                                 "bougerversennemi": self.bouger_vers_ennemi,
+                                 "verifierchampvision": self.verifier,
+                                 "bougerversennemi": self.bouger_vers_ennemi
+                                 }
+        self.actioncourante = "verifierchampvision"
+
+    def cibler(self):
+        self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
+        if self.x < self.position_visee[0]:
+            self.dir = "D"
+        else:
+            self.dir = "G"
+        if self.y < self.position_visee[1]:
+            self.dir = self.dir + "B"
+        else:
+            self.dir = self.dir + "H"
+
+        self.image = self.image[:-2] + self.dir
+        self.actioncourante = "attaquerennemi"
+
+    def attaquer(self, ennemi):
+        self.cibleennemi = ennemi
+        x = self.cibleennemi.x
+        y = self.cibleennemi.y
+        self.position_visee = [x, y]
+        dist = Helper.calcDistance(self.x, self.y, x, y)
+
+        if dist <= self.distancefeu:  # la distance fonctionne, mais augmenter la distancefeu
+            self.actioncourante = "ciblerennemi"
+        else:  # si la distance est trop grande ca fait juste le cibler et ca arrete la
+            self.actioncourante = "bougerversennemi"
+
+    def attaquerennemi(self):
+        if self.cibleennemi:
+            self.delaifeu = self.delaifeu - 1
+            if self.delaifeu == 0:
+                id = get_prochain_id()
+                boulet = Boulet(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.boulets.append(boulet)
+                self.delaifeu = self.delaifeumax
+            if len(self.boulets) > 0:
+                for i in self.boulets:
                     rep = i.bouger()
             # if rep:
             # self.cibleennemi.recevoir_coup(self.force)

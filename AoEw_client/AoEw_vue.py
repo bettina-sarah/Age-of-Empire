@@ -554,8 +554,14 @@ class Vue():
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             if i == "catapulte":  # !! image a faire
-                btn = Button(self.cadrebatiment, text=i)
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+                btn.bind("<Button>",
+                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                      tag_batiment,
+                                                                                                                      id_joueur,
+                                                                                                                      pos))
                 btn.pack()
+                self.afficher_labels_ressources(i)
             else:
                 btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
@@ -750,6 +756,7 @@ class Vue():
     def afficher_jeu(self):
 
         # On efface tout ce qui est 'mobile' (un tag)
+
         self.canevas.delete("mobile")
 
         # on se debarrasse des choses mortes (disparues), le id est dans le tag du dessin
@@ -823,11 +830,23 @@ class Vue():
                         for b in self.modele.joueurs[j].persos[p][k].javelots:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
-                    if p == "ballista" or p == "archer":
+                    if p == "ballista" or p == "archer" or p == "cavalierarcher":
                         for b in self.modele.joueurs[j].persos[p][k].fleches:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
                             # tags=(j,b.id,"artefact","mobile","javelot"))
+
+
+                    if p == "catapulte":
+                        for b in self.modele.joueurs[j].persos[p][k].boulets:
+                            self.canevas.create_image(b.x, b.y, image=self.images[b.image],
+                                                      tags=("mobile", j, b.id, "", type(b).__name__, ""))
+
+            for p in self.modele.joueurs[j].batiments["tour"].keys():
+                for t in self.modele.joueurs[j].batiments["tour"][p].boulets:
+                    self.canevas.create_image(t.x, t.y, image=self.images[t.image],
+                                              tags=("mobile", j, t.id, "", type(t).__name__, ""))
+
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["daim"].keys():
@@ -1080,7 +1099,7 @@ class Vue():
                 if "champstir" in mestags:
                     print("JE RENTRE CHAMPS TIRIIIRR")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
+                    self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "cavalierarcher"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_tour(coul[0] + "_", ["mur_gb", "mur_db","mur_dh","mur_gh"], mestags[2], pos)

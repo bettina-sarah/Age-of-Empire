@@ -133,7 +133,9 @@ class Partie():
                               "soldat": Soldat,
                               "archer": Archer,
                               "chevalier": Chevalier,
-                              "druide": Druide}
+                              "druide": Druide,
+                              "cavalierarcher": CavalierArcher,
+                              "catapulte": Catapulte }
         self.ressourcemorte = []
         self.msggeneral = None
         self.msggeneraldelai = 30
