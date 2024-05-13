@@ -1037,7 +1037,6 @@ class Vue():
 
     def construire_batiment(self, evt, coordos_tour=None):
         mestags = self.canevas.gettags(CURRENT)
-
         if not mestags:
             if coordos_tour is not None:
                 #pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
@@ -1045,6 +1044,7 @@ class Vue():
             else:
                 pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                 self.action.construire_batiment(pos)
+
         elif "SiteConstruction" in mestags:  # permet de continuer une constuction de site de construction
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
             self.action.prochaineaction = "siteconstruction"
@@ -1139,6 +1139,7 @@ class Action():
 
     def construire_batiment(self, pos):
         print(self.persochoisi)
+        action = None
         if self.persochoisi:
             #self.btnactif.config(bg="SystemButtonFace")
             self.btnactif = None
@@ -1146,12 +1147,14 @@ class Action():
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
             else:
-                action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+                if self.prochaineaction:
+                    action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
         else:
             if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
-        self.parent.parent.actions_requises.append(action)
+        if action:
+            self.parent.parent.actions_requises.append(action)
 
     def continuer_construction(self, pos):
         action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]

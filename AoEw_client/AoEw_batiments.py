@@ -42,8 +42,12 @@ class Batiment():
             try:
                 self.parent.parent.annoncer_mort_batiment(self)
             except:
-                print("MAISON PRINCIPALE")
-                self.parent.annoncer_mort_batiment(self)
+                try:
+                    print("MAISON PRINCIPALE")
+                    self.parent.annoncer_mort_batiment(self)
+                except:
+                    print("plusieur unité cant")
+
             return 1
 
     def recevoir_soin(self, soin):
@@ -128,6 +132,7 @@ class MurH(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
+
 
 
 class MurV(Batiment):
