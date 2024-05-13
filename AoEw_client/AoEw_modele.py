@@ -174,6 +174,7 @@ class Partie():
         elif batiment.montype == "mur_h" or batiment.montype == "mur_v" or batiment.montype == "tour":
             type_case = "batiment-mur"
 
+
         for i in cartebatiment:
             # pour contournement avec retour de ressource
             self.cartecase[i[1]][i[0]].montype = type_case

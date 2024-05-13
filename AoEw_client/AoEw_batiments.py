@@ -128,9 +128,18 @@ class MurH(Batiment):
         self.perso = 0
 
 
-    # def get_coins(self):
-    #     # UN MUR N'A PAS DE COIN
-    #     return []
+    def get_coins(self, y_perso):
+        # si l'unité à un 'y' plus bas, il est donc physiquement du coté nord du mur, donc les coins possibles
+        # sont les coins supérieurs, sinon on inverse
+        print(y_perso, " < ", self.y, " = ", (y_perso > self.y))
+        if y_perso > self.y:
+            print("coins: gh ",self.coin_gh)
+            print("coins: dh ",self.coin_dh)
+            return self.coin_gh, self.coin_dh
+        else:
+            print("coins: bg ",self.coin_bg)
+            print("coins: bd ",self.coin_bd)
+            return self.coin_bg, self.coin_bd
 
 class MurV(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -140,9 +149,18 @@ class MurV(Batiment):
         self.maxperso = 20
         self.perso = 0
 
-    # def get_coins(self):
-    #     # UN MUR N'A PAS DE COIN
-    #     return []
+    def get_coins(self, y_perso):
+        # si l'unité à un 'y' plus bas, il est donc physiquement du coté nord du mur, donc les coins possibles
+        # sont les coins supérieurs, sinon on inverse
+        print(y_perso, " < ", self.y, " = ", (y_perso > self.y))
+        if y_perso > self.y:
+            print("coins: gh ",self.coin_gh)
+            print("coins: dh ",self.coin_dh)
+            return self.coin_gh, self.coin_dh
+        else:
+            print("coins: bg ",self.coin_bg)
+            print("coins: bd ",self.coin_bd)
+            return self.coin_bg, self.coin_bd
 
 class Tour(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
