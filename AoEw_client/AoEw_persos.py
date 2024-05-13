@@ -410,7 +410,7 @@ class Perso():
         cible_possibles = []
 
         #Si c'est un batiment-mur, trouver la direction de la collision
-        if self.case_coutournement.batiment.montype == "mur_v" or self.case_coutournement.batiment.montype == "mur_h":
+        if "mur" in self.case_coutournement.batiment.montype:
             for coin in self.case_coutournement.batiment.get_coins(self.y):
                 if coin not in self.cibles_contournement_precedentes:
                     cible_possibles.append(coin)
@@ -1369,6 +1369,10 @@ class Ouvrier(Perso):
                 batiment = self.parent.parent.classesbatiments[self.cible.sorte](self, self.cible.id, self.parent.couleur,
                                                                              self.cible.x, self.cible.y,
                                                                              self.cible.sorte)
+
+                print(self.parent.batiments)
+                print(self.cible.sorte)
+                print(self.cible.id)
                 self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
 
 

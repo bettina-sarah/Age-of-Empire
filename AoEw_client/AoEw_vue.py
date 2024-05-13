@@ -633,17 +633,27 @@ class Vue():
 
     def site_construction_mur(self, tag_tour, coordos_tour, type_mur):
         x,y = coordos_tour
-        if type_mur == "mur_v":
-            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v += 1
-            murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v
-            x = x + 60 * murv
-            y = y + 60 * murv
+        if type_mur == "mur_db":
+            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_db += 1
+            murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_db
+            x = x + 95 * murv
+            y = y + 50  * murv
 
-        else:
-            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h += 1
-            murh = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_h
-            x = x - 105 * murh
-            y = y + 35 * murh
+        elif type_mur == "mur_gb":
+            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_gb += 1
+            murh = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_gb
+            x = x - 95 * murh
+            y = y + 50 * murh
+        elif type_mur == "mur_dh":
+            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_dh += 1
+            murh = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_dh
+            x = x + 95 * murh
+            y = y - 50 * murh
+        elif type_mur == "mur_gh":
+            self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_gh += 1
+            murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_gh
+            x = x - 95 * murv
+            y = y - 50 * murv
 
         self.action.prochaineaction = type_mur
         self.construire_batiment(self, (x,y))
@@ -1011,7 +1021,7 @@ class Vue():
             nomsorte = obj.cget("text")
             self.action.btnactif = obj
         except:
-            nomsorte = "mur_h"
+            nomsorte = "mur_dh"
 
         vals = self.parent.trouver_valeurs()
         ok = 1
@@ -1024,7 +1034,7 @@ class Vue():
                 self.action.prochaineaction = obj.cget("text")
                 obj.config(bg="lightgreen")
             except:
-                self.action.prochaineaction = "mur_h"
+                self.action.prochaineaction = "mur_dh"
         else:
             print(val)
             print("VOUS N'AVEZ PAS ASSEZ DE", k)
@@ -1073,7 +1083,7 @@ class Vue():
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-                    self.creer_cadre_tour(coul[0] + "_", ["mur_h", "mur_v"], mestags[2], pos)
+                    self.creer_cadre_tour(coul[0] + "_", ["mur_gb", "mur_db","mur_dh","mur_gh"], mestags[2], pos)
         elif self.action.persochoisi != []:
             print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
@@ -1137,14 +1147,14 @@ class Action():
         if self.persochoisi:
             #self.btnactif.config(bg="SystemButtonFace")
             self.btnactif = None
-            if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
+            if self.prochaineaction == "mur_db" or self.prochaineaction == "mur_dh" or self.prochaineaction == "mur_gb" or self.prochaineaction == "mur_gh":
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
             else:
                 if self.prochaineaction:
                     action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
         else:
-            if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
+            if self.prochaineaction == "mur_db" or self.prochaineaction == "mur_dh" or self.prochaineaction == "mur_gb" or self.prochaineaction == "mur_gh":
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
         if action:
