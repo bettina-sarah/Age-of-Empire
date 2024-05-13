@@ -187,7 +187,7 @@ class Perso():
         self.mana = 100
         self.force = 25
         self.champvision = 100
-        self.vitesse = 30
+        self.vitesse = 10
         self.angle = None
         self.etats_et_actions = {"bouger": self.bouger,
                                  "attaquerennemi": None,  # caller la bonne fctn attaquer
@@ -634,7 +634,7 @@ class Soldat(Perso):
 
 
 class Archer(Perso):
-    def __init__(self, parent, id, couleur, x, y, montype,  maison=None):
+    def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
         self.dir = "D"
@@ -893,7 +893,8 @@ class Druide(Perso):
         self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
-
+        self.vision_cases = 10
+        self.delai_verifier_champ = 30
         self.delaisoin = 5
         self.delaisoinmax = 5
         self.cibleennemi = None
@@ -904,8 +905,12 @@ class Druide(Perso):
                                  "ciblerennemi": self.cibler,
                                  "contourne": self.contourne,
                                  "bougerversennemi": self.bouger_vers_ennemi,
-                                 "soignercible": self.soignercible
+                                 "soignercible": self.soignercible,
+                                 "verifierchampvision": self.verifier
                                  }
+
+        self.actioncourante = "verifierchampvision"
+
 
     def cibler(self):
         ###?????????????????????????????????????
@@ -957,7 +962,23 @@ class Druide(Perso):
                 if rep:
                     self.actioncourante = None
 
+    def verifier(self):
+        self.verifier_champ_vision(self.x, self.y, self.vision_cases)
 
+    def verifier_champ_vision(self, x, y, radius):
+        self.delai_verifier_champ -= 1
+        if self.delai_verifier_champ == 0:
+            cases = self.parent.parent.get_subcarte(x, y, radius)
+            print("CASES", cases)
+            for i in cases:  # chaque case
+                cles = i.persos.values()  # 'objet'
+                for j in cles:  # pour chaque objet
+                    print(j.parent.nom)
+                    if j.parent.nom != self.parent.nom:
+                        print("============== DETECTION ENNEMI============")
+                        self.attaquer(j)
+            self.delai_verifier_champ = 30
+    #
 class DruideOurs(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
@@ -970,6 +991,7 @@ class DruideOurs(Perso):
         self.delaisoinmax = 5
         self.delai_verifier_champ = 30
         self.vision_cases = 10
+        self.vitesse = 10
         self.cibleennemi = None
         self.cible_soin = None
         self.position_visee = None
@@ -1226,7 +1248,7 @@ class Ballista(Perso):
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
-        self.vitesse = 25
+        self.vitesse = 30
         self.mana = 200
         self.delaifeumax = 90
         self.fleches = []
@@ -1350,7 +1372,7 @@ class Catapulte(Perso):
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
-        self.vitesse = 80
+        self.vitesse = 10
         self.mana = 200
         self.delaifeumax = 90
         self.boulets = []
