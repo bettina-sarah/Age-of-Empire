@@ -70,7 +70,6 @@ class Batiment():
         pass
 
     def set_coins(self, coin_x1, coin_y1, coin_x2, coin_y2):
-        print("set coins")
         self.coin_gh = (coin_x1 - 20, coin_y2 + 20)
         self.coin_dh = (coin_x2 + 20, coin_y2 + 20)
         self.coin_bg = (coin_x1 - 20, coin_y1 - 20)

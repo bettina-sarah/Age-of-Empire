@@ -195,7 +195,6 @@ class Partie():
             # pour contournement avec retour de ressource
             self.cartecase[i[1]][i[0]].montype = type_case
             self.cartecase[i[1]][i[0]].batiment = batiment
-            print("new batiment: ", i[1], "/", i[0])
 
         x1, y1 = cartebatiment[0]
         x4, y4 = cartebatiment[-1]
