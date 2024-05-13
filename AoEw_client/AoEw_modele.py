@@ -69,19 +69,31 @@ class Partie():
                              "roche": 10,
                              "aureus": 10,
                              "delai": 20,
-                             "objet": 0},
-               "mur_h": {"nourriture": 5,
+                            "objet": 0},
+               "mur_db": {"nourriture": 5,
+                             "arbre": 5,
+                             "roche": 5,
+                             "aureus": 5,
+                             "delai": 5,
+                         "objet": 0},
+               "mur_gb": {"nourriture": 5,
                          "arbre": 5,
                          "roche": 5,
                          "aureus": 5,
                          "delai": 5,
                          "objet": 0},
-               "mur_v": {"nourriture": 5,
-                         "arbre": 5,
-                         "roche": 5,
-                         "aureus": 5,
-                         "delai": 5,
-                         "objet": 0},
+               "mur_dh": {"nourriture": 5,
+                          "arbre": 5,
+                          "roche": 5,
+                          "aureus": 5,
+                          "delai": 5,
+                          "objet": 0},
+               "mur_gh": {"nourriture": 5,
+                          "arbre": 5,
+                          "roche": 5,
+                          "aureus": 5,
+                          "delai": 5,
+                          "objet": 0},
                "tour": {"nourriture": 25,
                         "arbre": 25,
                         "roche": 25,
@@ -111,15 +123,20 @@ class Partie():
                                  "caserne": Caserne,
                                  "abri": Abri,
                                  "usineballiste": Maison,
-                                 "champstir": Champstir,
-                                 "mur_h": MurH,
-                                 "mur_v": MurV,
-                                 "tour": Tour}
+                                 "champstir":Champstir,
+                                 "mur_dh":MurV,
+                                 "mur_db":MurH,
+                                 "mur_gh": MurV,
+                                 "mur_gb": MurH,
+                                 "tour":Tour}
+
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,
                               "chevalier": Chevalier,
-                              "druide": Druide}
+                              "druide": Druide,
+                              "cavalierarcher": CavalierArcher,
+                              "catapulte": Catapulte }
         self.ressourcemorte = []
         self.msggeneral = None
         self.msggeneraldelai = 30
@@ -170,14 +187,14 @@ class Partie():
 
         if batiment.montype == "maison":
             type_case = "batiment-maison"
-        elif batiment.montype == "mur_h" or batiment.montype == "mur_v" or batiment.montype == "tour":
+        elif "mur" in batiment.montype or batiment.montype == "tour":
             type_case = "batiment-mur"
+
 
         for i in cartebatiment:
             # pour contournement avec retour de ressource
             self.cartecase[i[1]][i[0]].montype = type_case
             self.cartecase[i[1]][i[0]].batiment = batiment
-            print("new batiment: ", i[1], "/", i[0])
 
         x1, y1 = cartebatiment[0]
         x4, y4 = cartebatiment[-1]
