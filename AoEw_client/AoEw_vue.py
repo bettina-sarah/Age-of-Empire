@@ -828,7 +828,7 @@ class Vue():
 
 
                     if p == "catapulte":
-                        for b in self.modele.joueurs[j].persos[p][k].fleches:
+                        for b in self.modele.joueurs[j].persos[p][k].boulets:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
 

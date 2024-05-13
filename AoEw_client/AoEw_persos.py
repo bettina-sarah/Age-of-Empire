@@ -87,7 +87,27 @@ class Boulet():
         self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
         dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
         if dist <= self.taille:
-            rep = self.proie.recevoir_coup(self.force)
+            if not self.parent.montype == "tour":
+                carte = self.parent.parent.parent.get_subcarte(self.x, self.y, 4)
+            else:
+                carte = self.parent.parent.parent.parent.get_subcarte(self.x, self.y, 4)
+            persos_a_attaquer = []
+
+            for i in range(len(carte)):
+                persos_a_attaquer.append(carte[i].persos)
+            for i in range(len(persos_a_attaquer)):
+                values = persos_a_attaquer[i].values()
+                for j in list(values):
+                    if not self.parent.montype == "tour":
+                        if j.parent.nom != self.parent.parent.nom:
+                            rep = j.recevoir_coup(self.force)
+
+                    else:
+                        if j.parent.nom != self.parent.parent.parent.nom:
+                            rep = j.recevoir_coup(self.force)
+
+
+                # rep = self.proie.recevoir_coup(self.force)
             self.parent.boulets.remove(self)
             if rep == 1:
                 self.parent.boulets.clear()
@@ -1330,10 +1350,10 @@ class Catapulte(Perso):
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
-        self.vitesse = 3
+        self.vitesse = 80
         self.mana = 200
         self.delaifeumax = 90
-        self.fleches = []
+        self.boulets = []
         self.cibleennemi = None
         self.position_visee = None
         # self.nomimg="ballista"
@@ -1378,11 +1398,11 @@ class Catapulte(Perso):
             self.delaifeu = self.delaifeu - 1
             if self.delaifeu == 0:
                 id = get_prochain_id()
-                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
-                self.fleches.append(fleche)
+                boulet = Boulet(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.boulets.append(boulet)
                 self.delaifeu = self.delaifeumax
-            if len(self.fleches) > 0:
-                for i in self.fleches:
+            if len(self.boulets) > 0:
+                for i in self.boulets:
                     rep = i.bouger()
             # if rep:
             # self.cibleennemi.recevoir_coup(self.force)
