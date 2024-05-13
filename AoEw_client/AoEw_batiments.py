@@ -1,5 +1,5 @@
 import random
-from AoEw_persos import Fleche
+from AoEw_persos import Boulet
 from AoEw_divers import *
 
 
@@ -163,7 +163,7 @@ class Tour(Batiment):
         self.distancefeu = 200
         self.delaifeu = 2
         self.delaifeumax = 2
-        self.fleches = []
+        self.boulets = []
 
         self.etats_et_actions = {
             "attaquerennemi": self.attaquerennemi,  # caller la bonne fctn attaquer
@@ -185,16 +185,16 @@ class Tour(Batiment):
             try:
                 id = get_prochain_id()
                 print("AVNT creer fleche")
-                fleche = Fleche(self, id, self.cibleennemi)  # avant cetait ciblennemi
-                self.fleches.append(fleche)
+                boulet = Boulet(self, id, self.cibleennemi)  # avant cetait ciblennemi
+                self.boulets.append(boulet)
                 self.delaifeu = self.delaifeumax
             except:
                 print("mort cible")
                 #self.actioncourante= "verifierchampvision"
 
-        if len(self.fleches) > 0:
-            for i in self.fleches:
-                print( "fleche bougger")
+        if len(self.boulets) > 0:
+            for i in self.boulets:
+                print( "boulet bougger")
                 rep = i.bouger()
             # if rep:
             # self.cibleennemi.recevoir_coup(self.force)

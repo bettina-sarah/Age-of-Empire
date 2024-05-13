@@ -52,6 +52,56 @@ class Fleche():
 
 
 
+
+
+class Boulet():
+    def __init__(self, parent, id, proie):
+        self.parent = parent
+        self.id = id
+        self.vitesse = 18
+        self.taille = 20
+
+        self.force = 25  ##A REMMETTRE A 10
+
+        self.proie = proie
+        self.proiex = self.proie.x
+        self.proiey = self.proie.y
+        self.x = self.parent.x
+        self.y = self.parent.y
+        self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
+        angquad = math.degrees(self.ang)
+        dir = "DB"
+        if 0 <= angquad <= 89:
+            dir = "DB"
+        elif -90 <= angquad <= -1:
+            dir = "DH"
+        if 90 <= angquad <= 179:
+            dir = "GB"
+        elif -180 <= angquad <= -91:
+            dir = "GH"
+        self.image = "boulet" + dir
+
+    def bouger(self):
+        if not self.proie:
+            self.parent.boulets = []
+        self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
+        dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
+        if dist <= self.taille:
+            rep = self.proie.recevoir_coup(self.force)
+            self.parent.boulets.remove(self)
+            if rep == 1:
+                self.parent.boulets.clear()
+                try:
+                    self.parent.parent.parent.trouver_case(self.parent.cibleennemi.x, self.parent.cibleennemi.y).persos.pop(self.parent.cibleennemi.id)
+                except:
+                    pass
+                self.parent.cibleennemi = None;
+                self.parent.actioncourante = "verifierchampvision"
+
+            # return self
+
+
+
 class Javelot():
     def __init__(self, parent, id, proie):
         self.parent = parent

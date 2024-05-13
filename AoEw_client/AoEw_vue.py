@@ -821,7 +821,7 @@ class Vue():
                             # tags=(j,b.id,"artefact","mobile","javelot"))
 
             for p in self.modele.joueurs[j].batiments["tour"].keys():
-                for t in self.modele.joueurs[j].batiments["tour"][p].fleches:
+                for t in self.modele.joueurs[j].batiments["tour"][p].boulets:
                     self.canevas.create_image(t.x, t.y, image=self.images[t.image],
                                               tags=("mobile", j, t.id, "", type(t).__name__, ""))
 
