@@ -70,7 +70,6 @@ class Batiment():
         pass
 
     def set_coins(self, coin_x1, coin_y1, coin_x2, coin_y2):
-        print("set coins")
         self.coin_gh = (coin_x1 - 20, coin_y2 + 20)
         self.coin_dh = (coin_x2 + 20, coin_y2 + 20)
         self.coin_bg = (coin_x1 - 20, coin_y1 - 20)
@@ -134,6 +133,19 @@ class MurH(Batiment):
         self.perso = 0
 
 
+    def get_coins(self, y_perso):
+        # si l'unité à un 'y' plus bas, il est donc physiquement du coté nord du mur, donc les coins possibles
+        # sont les coins supérieurs, sinon on inverse
+        print(y_perso, " < ", self.y, " = ", (y_perso > self.y))
+        if y_perso > self.y:
+            print("coins: gh ",self.coin_gh)
+            print("coins: dh ",self.coin_dh)
+            return self.coin_gh, self.coin_dh
+        else:
+            print("coins: bg ",self.coin_bg)
+            print("coins: bd ",self.coin_bd)
+            return self.coin_bg, self.coin_bd
+
 
 class MurV(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -143,6 +155,18 @@ class MurV(Batiment):
         self.maxperso = 20
         self.perso = 0
 
+    def get_coins(self, y_perso):
+        # si l'unité à un 'y' plus bas, il est donc physiquement du coté nord du mur, donc les coins possibles
+        # sont les coins supérieurs, sinon on inverse
+        print(y_perso, " < ", self.y, " = ", (y_perso > self.y))
+        if y_perso > self.y:
+            print("coins: gh ",self.coin_gh)
+            print("coins: dh ",self.coin_dh)
+            return self.coin_gh, self.coin_dh
+        else:
+            print("coins: bg ",self.coin_bg)
+            print("coins: bd ",self.coin_bd)
+            return self.coin_bg, self.coin_bd
 
 class Tour(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
@@ -152,8 +176,10 @@ class Tour(Batiment):
         self.montype = montype
         self.maxperso = 20
         self.perso = 0
-        self.nbr_mur_v = 0
-        self.nbr_mur_h = 0
+        self.nbr_mur_gb = 0
+        self.nbr_mur_db = 0
+        self.nbr_mur_gh = 0
+        self.nbr_mur_dh = 0
 
         # de ARCHER
         self.cibleennemi = None

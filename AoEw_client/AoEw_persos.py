@@ -270,6 +270,7 @@ class Perso():
             self.update_cases(x1,y1)
             if case_mur:
                 self.nouveau_contournement(case_mur)
+                self.contournements += 1
                 return "contourne"
 
             ######## FIN DE TEST POUR SURFACE MARCHEE
@@ -296,7 +297,7 @@ class Perso():
         self.actioncourante = "contourne"
         self.contournements += 1
         self.case_coutournement = case
-        # print("contournement #:", self.contournements)
+        print("contournement #:", self.contournements)
 
     def bouger_vers_ennemi(self):
         if self.cibleennemi:
@@ -360,13 +361,6 @@ class Perso():
         else:
             return True
 
-            # print("bad vertical")
-
-        # cases = self.parent.parent.get_carte_contournement(x1, y1, 4, 1)
-        # if cases[0].montype == "batiment" or cases[-1].montype == "batiment":
-        #     print("bad vertical")
-
-        # return  self.get_directon_contournement()
 
     def get_directon_vers_position_visee(self):
         if self.position_visee:
@@ -457,11 +451,11 @@ class Perso():
         #déplace vers la cible de contournement
         # if not self.cible_contournement:
         #     return
-        print("cible: ",self.cible_contournement)
+        # print("cible: ",self.cible_contournement)
         if not self.cible_contournement:
-            print("contoure")
+            print("retour à ",  self.action_precedente)
             self.cible_contournement = None
-            self.actioncourante = self.action_precedente
+            self.actioncourante = None
             return
 
         x,y = self.cible_contournement[1]
@@ -480,12 +474,20 @@ class Perso():
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
 
+
     def get_cible_contournement(self):
 
         cible_possibles = []
-        for coin in self.case_coutournement.batiment.get_coins():
-            if coin not in self.cibles_contournement_precedentes:
-                cible_possibles.append(coin)
+
+        #Si c'est un batiment-mur, trouver la direction de la collision
+        if "mur" in self.case_coutournement.batiment.montype:
+            for coin in self.case_coutournement.batiment.get_coins(self.y):
+                if coin not in self.cibles_contournement_precedentes:
+                    cible_possibles.append(coin)
+        else:
+            for coin in self.case_coutournement.batiment.get_coins():
+                if coin not in self.cibles_contournement_precedentes:
+                    cible_possibles.append(coin)
 
         # trouve le coin le plus proche
         distance_coin = []
@@ -495,8 +497,8 @@ class Perso():
 
         # trouve le coin avec la plus petite distance avec le perso
         print(cible_possibles)
-        print(distance_coin)
-        print(len(distance_coin))
+        # print(distance_coin)
+        # print(len(distance_coin))
 
         if len(distance_coin) > 0:
             self.cible_contournement = None
@@ -1560,6 +1562,10 @@ class Ouvrier(Perso):
                 batiment = self.parent.parent.classesbatiments[self.cible.sorte](self, self.cible.id, self.parent.couleur,
                                                                              self.cible.x, self.cible.y,
                                                                              self.cible.sorte)
+
+                print(self.parent.batiments)
+                print(self.cible.sorte)
+                print(self.cible.id)
                 self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
 
 

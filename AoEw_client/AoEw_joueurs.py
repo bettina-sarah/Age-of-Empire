@@ -46,18 +46,30 @@ class Joueur():
                              "aureus": 10,
                              "delai": 20,
                              "objet": 0},
-               "mur_h": {"nourriture": 5,
+               "mur_dh": {"nourriture": 5,
                          "arbre": 5,
                          "roche": 5,
                          "aureus": 5,
                          "delai": 5,
                          "objet": 0},
-               "mur_v": {"nourriture": 5,
+               "mur_db": {"nourriture": 5,
                          "arbre": 5,
                          "roche": 5,
                          "aureus": 5,
                          "delai": 5,
                          "objet": 0},
+               "mur_gh": {"nourriture": 5,
+                          "arbre": 5,
+                          "roche": 5,
+                          "aureus": 5,
+                          "delai": 5,
+                          "objet": 0},
+               "mur_gb": {"nourriture": 5,
+                          "arbre": 5,
+                          "roche": 5,
+                          "aureus": 5,
+                          "delai": 5,
+                          "objet": 0},
                "tour": {"nourriture": 25,
                         "arbre": 25,
                         "roche": 25,
@@ -199,8 +211,10 @@ class Joueur():
                           "usineballiste": {},
                           "siteconstruction": {},
                           "champstir": {},
-                          "mur_h": {},
-                          "mur_v": {},
+                          "mur_db": {},
+                          "mur_dh": {},
+                          "mur_gb": {},
+                          "mur_gh": {},
                           "tour": {}}
 
         self.actions = {"creerperso": self.creer_perso,
@@ -340,7 +354,33 @@ class Joueur():
 
     def creer_point_origine(self, x, y):
         idmaison = get_prochain_id()
-        self.batiments["maison"][idmaison] = Maison(self, idmaison, self.couleur, x, y, "maison")
+        batiment = Maison(self, idmaison, self.couleur, x, y, "maison")
+        self.batiments["maison"][idmaison] = batiment
+
+        # x1, y1, x2, y2 = self.parent.parent.installer_batiment(self.nom, batiment)
+        # cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
+        #
+        # type_case = "batiment"
+        #
+        # if batiment.montype == "maison":
+        #     type_case = "batiment-maison"
+        # elif "mur" in batiment.montype or batiment.montype == "tour":
+        #     type_case = "batiment-mur"
+        #
+        #
+        # for i in cartebatiment:
+        #     # pour contournement avec retour de ressource
+        #     self.cartecase[i[1]][i[0]].montype = type_case
+        #     self.cartecase[i[1]][i[0]].batiment = batiment
+        #     print("new batiment: ", i[1], "/", i[0])
+        #
+        # x1, y1 = cartebatiment[0]
+        # x4, y4 = cartebatiment[-1]
+
+
+        #TOUJOURS PREND SET COINS
+        # batiment.set_coins(x1 * self.taillecase, y1* self.taillecase , x4* self.taillecase, y4* self.taillecase)
+        # batiment.cartebatiment = cartebatiment
 
     def construire_batiment(self, param):
         print("voici les params:", param)
