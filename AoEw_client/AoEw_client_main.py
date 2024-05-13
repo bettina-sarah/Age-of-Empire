@@ -154,7 +154,7 @@ class Controleur():
                     "actions_requises": actions}
             try:
                 mondict = self.appeler_serveur(url, data, method="POST")
-
+                
                 # verifie pour requete d'attente d'un joueur plus lent
                 if "ATTENTION" in mondict:
                     self.on_joue = 0
@@ -228,6 +228,8 @@ class Controleur():
     def retirer_batiment_minimap(self, id):
         self.vue.minicarte.delete(id)
 
+    def delai_vue(self):
+        self.vue.delai_batim()
 
 if __name__ == '__main__':
     c = Controleur()

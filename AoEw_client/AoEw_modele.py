@@ -69,12 +69,12 @@ class Partie():
                              "roche": 10,
                              "aureus": 10,
                              "delai": 20,
-                            "objet": 0},
+                             "objet": 0},
                "mur_h": {"nourriture": 5,
-                             "arbre": 5,
-                             "roche": 5,
-                             "aureus": 5,
-                             "delai": 5,
+                         "arbre": 5,
+                         "roche": 5,
+                         "aureus": 5,
+                         "delai": 5,
                          "objet": 0},
                "mur_v": {"nourriture": 5,
                          "arbre": 5,
@@ -87,7 +87,7 @@ class Partie():
                         "roche": 25,
                         "aureus": 25,
                         "delai": 15,
-                         "objet": 0}
+                        "objet": 0}
 
                }
 
@@ -111,10 +111,10 @@ class Partie():
                                  "caserne": Caserne,
                                  "abri": Abri,
                                  "usineballiste": Maison,
-                                 "champstir":Champstir,
-                                 "mur_h":MurH,
-                                 "mur_v":MurV,
-                                 "tour":Tour}
+                                 "champstir": Champstir,
+                                 "mur_h": MurH,
+                                 "mur_v": MurV,
+                                 "tour": Tour}
         self.classespersos = {"ouvrier": Ouvrier,
                               "soldat": Soldat,
                               "archer": Archer,
@@ -135,7 +135,7 @@ class Partie():
                          "baie": {},
                          "objet": {}}
         self.regions = {}
-                                #    nbr iteration, min3, ??
+        #    nbr iteration, min3, ??
         self.regionstypes = [["arbre", 50, 20, 5, "forest green"],
                              ["eau", 10, 20, 12, "light blue"],
                              ["marais", 3, 8, 8, "DarkSeaGreen3"],
@@ -146,11 +146,10 @@ class Partie():
         self.creer_biotopes()
         self.creer_population(mondict)
 
-
         self.taillecase = 20
         self.demicase = self.taillecase / 2
         self.taillecarte = int(self.aireX / self.taillecase)
-        self.case_batiment = ["batiment", "batiment-mur","batiment-maison"]
+        self.case_batiment = ["batiment", "batiment-mur", "batiment-maison"]
 
     def get_case_batiment(self):
         return self.case_batiment
@@ -185,11 +184,9 @@ class Partie():
         x2, y2 = x4, y1
         x3, y3 = x1, y4
 
-        #TOUJOURS PREND SET COINS
-        batiment.set_coins(x1 * self.taillecase, y1* self.taillecase , x4* self.taillecase, y4* self.taillecase)
+        # TOUJOURS PREND SET COINS
+        batiment.set_coins(x1 * self.taillecase, y1 * self.taillecase, x4 * self.taillecase, y4 * self.taillecase)
         batiment.cartebatiment = cartebatiment
-
-
 
     def creer_biotopes(self):
         # creer des daims éparpillés
@@ -328,6 +325,8 @@ class Partie():
             self.joueurs[i].deplacer()
 
     def jouer_prochain_coup(self, cadrecourant):
+
+        self.joueurs[self.parent.nom_joueur_local].delai_boucle()
         self.ressourcemorte = []
         ##################################################################
         # faire nouvelle action recu du serveur si on est au bon cadrecourant
@@ -348,7 +347,6 @@ class Partie():
                 self.biotopes["ours"][i].deplacer()
             else:
                 self.biotopes["ours"][i].attaquer()
-
 
         for i in self.biotopes["eau"].keys():
             self.biotopes["eau"][i].jouer_prochain_coup()
@@ -666,7 +664,7 @@ class Partie():
         #     self.cartecase[i[1]][i[0]].montype = "plaine"
         self.parent.retirer_batiment_minimap(id)
 
-    def set_background_case_batiment(self,  cartebatiment):
+    def set_background_case_batiment(self, cartebatiment):
 
         # x1, y1 = cartebatiment[0]
         # x4, y4 = cartebatiment[-1]

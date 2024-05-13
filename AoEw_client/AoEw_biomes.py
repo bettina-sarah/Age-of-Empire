@@ -1,6 +1,7 @@
 import random
 from helper import Helper
 
+
 class Biotope():
     def __init__(self, parent, id, monimg, x, y, montype, idregion=0, posid="0"):
         self.parent = parent
@@ -14,6 +15,7 @@ class Biotope():
         self.idregion = idregion
         self.idcaseregion = posid
 
+
 class Objet(Biotope):
     typeressource = ['objet',
                      'chest']
@@ -21,8 +23,7 @@ class Objet(Biotope):
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
         self.valeur = 1
-        
-    
+
 
 class Baie(Biotope):
     typeressource = ['arbustebaiesgrand',
@@ -33,6 +34,7 @@ class Baie(Biotope):
         Biotope.__init__(self, parent, id, monimg, x, y, montype)
         self.valeur = 30
 
+
 class Marais(Biotope):
     typeressource = ['marais1',
                      'marais2',
@@ -41,6 +43,7 @@ class Marais(Biotope):
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
         self.valeur = 100
+
 
 class Eau(Biotope):
     typeressource = ['eaugrand1',
@@ -71,6 +74,7 @@ class Eau(Biotope):
             if self.spriteno > self.spritelen - 1:
                 self.spriteno = 0
 
+
 class Aureus(Biotope):
     typeressource = ['aureusbrillant',
                      'aureusD_',
@@ -82,6 +86,7 @@ class Aureus(Biotope):
     def __init__(self, parent, id, monimg, x, y, montype, cleregion, posid):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
         self.valeur = 100
+
 
 class Roche(Biotope):
     typeressource = ['roches1 grand',
@@ -98,6 +103,7 @@ class Roche(Biotope):
         Biotope.__init__(self, parent, id, monimg, x, y, montype, cleregion, posid)
         self.valeur = 100
 
+
 class Arbre(Biotope):
     typeressource = ['arbre0grand',
                      'arbre0petit',
@@ -111,12 +117,8 @@ class Arbre(Biotope):
         self.valeur = 30
 
 
-
-
-
-
 class Animal():
-    def __init__(self, parent, id, x, y, imgdep, valeur, vie, notyperegion=-1, idregion=None):
+    def __init__(self, parent, id, x, y, imgdep, valeur, vie, vitesse=4, notyperegion=-1, idregion=None):
         self.parent = parent
         self.id = id
         self.idregion = idregion
@@ -128,7 +130,7 @@ class Animal():
         self.dir = "GB"
         self.nomimg = imgdep
         self.img = self.nomimg + self.dir
-        self.vitesse = random.randrange(3) + 3
+        self.vitesse = vitesse
         self.montype = imgdep
         self.vie = vie
         self.valeur = valeur
@@ -136,12 +138,12 @@ class Animal():
         self.ennemi = None
 
     def mourir(self):
-        #self.etat = "mort"
+        # self.etat = "mort"
         self.en_vie = False
         print("MORT!!!")
         self.position_visee = None
 
-    def recevoir_coup(self,dommage, ennemi):
+    def recevoir_coup(self, dommage, ennemi):
         self.vie -= dommage
         print("Ouch")
         if self.vie < 1:
@@ -150,7 +152,7 @@ class Animal():
             return 1
 
     def deplacer(self):
-        if self.etat=="agressif":
+        if self.etat == "agressif":
             self.img = self.nomimg + self.dir + "A"
         if self.position_visee:
             x = self.position_visee[0]
@@ -200,7 +202,7 @@ class Animal():
 
 class Ours(Animal):
     def __init__(self, parent, id, x, y, tem='ours'):
-        Animal.__init__(self, parent, id, x, y, tem, 10000, 20000)
+        Animal.__init__(self, parent, id, x, y, tem, 100, 150, 8)
         self.force = 5
         self.distancefeumax = 10
         self.delaifeu = 10
@@ -208,7 +210,6 @@ class Ours(Animal):
         self.cibleennemi = None
         self.position_visee = None
         self.ennemi = None
-
 
     def trouver_cible(self):
         n = 1
@@ -260,7 +261,6 @@ class Ours(Animal):
         else:
             self.cibler()
 
-
     def cibler(self):
         self.angle = Helper.calcAngle(self.x, self.y, self.position_visee[0], self.position_visee[1])
         if self.x < self.position_visee[0]:
@@ -280,12 +280,10 @@ class Ours(Animal):
             if self.delaifeu == 0:
                 rep = self.ennemi.recevoir_coup(self.force)
                 self.delaifeu = self.delaifeumax
-                if rep==1:
+                if rep == 1:
                     self.ennemi = None
-
 
 
 class Daim(Animal):
     def __init__(self, parent, id, x, y, tem='daim'):
         Animal.__init__(self, parent, id, x, y, tem, 40, 10)
-

@@ -138,6 +138,7 @@ class Joueur():
                      "ballista": Ballista,
                      "ingenieur": Ingenieur,
                      "druideOurs": DruideOurs}
+
     ressources = {"Azteque": {"nourriture": 999,
                               "arbre": 200,
                               "roche": 200,
@@ -159,11 +160,23 @@ class Joueur():
         self.monchat = []
         self.chatneuf = 0
         self.ressourcemorte = []
+        self.delai_max = 50
+
+        self.delai_perso = {"ouvrier": 0,
+                            "soldat": 0,
+                            "archer": 0,
+                            "chevalier": 0,
+                            "druide": 0,
+                            "ballista": 0,
+                            "ingenieur": 0,
+                            "druideOurs": 0}
+
         self.ressources = {"nourriture": 500,
                            "arbre": 500,
                            "roche": 500,
                            "aureus": 500,
                            "objet": 10}
+
         self.persos = {"ouvrier": {},
                        "soldat": {},
                        "archer": {},
@@ -237,7 +250,6 @@ class Joueur():
                 if j in self.persos[i]:
                     self.persos[i][j].attaquer(ennemi)
                     # j.attaquer(ennemi)
-        
 
     def soigner(self, param):
         soigneur, cible = param
@@ -364,7 +376,7 @@ class Joueur():
         for j in list(self.persos.keys()):
             for i in list(self.persos[j].keys()):
                 self.persos[j][i].jouer_prochain_coup()
-        
+
         for i in list(self.batiments["tour"].keys()):
             self.batiments["tour"][i].jouer_prochain_coup()
 
@@ -375,22 +387,35 @@ class Joueur():
         prix_perso = Joueur.prix_unite
         possede_les_ressources = True
 
-        for k, val in self.ressources.items():
-            if self.ressources[k] - prix_perso[sorteperso][k] < 0:
-                possede_les_ressources = False
-                print("pas assez de ressource")
-                print(k)
-                print(val)
-
-        if possede_les_ressources:
-            # paye les ressources
+        if self.delai_perso[sorteperso] == 0:
             for k, val in self.ressources.items():
-                self.ressources[k] = val - prix_perso[sorteperso][k]
-            id = get_prochain_id()
-            batiment = self.batiments[batimentsource][idbatiment]
+                if self.ressources[k] - prix_perso[sorteperso][k] < 0:
+                    possede_les_ressources = False
+                    print("pas assez de ressource")
+                    print(k)
+                    print(val)
 
-            x = batiment.x + 100 + (random.randrange(50) - 15)
-            y = batiment.y + (random.randrange(50) - 15)
+            if possede_les_ressources:
+                # paye les ressources
+                for k, val in self.ressources.items():
+                    self.ressources[k] = val - prix_perso[sorteperso][k]
+                id = get_prochain_id()
+                batiment = self.batiments[batimentsource][idbatiment]
+                x = batiment.x + 100 + (random.randrange(50) - 15)
+                y = batiment.y + (random.randrange(50) - 15)
+                self.delai_perso[sorteperso] = self.delai_max
+                self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+                                                                               sorteperso)
 
-            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
-                                                                           sorteperso)
+
+        else:
+            print("TROP RAPPIDE !!!!!!!!!!!!!!!!!!!!!!!!!! ")
+
+    def delai_boucle(self):
+
+        for sorte, value in self.delai_perso.items():
+
+            if value > 0:
+                self.delai_perso[sorte] -= 1
+            else:
+                self.delai_perso[sorte] = 0

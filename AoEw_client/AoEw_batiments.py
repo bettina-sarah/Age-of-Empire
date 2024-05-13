@@ -134,7 +134,6 @@ class MurH(Batiment):
         self.perso = 0
 
 
-
 class MurV(Batiment):
     def __init__(self, parent, id, couleur, x, y, montype):
         Batiment.__init__(self, parent, id, x, y)
@@ -190,11 +189,11 @@ class Tour(Batiment):
                 self.delaifeu = self.delaifeumax
             except:
                 print("mort cible")
-                #self.actioncourante= "verifierchampvision"
+                # self.actioncourante= "verifierchampvision"
 
         if len(self.fleches) > 0:
             for i in self.fleches:
-                print( "fleche bougger")
+                print("fleche bougger")
                 rep = i.bouger()
             # if rep:
             # self.cibleennemi.recevoir_coup(self.force)
@@ -213,7 +212,7 @@ class Tour(Batiment):
                     if j.parent.nom != self.parent.parent.nom:
                         print("DANS TOUR")
                         print("============== DETECTION ENNEMI============")
-                        self.cibleennemi= j
-                        self.actioncourante="attaquerennemi"
+                        self.cibleennemi = j
+                        self.actioncourante = "attaquerennemi"
                         self.attaquerennemi()
             self.delai_verifier_champ = 30

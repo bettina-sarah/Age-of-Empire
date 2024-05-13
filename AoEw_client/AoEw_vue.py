@@ -8,6 +8,7 @@ from chargeurdimages import *
 
 
 class Vue():
+
     def __init__(self, parent, url_serveur, nom_joueur_local):  # , testdispo):
 
         self.gagnant = "ARI"
@@ -436,6 +437,7 @@ class Vue():
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         print(persos)
+
         for i in persos:
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
             btn.bind("<Button>",
@@ -517,22 +519,22 @@ class Vue():
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
-            if i == "druideOurs":  # !! image a faire
-                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
-                btn.bind("<Button>",
-                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
-                                                                                                                      tag_batiment,
-                                                                                                                      id_joueur,
-                                                                                                                      pos))
-                btn.pack()
-            else:
-                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+            # if i == "druideOurs":  # !! image a faire
+            #     btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+            #     btn.bind("<Button>",
+            #              lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+            #                                                                                                           tag_batiment,
+            #                                                                                                           id_joueur,
+            #                                                                                                           pos))
+            #     btn.pack()
+            # else:
+            btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
 
-                btn.bind("<Button>",
-                         lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
-                                                                                                                      tag_batiment,
-                                                                                                                      id_joueur,
-                                                                                                                      pos))
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
+                                                                                                                  tag_batiment,
+                                                                                                                  id_joueur,
+                                                                                                                  pos))
             btn.pack()
             self.afficher_labels_ressources(i)
 
@@ -606,6 +608,9 @@ class Vue():
             self.canevasaction.config(scrollregion=(0, 0, cl, fh + 60))
 
     def test_entite(self, type_perso, tag_batiment, id_joueur, pos):
+        # j = self.modele.joueurs[self.parent.nom_joueur_local]
+        # j.delai_perso[type_perso] = j.delai_max
+
         action = [self.parent.nom_joueur_local, "creerperso", [type_perso, tag_batiment, id_joueur, pos]]
         try:
             self.parent.actions_requises.append(action)
@@ -620,7 +625,8 @@ class Vue():
         for i in artefacts:
             print()
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i])
-            btn.bind("<Button>", lambda event, i=i, tag_tour = tag_tour, pos = pos: self.site_construction_mur(tag_tour, pos, i))
+            btn.bind("<Button>",
+                     lambda event, i=i, tag_tour=tag_tour, pos=pos: self.site_construction_mur(tag_tour, pos, i))
             btn.pack()
 
         self.action.widgetsactifs.append(self.canevasaction.create_window(100, 60,
@@ -632,7 +638,7 @@ class Vue():
         self.canevasaction.config(scrollregion=(0, 0, cl, fh))
 
     def site_construction_mur(self, tag_tour, coordos_tour, type_mur):
-        x,y = coordos_tour
+        x, y = coordos_tour
         if type_mur == "mur_v":
             self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v += 1
             murv = self.modele.joueurs[self.nom_joueur_local].batiments["tour"][tag_tour].nbr_mur_v
@@ -646,8 +652,7 @@ class Vue():
             y = y + 35 * murh
 
         self.action.prochaineaction = type_mur
-        self.construire_batiment(self, (x,y))
-
+        self.construire_batiment(self, (x, y))
 
     ##FONCTIONS D'AFFICHAGES##################################
     def afficher_depart(self):
@@ -807,7 +812,8 @@ class Vue():
                                                       tags=("mobile", j, p, "perso", type(i).__name__, "persochoisi"))
                         self.canevas.create_rectangle(i.x - 10, i.y + 5, i.x + 10, i.y + 10, fill="yellow",
                                                       tags=("mobile", j, p, "perso", type(i).__name__, "persochoisi"))
-                        # tags=(j,k,"artefact","mobile","persochoisi"))
+                        if self.action.ciblechoisi is not None:
+                            print(self.action.ciblechoisi)
 
                     # dessiner javelot de l'ouvrier
                     if p == "ouvrier":
@@ -1013,7 +1019,7 @@ class Vue():
             if self.action.btnactif:
                 if self.action.btnactif != obj:
                     self.action.btnactif.config(bg="SystemButtonFace")
-        # test de cout a cet endroit
+            # test de cout a cet endroit
             nomsorte = obj.cget("text")
             self.action.btnactif = obj
         except:
@@ -1039,7 +1045,7 @@ class Vue():
         mestags = self.canevas.gettags(CURRENT)
         if not mestags:
             if coordos_tour is not None:
-                #pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                # pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                 self.action.construire_batiment(coordos_tour)
             else:
                 pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
@@ -1057,7 +1063,8 @@ class Vue():
         x, y = evt.x, evt.y
         mestags = self.canevas.gettags(CURRENT)
 
-        coul = self.modele.joueurs[self.parent.nom_joueur_local].couleur
+        j = self.modele.joueurs[self.parent.nom_joueur_local]
+        coul = j.couleur
         if self.parent.nom_joueur_local in mestags:
             if "batiment" in mestags:
                 if "maison" in mestags or "init" in mestags:
@@ -1096,6 +1103,9 @@ class Vue():
     def unbind_joueur(self):
         self.canevas.tag_unbind("perso", "<Button-1>")
 
+    def delai_batim(self):
+        print("dans delai vue")
+
 
 # Singleton (mais pas automatique) sert a conserver les manipulations du joueur
 # pour demander une action
@@ -1103,6 +1113,7 @@ class Action():
     def __init__(self, parent):
         self.parent = parent
         self.persochoisi = []
+        # was none befre ?
         self.ciblechoisi = None
         self.position = []
         self.btnactif = None
@@ -1128,6 +1139,7 @@ class Action():
             self.parent.parent.actions_requises.append(action)
 
     def chasser_ressource(self, tag):
+        print(tag)
         if self.persochoisi:
             action = [self.parent.parent.nom_joueur_local, "chasserressource", [tag[4], tag[2], self.persochoisi]]
             self.parent.parent.actions_requises.append(action)
@@ -1141,14 +1153,15 @@ class Action():
         print(self.persochoisi)
         action = None
         if self.persochoisi:
-            #self.btnactif.config(bg="SystemButtonFace")
+            # self.btnactif.config(bg="SystemButtonFace")
             self.btnactif = None
             if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
             else:
                 if self.prochaineaction:
-                    action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+                    action = [self.parent.nom_joueur_local, "construirebatiment",
+                              [self.persochoisi, self.prochaineaction, pos]]
         else:
             if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
