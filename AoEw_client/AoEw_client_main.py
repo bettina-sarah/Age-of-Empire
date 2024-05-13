@@ -8,8 +8,7 @@ from AoEw_modele import *
 class Controleur():
 
     def __init__(self):
-        self.type = None
-        self.t = True
+        
         self.ego_serveur = 0  # 1 si le joueur a creer la partie (seul lui peut 'lancer' la partie)
         self.iteration_boucle_jeu = 0
         self.actions_requises = []
@@ -91,10 +90,10 @@ class Controleur():
         for i in self.joueurs:
             listejoueurs.append(i[0])
 
-        print(listejoueurs)
-        set(listejoueurs)
-        print(listejoueurs)
-        self.type = len(listejoueurs)
+        # print(listejoueurs)
+        # set(listejoueurs)
+        # print(listejoueurs)
+        # self.type = len(listejoueurs)
         # on cree le modele (la partie)
         self.partie = Partie(self, listejoueurs)
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner

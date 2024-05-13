@@ -746,6 +746,7 @@ class Vue():
     def afficher_jeu(self):
 
         # On efface tout ce qui est 'mobile' (un tag)
+
         self.canevas.delete("mobile")
 
         # on se debarrasse des choses mortes (disparues), le id est dans le tag du dessin
@@ -825,10 +826,17 @@ class Vue():
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
                             # tags=(j,b.id,"artefact","mobile","javelot"))
 
+
                     if p == "catapulte":
                         for b in self.modele.joueurs[j].persos[p][k].fleches:
                             self.canevas.create_image(b.x, b.y, image=self.images[b.image],
                                                       tags=("mobile", j, b.id, "", type(b).__name__, ""))
+
+            for p in self.modele.joueurs[j].batiments["tour"].keys():
+                for t in self.modele.joueurs[j].batiments["tour"][p].boulets:
+                    self.canevas.create_image(t.x, t.y, image=self.images[t.image],
+                                              tags=("mobile", j, t.id, "", type(t).__name__, ""))
+
 
         # ajuster les choses vivantes dependantes de la partie (mais pas des joueurs)
         for j in self.modele.biotopes["daim"].keys():
@@ -1042,7 +1050,6 @@ class Vue():
 
     def construire_batiment(self, evt, coordos_tour=None):
         mestags = self.canevas.gettags(CURRENT)
-
         if not mestags:
             if coordos_tour is not None:
                 #pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
@@ -1050,6 +1057,7 @@ class Vue():
             else:
                 pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                 self.action.construire_batiment(pos)
+
         elif "SiteConstruction" in mestags:  # permet de continuer une constuction de site de construction
             pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y), mestags[2])
             self.action.prochaineaction = "siteconstruction"
@@ -1144,6 +1152,7 @@ class Action():
 
     def construire_batiment(self, pos):
         print(self.persochoisi)
+        action = None
         if self.persochoisi:
             #self.btnactif.config(bg="SystemButtonFace")
             self.btnactif = None
@@ -1151,12 +1160,14 @@ class Action():
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
             else:
-                action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
+                if self.prochaineaction:
+                    action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]
         else:
             if self.prochaineaction == "mur_v" or self.prochaineaction == "mur_h":
                 action = [self.parent.nom_joueur_local, "construirebatiment", [None, self.prochaineaction, pos]]
 
-        self.parent.parent.actions_requises.append(action)
+        if action:
+            self.parent.parent.actions_requises.append(action)
 
     def continuer_construction(self, pos):
         action = [self.parent.nom_joueur_local, "construirebatiment", [self.persochoisi, self.prochaineaction, pos]]

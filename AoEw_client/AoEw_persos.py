@@ -52,6 +52,56 @@ class Fleche():
 
 
 
+
+
+class Boulet():
+    def __init__(self, parent, id, proie):
+        self.parent = parent
+        self.id = id
+        self.vitesse = 18
+        self.taille = 20
+
+        self.force = 25  ##A REMMETTRE A 10
+
+        self.proie = proie
+        self.proiex = self.proie.x
+        self.proiey = self.proie.y
+        self.x = self.parent.x
+        self.y = self.parent.y
+        self.ang = Helper.calcAngle(self.x, self.y, self.proiex, self.proiey)
+        angquad = math.degrees(self.ang)
+        dir = "DB"
+        if 0 <= angquad <= 89:
+            dir = "DB"
+        elif -90 <= angquad <= -1:
+            dir = "DH"
+        if 90 <= angquad <= 179:
+            dir = "GB"
+        elif -180 <= angquad <= -91:
+            dir = "GH"
+        self.image = "boulet" + dir
+
+    def bouger(self):
+        if not self.proie:
+            self.parent.boulets = []
+        self.x, self.y, = Helper.getAngledPoint(self.ang, self.vitesse, self.x, self.y)
+        dist = Helper.calcDistance(self.x, self.y, self.proie.x, self.proie.y)
+        if dist <= self.taille:
+            rep = self.proie.recevoir_coup(self.force)
+            self.parent.boulets.remove(self)
+            if rep == 1:
+                self.parent.boulets.clear()
+                try:
+                    self.parent.parent.parent.trouver_case(self.parent.cibleennemi.x, self.parent.cibleennemi.y).persos.pop(self.parent.cibleennemi.id)
+                except:
+                    pass
+                self.parent.cibleennemi = None;
+                self.parent.actioncourante = "verifierchampvision"
+
+            # return self
+
+
+
 class Javelot():
     def __init__(self, parent, id, proie):
         self.parent = parent
@@ -263,7 +313,6 @@ class Perso():
         self.case = self.parent.parent.trouver_case(self.x, self.y)
         self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
 
-
     def get_directon_vers_position_visee(self):
         if self.position_visee:
             if self.x < self.position_visee[0]:
@@ -310,29 +359,6 @@ class Perso():
                 self.dir += "B"
             else:
                 self.dir += "H"
-
-    def get_directon_contournement(self, x1, y1):
-        # suis-je plus près de ma cible sur l'axe des x ou y
-        cases = self.parent.parent.get_carte_contournement(x1, y1, 1, 4)
-        # retourn vrai pour un mouvement vertical
-        if cases[3].montype == "batiment" and cases[5].montype == "batiment":
-            return False
-        if cases[4].montype == "batiment" and cases[6].montype == "batiment":
-            return False
-        if cases[-3].montype == "batiment" and cases[-5].montype == "batiment":
-            return False
-        if cases[-4].montype == "batiment" and cases[-6].montype == "batiment":
-            return False
-        else:
-            return True
-
-            # print("bad vertical")
-
-        # cases = self.parent.parent.get_carte_contournement(x1, y1, 4, 1)
-        # if cases[0].montype == "batiment" or cases[-1].montype == "batiment":
-        #     print("bad vertical")
-
-        # return  self.get_directon_contournement()
 
     def cibler(self, obj):
         self.cible = obj
@@ -347,39 +373,6 @@ class Perso():
             self.position_visee = None
 
 
-    def get_map_contournement(self):
-        x1, y1 = self.x, self.y
-
-        casex = x1 / self.parent.parent.taillecase
-        if casex != int(casex):
-            casex = int(casex) + 1
-        casey = y1 / self.parent.parent.taillecase
-        if casey != int(casey):
-            casey = int(casey) + 1
-
-        taille = self.parent.parent.taillecase
-
-        cases_cibles = []
-        # trouve si on frappe un mur à l'horinzontal ou vertial
-        if self.get_directon_contournement(x1, y1):  # horizontal
-            cases = self.parent.parent.get_carte_contournement(x1, y1, 1, self.contournement_range)
-        else:  # vertical
-            cases = self.parent.parent.get_carte_contournement(x1, y1, self.contournement_range, 1)
-
-        for i in cases:
-            if i.montype == "batiment":
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-                xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="red", tags=("statique",))
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-            else:
-                cases_cibles.append(i)
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-                # xa, ya, xb, yb = i.x * taille, i.y * taille, i.x * taille + taille, i.y * taille + taille
-                # self.parent.parent.parent.vue.canevas.create_rectangle(xa, ya, xb, yb, fill="green", tags=("statique",))
-                # AFFICHAGE POUR DEBUG ---------------------------------------------------------------------------------
-        # print("new map: ", len(cases_cibles))
-        return cases_cibles
 
 
     def test_etat_du_sol(self, x1, y1):
@@ -404,14 +397,6 @@ class Perso():
 
         case_avec_collision = self.parent.parent.get_case_batiment()
 
-        # print(self.cibleennemi )
-        # if case.batiment:
-        #     print(case.batiment.id)
-        # if self.cibleennemi and not case.batiment:
-        #     if case.batiment.id == self.cibleennemi
-
-        # print(self.actioncourante)
-        # print(case)
 
         if self.actioncourante == "bougerversennemi" or self.actioncourante == "ciblerennemi" or self.actioncourante == "attaquerennemi":
             print(self.actioncourante)
@@ -452,7 +437,9 @@ class Perso():
         #déplace vers la cible de contournement
         # if not self.cible_contournement:
         #     return
+        print("cible: ",self.cible_contournement)
         if not self.cible_contournement:
+            print("contoure")
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
             return
@@ -487,12 +474,13 @@ class Perso():
             distance_coin.append((distance, coin))
 
         # trouve le coin avec la plus petite distance avec le perso
+        print(cible_possibles)
+        print(distance_coin)
+        print(len(distance_coin))
 
         if len(distance_coin) > 0:
             self.cible_contournement = None
             self.actioncourante = self.action_precedente
-
-
 
             smallest_dist = distance_coin[0]
             for d in distance_coin:
@@ -502,6 +490,7 @@ class Perso():
             # ce coin devient la cible de contournement, on l'ajoute au cible précédente pour éviter un repeat
             self.cible_contournement = smallest_dist
             self.cibles_contournement_precedentes.append(smallest_dist[1])
+
 
 class Soldat(Perso):
     def __init__(self, parent, id, maison, couleur, x, y, montype):
@@ -625,7 +614,7 @@ class Soldat(Perso):
 
 
 class Archer(Perso):
-    def __init__(self, parent, id, maison, couleur, x, y, montype):
+    def __init__(self, parent, id, couleur, x, y, montype,  maison=None):
         Perso.__init__(self, parent, id, maison, couleur, x, y, montype)
 
         self.dir = "D"
@@ -1217,7 +1206,7 @@ class Ballista(Perso):
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
-        self.vitesse = 3
+        self.vitesse = 25
         self.mana = 200
         self.delaifeumax = 90
         self.fleches = []
@@ -1520,13 +1509,18 @@ class Ouvrier(Perso):
 
     def construire_batiment(self):
         self.cible.decremente_delai()
+
+        if self.cible.sorte == "siteconstruction":
+            return
+
         if self.cible.delai < 1:
-            batiment = self.parent.parent.classesbatiments[self.cible.sorte](self, self.cible.id, self.parent.couleur,
+            try:
+                batiment = self.parent.parent.classesbatiments[self.cible.sorte](self, self.cible.id, self.parent.couleur,
                                                                              self.cible.x, self.cible.y,
                                                                              self.cible.sorte)
-            self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
+                self.parent.batiments[self.cible.sorte][self.cible.id] = batiment
 
-            try:
+
                 sitecons = self.parent.batiments['siteconstruction'].pop(batiment.id)
                 self.parent.installer_batiment(batiment)
             except:
