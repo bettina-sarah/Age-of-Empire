@@ -195,6 +195,7 @@ class Joueur():
                             "soldat": 0,
                             "archer": 0,
                             "chevalier": 0,
+                            "cavalierarcher":0,
                             "druide": 0,
                             "ballista": 0,
                             "ingenieur": 0,
@@ -250,7 +251,6 @@ class Joueur():
             print("Deja Mort")
 
     def annoncer_mort_batiment(self, perso):
-        print("batiment mort!")
         # retirer de la minimap
         # placer les case à plaine
         # retirer de l'image de l'affichage
@@ -265,19 +265,14 @@ class Joueur():
 
     def attaquer(self, param):
         attaquants, attaque = param
-        print("Joueurs attaquants et attaque", attaquants, attaque)
         # Joueurs attaquants et attaque['id_44859', 'id_44925']['JAJA_512', 'id_44868', 'ballista']
-
         nomjoueur, idperso, sorte = attaque
 
         if sorte in self.batiments.keys():
             ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
         else:
             ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
-
-        # print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
-
-        # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
+            
         for i in self.persos.keys():
             for j in attaquants:
                 if j in self.persos[i]:
@@ -286,12 +281,6 @@ class Joueur():
 
     def soigner(self, param):
         soigneur, cible = param
-        print("soigner ", soigneur)
-        print(cible)
-        print("cible ", cible)
-
-        # soigner['id_44851']
-        # cible['JAJA_438', 'id_44858', 'soldat']
 
         nomjoueur, idperso, sorte = cible
 
@@ -300,7 +289,6 @@ class Joueur():
         else:
             cible = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
 
-        # print("Nom joueur, idperso, sorte", nomjoueur, idperso, sorte)
 
         # ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
         try:
@@ -318,8 +306,6 @@ class Joueur():
     def abandonner(self, param):
         # ajouter parametre nom de l'Abandonneux, et si c'est moi, envoyer une action
         # quitter au serveur et faire destroy
-        print("param de abandonner")
-        print(param)
         msg = param[0]
 
         self.parent.mort = param[1]
@@ -375,7 +361,6 @@ class Joueur():
         # batiment.cartebatiment = cartebatiment
 
     def construire_batiment(self, param):
-        print("voici les params:", param)
         siteconstruction = None
 
         if len(param) == 3:
@@ -389,7 +374,6 @@ class Joueur():
             except:
                 siteconstruction = None
         else:
-            print("construire batiment joueur: sorte = ", sorte)
             id = get_prochain_id()
             # payer batiment
             vals = Joueur.valeurs
@@ -429,18 +413,15 @@ class Joueur():
         prix_perso = Joueur.prix_unite
         possede_les_ressources = True
 
-
         for k, val in self.ressources.items():
             if self.ressources[k] - prix_perso[sorteperso][k] < 0:
-                possede_les_ressources = False
-                print("pas assez de ressource")
-                print(k)
-                print(val)
+                    possede_les_ressources = False
 
         if possede_les_ressources:
-            # paye les ressources
+                # paye les ressources
             for k, val in self.ressources.items():
-                self.ressources[k] = val - prix_perso[sorteperso][k]
+                    self.ressources[k] = val - prix_perso[sorteperso][k]
+
             id = get_prochain_id()
             batiment = self.batiments[batimentsource][idbatiment]
             x = batiment.x + 100 + (random.randrange(50) - 15)
@@ -448,9 +429,6 @@ class Joueur():
             self.delai_perso[sorteperso] = self.delai_max
             self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                                sorteperso)
-
-
-
     def delai_boucle(self):
 
         for sorte, value in self.delai_perso.items():

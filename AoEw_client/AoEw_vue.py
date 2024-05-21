@@ -436,7 +436,6 @@ class Vue():
             self.canevasaction.delete(self.action.widgetsactifs)
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
-        print(persos)
 
         for i in persos:
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
@@ -629,7 +628,6 @@ class Vue():
             self.action.widgetsactifs = []
         self.cadrebatiment = Frame(self.canevasaction)
         for i in artefacts:
-            print()
             btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i])
             btn.bind("<Button>",
                      lambda event, i=i, tag_tour=tag_tour, pos=pos: self.site_construction_mur(tag_tour, pos, i))
@@ -737,8 +735,6 @@ class Vue():
         coul = self.modele.joueurs[joueur].couleur[0]
 
         self.canevas.delete(batiment.id)
-
-        print(self.parent.nom_joueur_local)
 
         chose = self.canevas.create_image(batiment.x, batiment.y, image=self.images[batiment.image],
                                           tags=(
@@ -934,40 +930,36 @@ class Vue():
         # A PROBLEM HERE !!:
 
         mestags = self.canevas.gettags(CURRENT)
+<<<<<<< HEAD
         print(self.action.persochoisi[0])
         print("Dans testSOIN")
         if self.action.persochoisi[0] == "Druide":
             self.action.ciblechoisi = mestags
             print(" self.action.ciblechoisi ", self.action.ciblechoisi)
             self.action.soigner()
+=======
+        self.action.ciblechoisi = mestags
+        self.action.soigner()
+>>>>>>> main
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
-        print("AJOTUER SELECTION", mestags)
         # SELECTION('mobile', 'JAJA_942', 'id_44881', 'perso', 'druide', 'current')
         if self.parent.nom_joueur_local == mestags[1]:
             if "ouvrier" == mestags[4]:
                 self.action.persochoisi.append(mestags[2])
                 self.action.afficher_commande_perso()
             elif "druide" == mestags[4] or "druideOurs" == mestags[4]:
-                print("dans DRUIDE")
                 if not self.action.persochoisi:
                     self.action.persochoisi.append(mestags[2])
-                    print(" self.action.ciblechoisi ", self.action.ciblechoisi)
-                    print("pas de perso choisi", self.action.persochoisi)
                     # self.action.soigner()
             else:
-                print("else pas ouvrier", self.action.persochoisi)
                 self.action.persochoisi.append(mestags[2])
         elif self.action.persochoisi:
-            print("Dans le elif self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
-            print(" self.action.ciblechoisi ", self.action.ciblechoisi)
             self.action.attaquer()
         else:
-            print("Dans le ELSE donc pas self.action.persochoixi != []")
             self.action.ciblechoisi = mestags
-            print(" self.action.ciblechoisi ", self.action.ciblechoisi)
             self.action.attaquer()
 
     # Methodes pour multiselect
@@ -1065,7 +1057,6 @@ class Vue():
             except:
                 self.action.prochaineaction = "mur_dh"
         else:
-            print(val)
             print("VOUS N'AVEZ PAS ASSEZ DE", k)
 
     def construire_batiment(self, evt, coordos_tour=None):
@@ -1108,21 +1099,18 @@ class Vue():
                     self.creer_cadre_usine(coul[0] + "_", ["ballista", "catapulte"], mestags[4], mestags[2],
                                            pos)
                 if "champstir" in mestags:
-                    print("JE RENTRE CHAMPS TIRIIIRR")
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_champs_tir(coul[0] + "_", ["archer", "cavalierarcher"], mestags[4], mestags[2], pos)
                 if "tour" in mestags:
                     pos = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
                     self.creer_cadre_tour(coul[0] + "_", ["mur_gb", "mur_db","mur_dh","mur_gh"], mestags[2], pos)
         elif self.action.persochoisi != []:
-            print("-=============ENNEMI ===================")
             self.action.ciblechoisi = mestags
             self.action.attaquer()
 
     # Ajout pour affichage de fin
 
     def test(self, evt):
-        # print("DANS TEST DE FIN")
         self.gagnant = "MARI"
         self.cadres["fin"] = self.creer_cadre_fin()
         self.changer_cadre("fin")
@@ -1150,13 +1138,10 @@ class Action():
         self.aideon = 0
 
     def attaquer(self):
-        print("dans attaquer : persochoisi : ", self.persochoisi)
-        print("dans attaquer : ciblechoisi : ", self.ciblechoisi)
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
             sorte = self.ciblechoisi[4]
-            print("Vue attaquer, sorte, self.ciblechoisi", sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "attaquer", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 
@@ -1166,7 +1151,6 @@ class Action():
             self.parent.parent.actions_requises.append(action)
 
     def chasser_ressource(self, tag):
-        print(tag)
         if self.persochoisi:
             action = [self.parent.parent.nom_joueur_local, "chasserressource", [tag[4], tag[2], self.persochoisi]]
             self.parent.parent.actions_requises.append(action)
@@ -1177,7 +1161,6 @@ class Action():
             self.parent.parent.actions_requises.append(action)
 
     def construire_batiment(self, pos):
-        print(self.persochoisi)
         action = None
         if self.persochoisi:
             # self.btnactif.config(bg="SystemButtonFace")
@@ -1255,13 +1238,10 @@ class Action():
 
     ##SEND ACTION TO SERVER !!!!!!!
     def soigner(self):
-        print("dans soigner : persochoisi : ", self.persochoisi)
-        print("dans soigner : ciblechoisi : ", self.ciblechoisi)
         if self.persochoisi:
             qui = self.ciblechoisi[1]
             cible = self.ciblechoisi[2]
             sorte = self.ciblechoisi[4]
-            print("Vue soigner, sorte, self.ciblechoisi", sorte, self.ciblechoisi[4])
             action = [self.parent.parent.nom_joueur_local, "soigner", [self.persochoisi, [qui, cible, sorte]]]
             self.parent.parent.actions_requises.append(action)
 

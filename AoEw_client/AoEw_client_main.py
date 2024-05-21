@@ -94,10 +94,6 @@ class Controleur():
             # print(self.joueurs[i])
             listejoueurs.append(i[0])
 
-        # print(listejoueurs)
-        # set(listejoueurs)
-        # print(listejoueurs)
-        # self.type = len(listejoueurs)
         # on cree le modele (la partie)
         self.partie = Partie(self, listejoueurs)
         # on passe le modele a la vue puisqu'elle trouvera toutes le sinfos a dessiner
@@ -122,7 +118,6 @@ class Controleur():
         url = self.url_serveur + "/tester_jeu"
         params = {"nom": self.nom_joueur_local}
         mondict = self.appeler_serveur(url, params)
-        # print(self.nom_joueur_local, mondict)
         if mondict:
             self.vue.update_splash(mondict[0])
         self.prochain_splash = self.vue.root.after(50, self.boucler_sur_splash)
@@ -224,7 +219,6 @@ class Controleur():
     def afficher_fin(self, gagnant):
         self.vue.afficher_fin(gagnant)
 
-    # ajoute Abi AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH
     def tuer_joueur(self):
         self.vue.unbind_joueur()
         self.vue.test_HUD()
