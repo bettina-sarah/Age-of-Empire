@@ -327,10 +327,13 @@ class Perso():
                 return dist
 
     def update_cases(self, x1, y1):
-        self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
-        self.x, self.y = x1, y1
-        self.case = self.parent.parent.trouver_case(self.x, self.y)
-        self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+        try:
+            self.parent.parent.trouver_case(self.x, self.y).persos.pop(self.id)
+            self.x, self.y = x1, y1
+            self.case = self.parent.parent.trouver_case(self.x, self.y)
+            self.parent.parent.trouver_case(self.x, self.y).persos[self.id] = self
+        except:
+            print("cant find this")
 
     def get_directon_vers_position_visee(self):
         if self.position_visee:
