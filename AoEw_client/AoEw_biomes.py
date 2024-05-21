@@ -140,14 +140,12 @@ class Animal():
     def mourir(self):
         # self.etat = "mort"
         self.en_vie = False
-        print("MORT!!!")
         self.position_visee = None
 
     def recevoir_coup(self, dommage, ennemi):
         self.vie -= dommage
-        print("Ouch")
+
         if self.vie < 1:
-            print("MORT")
             self.mourir()
             return 1
 
@@ -243,9 +241,7 @@ class Ours(Animal):
         self.ennemi = ennemi
         self.img = self.nomimg + self.dir + "A"
         self.attaquer()
-        print("Ouch ours!")
         if self.vie < 1:
-            print("MORT")
             self.mourir()
             return 1
 
