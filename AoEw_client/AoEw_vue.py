@@ -973,20 +973,23 @@ class Vue():
             self.canevas.coords(self.selecteuractif, x1, y1, x2, y2)
 
     def terminer_selection(self, evt):
-        if self.debutselect:
-            x1, y1 = self.debutselect
-            x2, y2 = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
-            self.debutselect = []
-            objchoisi = (list(self.canevas.find_enclosed(x1, y1, x2, y2)))
-            for i in objchoisi:
-                if self.parent.nom_joueur_local not in self.canevas.gettags(i):
-                    objchoisi.remove(i)
-                else:
-                    self.action.persochoisi.append(self.canevas.gettags(i)[2])
+        try:
+            if self.debutselect:
+                x1, y1 = self.debutselect
+                x2, y2 = (self.canevas.canvasx(evt.x), self.canevas.canvasy(evt.y))
+                self.debutselect = []
+                objchoisi = (list(self.canevas.find_enclosed(x1, y1, x2, y2)))
+                for i in objchoisi:
+                    if self.parent.nom_joueur_local not in self.canevas.gettags(i):
+                        objchoisi.remove(i)
+                    else:
+                        self.action.persochoisi.append(self.canevas.gettags(i)[2])
 
-            if self.action.persochoisi:
-                self.action.afficher_commande_perso()
-            self.canevas.delete("selecteur")
+                if self.action.persochoisi:
+                    self.action.afficher_commande_perso()
+                self.canevas.delete("selecteur")
+        except:
+            print("catchman is back")
 
     ### FIN du multiselect
 
