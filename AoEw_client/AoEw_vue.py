@@ -932,12 +932,14 @@ class Vue():
     def testSoin(self, evt):
 
         # A PROBLEM HERE !!:
+
         mestags = self.canevas.gettags(CURRENT)
         print(self.action.persochoisi[0])
         print("Dans testSOIN")
-        self.action.ciblechoisi = mestags
-        print(" self.action.ciblechoisi ", self.action.ciblechoisi)
-        self.action.soigner()
+        if self.action.persochoisi[0] == "Druide":
+            self.action.ciblechoisi = mestags
+            print(" self.action.ciblechoisi ", self.action.ciblechoisi)
+            self.action.soigner()
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
