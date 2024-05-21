@@ -945,16 +945,18 @@ class Ballista(Perso):
         self.image = couleur[0] + "_" + montype + self.dir
         self.cible = None
         self.angle = None
-        self.distancefeumax = 360
-        self.distancefeu = 360
+        self.distancefeumax = 500
+        self.distancefeu = 500
         self.delai_verifier_champ = 30
+        
         self.vision_cases = 20
         self.delaifeu = 90
+
         self.force = 80
         self.champvision = 100
-        self.vitesse = 30
+        self.vitesse = 7
         self.mana = 200
-        self.delaifeumax = 90
+        self.delaifeumax = 40
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None
@@ -1033,16 +1035,16 @@ class Catapulte(Perso):
         self.image = couleur[0] + "_" + montype + self.dir
         self.cible = None
         self.angle = None
-        self.distancefeumax = 360
-        self.distancefeu = 360
+        self.distancefeumax = 700
+        self.distancefeu = 700
         self.delai_verifier_champ = 30
         self.vision_cases = 10
-        self.delaifeu = 90
+        self.delaifeu = 50
         self.force = 80
         self.champvision = 100
-        self.vitesse = 10
+        self.vitesse = 6
         self.mana = 200
-        self.delaifeumax = 90
+        self.delaifeumax = 50
         self.boulets = []
         self.cibleennemi = None
         self.position_visee = None
