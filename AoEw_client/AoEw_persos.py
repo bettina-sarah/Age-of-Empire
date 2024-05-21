@@ -940,13 +940,10 @@ class Ballista(Perso):
         self.distancefeumax = 500
         self.distancefeu = 500
         self.delai_verifier_champ = 30
-<<<<<<< HEAD
-        self.vision_cases = 10
-        self.delaifeu = 40
-=======
+
         self.vision_cases = 20
         self.delaifeu = 90
->>>>>>> 1d59f8ec7a2165c367623d8bc78f0a783a3a3e79
+
         self.force = 80
         self.champvision = 100
         self.vitesse = 7
