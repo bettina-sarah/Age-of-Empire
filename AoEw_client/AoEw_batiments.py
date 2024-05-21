@@ -189,7 +189,7 @@ class Tour(Batiment):
         self.vision_cases = 10
         self.distancefeu = 200
         self.delaifeu = 2
-        self.delaifeumax = 2
+        self.delaifeumax = 10
         self.boulets = []
 
         self.etats_et_actions = {
