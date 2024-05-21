@@ -24,7 +24,7 @@ class Controleur():
         # adresses du URL du serveur de jeu, adresse 127.0.0.1 est pour des tests avec un serveur local... utile pour tester
         # self.url_serveur = "http://jmdeschamps.pythonanywhere.com"
         # self.url_serveur = "http://10.57.48.24:8000"
-        self.url_serveur = "http://127.0.0.1:8000"
+        self.url_serveur = "http://10.57.48.24:8000"
         self.session = None
         self.vue = Vue(self, self.url_serveur, self.nom_joueur_local)
         self.vue.root.mainloop()

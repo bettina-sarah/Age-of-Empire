@@ -267,17 +267,19 @@ class Joueur():
         attaquants, attaque = param
         # Joueurs attaquants et attaque['id_44859', 'id_44925']['JAJA_512', 'id_44868', 'ballista']
         nomjoueur, idperso, sorte = attaque
+        try:
+            if sorte in self.batiments.keys():
+                ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
+            else:
+                ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
 
-        if sorte in self.batiments.keys():
-            ennemi = self.parent.joueurs[nomjoueur].batiments[sorte][idperso]
-        else:
-            ennemi = self.parent.joueurs[nomjoueur].persos[sorte][idperso]
-            
-        for i in self.persos.keys():
-            for j in attaquants:
-                if j in self.persos[i]:
-                    self.persos[i][j].attaquer(ennemi)
-                    # j.attaquer(ennemi)
+            for i in self.persos.keys():
+                for j in attaquants:
+                    if j in self.persos[i]:
+                        self.persos[i][j].attaquer(ennemi)
+                        # j.attaquer(ennemi)
+        except:
+            print("dans bug attaque ")
 
     def soigner(self, param):
         soigneur, cible = param
