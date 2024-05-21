@@ -32,7 +32,7 @@ Les unités combattantes sont par défaut en train de vérifier dans un rayon do
 Un ours a été rajouté. De dernier comprend deux types. 1) Un ours régulier , qui est une ressource. 2) Un ours puissant et agressif, qui attaque le joueur qui l'a attaqué en premier, le poursuivant. Les ours peuvent être attaqués par les ouvriers seulement. 
 
 --COLLISION--
-Lorsqu'un unité touche un batiment, celui-ci tente (la plupart du temps) de le contourné. Une unité 
+Lorsqu'un unité touche un batiment, celui-ci tente (la plupart du temps) de le contourné.
 
 --ESTHÉTIQUE-- 
 Plusieurs revêtements esthétiques ont été ajoutés, tant au niveau des personnages que des bâtiments. Certains personnages combatants possèdent même leurs propres animations, comme le soldat. Au final, ce sont surtout les bâtiments qui ont reçu une amélioration esthétique. 
