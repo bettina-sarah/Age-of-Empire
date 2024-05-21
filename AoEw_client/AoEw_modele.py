@@ -350,7 +350,6 @@ class Partie():
         # ATTENTION : NE PAS TOUCHER 
         if cadrecourant in self.actions_a_faire:
             for i in self.actions_a_faire[cadrecourant]:
-                print("i dans jouer prochain coup", i)
                 self.joueurs[i[0]].actions[i[1]](i[2])
 
         ##################################################################
@@ -418,33 +417,6 @@ class Partie():
                 t1.append(Caseregion(None, id, j, i))
             self.cartecase.append(t1)
 
-    # def trouver_case(self, x, y):
-    #
-    #     if x < 0:
-    #         x = 0
-    #     if y < 0:
-    #         y = 0
-    #
-    #     if x > (self.aireX - 1):
-    #         x = self.aireX - 1
-    #     if y > (self.aireY - 1):
-    #         y = self.aireY - 1
-    #
-    #     cx = int(x / self.taillecase)
-    #     cy = int(y / self.taillecase)
-    #     # if cx != 0 and x % self.taillecase > 0:
-    #     #     cx += 1
-    #     #
-    #     # if cy != 0 and y % self.taillecase > 0:
-    #     #     cy += 1
-    #
-    #     # possible d'etre dans une case trop loin
-    #     if cx == self.taillecarte:
-    #         cx -= 1
-    #     if cy == self.taillecarte:
-    #         cy -= 1
-    #     # print("--> carte",self.cartecase[cy][cx])
-    #     return self.cartecase[cy][cx]  # [cx,cy]
 
     def trouver_case(self, x, y, dir="none"):
         offsetX = 0
@@ -485,7 +457,6 @@ class Partie():
             cx -= 1
         if cy == self.taillecarte:
             cy -= 1
-        # print(self.cartecase[cy][cx])
         return self.cartecase[cy + offsetY][cx + offsetX]  # [cx,cy]
 
     def get_carte_bbox(self, x1, y1, x2, y2):  # case d'origine en cx et cy,  pour position pixels x, y
@@ -555,10 +526,7 @@ class Partie():
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax and case.persos:
                     t1.append(case)
-                    # first_key, first_value = next(iter(case.persos.items()))
-                    # print(f"First key: {first_key}, First value: {first_value}")
-                    #
-                    # print(t1)
+
         return t1
 
     def get_carte_contournement(self, x, y, dx, dy):
@@ -594,7 +562,6 @@ class Partie():
                 case = self.cartecase[i][j]
                 pxcentrecasex = (j * self.taillecase) + self.demicase
                 pxcentrecasey = (i * self.taillecase) + self.demicase
-                print(self.cartecase[i][j].montype)
                 distcase = Helper.calcDistance(pxcentrex, pxcentrey, pxcentrecasex, pxcentrecasey)
                 if distcase <= distmax:
                     t1.append(case)
@@ -637,17 +604,11 @@ class Partie():
     ## Ajout Abi
 
     def delete_batim_joueurs(self, id_batim, joueur):
-        print("JOEEUR LOCAL")
-        print(self.parent.nom_joueur_local)
-        print("joueur qui a etet delete")
-        print(joueur)
         joueur = self.joueurs.get(joueur)
-        print(joueur.batiments)
 
         for key, value_list in joueur.batiments.items():
             if id_batim in value_list:
                 value_list.remove(id_batim)
-        # joueur.batiments.pop(id_batim)
 
         self.eliminer_joueur()
 
@@ -682,22 +643,6 @@ class Partie():
         self.parent.retirer_batiment_minimap(id)
 
     def set_background_case_batiment(self, cartebatiment):
-
-        # x1, y1 = cartebatiment[0]
-        # x4, y4 = cartebatiment[-1]
-        # x2, y2 = x4, y1
-        # x3, y3 = x1, y4
-        #
-        # print(x1, "/", y1)
-        # print(x2, "/", y2)
-        # print(x3, "/", y3)
-        # print(x4, "/", y4)
-        #
-        # self.cartecase[[x1][y1]].montype = "coin"
-        # self.cartecase[[x2][y2]].montype = "coin"
-        # self.cartecase[[x3][y3]].montype = "coin"
-        # self.cartecase[[x4][y4]].montype = "coin"
-
         y1 = 0;
         count = 0
         for casePos in cartebatiment:
@@ -709,8 +654,6 @@ class Partie():
                 self.cartecase[casePos[1]][casePos[0]].montype = "batiment-back"
 
         test = self.cartecase
-        print(self.cartecase)
-
         pass
 
     def reset_case_batiment(self, cartebatiment):
