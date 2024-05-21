@@ -425,7 +425,10 @@ class Joueur():
         if siteconstruction:
             if perso:
                 for i in perso:
-                    self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
+                    try:
+                        self.persos["ouvrier"][i].construire_site_construction(siteconstruction)
+                    except:
+                        print("must be the wind")
 
     def installer_batiment(self, batiment):
         self.parent.installer_batiment(self.nom, batiment)

@@ -87,6 +87,7 @@ class Controleur():
         random.seed(2546)  # essayer de trouver un seed avec les maisons pas loin
         # on recoit la derniere liste des joueurs pour la partie
         listejoueurs = []
+        print("joueurs: ")
         for i in self.joueurs:
             print(i)
             # print(self.joueurs[i])
