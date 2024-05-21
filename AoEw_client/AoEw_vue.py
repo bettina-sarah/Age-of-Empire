@@ -930,17 +930,14 @@ class Vue():
         # A PROBLEM HERE !!:
 
         mestags = self.canevas.gettags(CURRENT)
-<<<<<<< HEAD
+
         print(self.action.persochoisi[0])
         print("Dans testSOIN")
         if self.action.persochoisi[0] == "Druide":
             self.action.ciblechoisi = mestags
             print(" self.action.ciblechoisi ", self.action.ciblechoisi)
             self.action.soigner()
-=======
-        self.action.ciblechoisi = mestags
-        self.action.soigner()
->>>>>>> main
+
 
     def ajouter_selection(self, evt):
         mestags = self.canevas.gettags(CURRENT)
