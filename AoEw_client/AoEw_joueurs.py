@@ -338,12 +338,15 @@ class Joueur():
 
     def ramasser_ressource(self, param):
         typeress, idress, troupe = param
-        for i in troupe:
-            for j in self.persos.keys():
-                if j == "ouvrier":
-                    if i in self.persos[j]:
-                        self.persos[j][i].chasser_ramasser(self.parent.biotopes[typeress][idress],
-                                                           typeress, "ciblerressource")
+        try:
+            for i in troupe:
+                for j in self.persos.keys():
+                    if j == "ouvrier":
+                        if i in self.persos[j]:
+                            self.persos[j][i].chasser_ramasser(self.parent.biotopes[typeress][idress],
+                                                               typeress, "ciblerressource")
+        except:
+            print("try catch dans ressource")
 
     def deplacer(self, param):
         pos, troupe = param
