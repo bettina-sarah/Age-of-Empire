@@ -11,7 +11,12 @@ class Fleche():
         self.vitesse = 18
         self.taille = 20
 
-        self.force = 25  ##A REMMETTRE A 10
+        if self.parent.montype == "ballista":
+            self.force = 40
+            self.vitesse = 10
+        else:
+            self.force = 25
+
 
         self.proie = proie
         self.proiex = self.proie.x
@@ -61,7 +66,7 @@ class Boulet():
         self.vitesse = 18
         self.taille = 20
 
-        self.force = 25  ##A REMMETTRE A 10
+        self.force = 30  ##A REMMETTRE A 10
 
         self.proie = proie
         self.proiex = self.proie.x
@@ -651,6 +656,7 @@ class Archer(Perso):
         self.champvision = 300
         self.vitesse = 5
         self.mana = 80
+        self.force = 25
         self.fleches = []
         self.cibleennemi = None
         self.position_visee = None
@@ -763,7 +769,7 @@ class CavalierArcher(Archer):
         self.delai_verifier_champ = 30
         self.distancefeu = 250
         self.champvision = 350
-        self.vitesse = 35
+        self.vitesse = 10
         self.mana = 120
 
 
@@ -892,7 +898,6 @@ class Druide(Perso):
         self.force = 20
         self.distancefeumax = 50
         self.soin_mana = 1
-        self.distancefeumax = 10
         self.delaifeu = 20
         self.delaifeumax = 20
         self.vision_cases = 10
@@ -993,7 +998,8 @@ class DruideOurs(Perso):
         self.delaisoinmax = 5
         self.delai_verifier_champ = 30
         self.vision_cases = 10
-        self.vitesse = 10
+        self.vitesse = 7
+        self.mana = 125
         self.cibleennemi = None
         self.cible_soin = None
         self.position_visee = None
@@ -1246,7 +1252,7 @@ class Ballista(Perso):
         self.distancefeumax = 360
         self.distancefeu = 360
         self.delai_verifier_champ = 30
-        self.vision_cases = 10
+        self.vision_cases = 20
         self.delaifeu = 90
         self.force = 80
         self.champvision = 100
