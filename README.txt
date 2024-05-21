@@ -5,9 +5,10 @@ L'accent a été mis sur le combat et ses diverses fonctionnalités. Ainsi, le b
 
 ----FONCTIONNALITÉS----
 Plusieurs personnages combatants ont été ajoutés, ainsi que leurs bâtiments parents. 
+Les batiments ont tous un menu permettant de choisir l'unité désiré ou autre action (comme construire un mur)
 
 --BÂTIMENTS--
-Une tour de tir a été ajoutée, représentant le seul bâtiment offensif. Cette dernière attaque à distance. 
+Une tour de tir a été ajoutée, représentant le seul bâtiment offensif. Cette dernière attaque à distance. La tour peut servir de fondation pour batir des murs.
 Un champ de tir a été ajouté
 
 --ARTEFACTS--
@@ -31,5 +32,7 @@ Les unités combattantes sont par défaut en train de vérifier dans un rayon do
 --ANIMAUX--
 Un ours a été rajouté. De dernier comprend deux types. 1) Un ours régulier , qui est une ressource. 2) Un ours puissant et agressif, qui attaque le joueur qui l'a attaqué en premier, le poursuivant. Les ours peuvent être attaqués par les ouvriers seulement. 
 
+--COLLISION--
+Lorsqu'un unité touche un batiment, celui-ci tente (la plupart du temps) de le contourné. Une unité 
 --ESTHÉTIQUE-- 
 Plusieurs revêtements esthétiques ont été ajoutés, tant au niveau des personnages que des bâtiments. Certains personnages combatants possèdent même leurs propres animations, comme le soldat. Au final, ce sont surtout les bâtiments qui ont reçu une amélioration esthétique. 
