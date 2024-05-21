@@ -555,7 +555,7 @@ class Vue():
         self.cadrebatiment = Frame(self.canevasaction)
         for i in persos:
             if i == "catapulte":  # !! image a faire
-                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "DH"])
                 btn.bind("<Button>",
                          lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
                                                                                                                       tag_batiment,
@@ -564,7 +564,7 @@ class Vue():
                 btn.pack()
                 self.afficher_labels_ressources(i)
             else:
-                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "D"])
+                btn = Button(self.cadrebatiment, text=i, image=self.images[coul + i + "DH"])
 
                 btn.bind("<Button>",
                          lambda event, i=i, tag_batiment=tag_batiment, id_joueur=id_joueur, pos=pos: self.test_entite(i,
