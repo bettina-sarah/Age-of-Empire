@@ -195,6 +195,7 @@ class Joueur():
                             "soldat": 0,
                             "archer": 0,
                             "chevalier": 0,
+                            "cavalierarcher":0,
                             "druide": 0,
                             "ballista": 0,
                             "ingenieur": 0,
@@ -409,26 +410,22 @@ class Joueur():
         prix_perso = Joueur.prix_unite
         possede_les_ressources = True
 
-        if self.delai_perso[sorteperso] == 0:
-            for k, val in self.ressources.items():
-                if self.ressources[k] - prix_perso[sorteperso][k] < 0:
+        for k, val in self.ressources.items():
+            if self.ressources[k] - prix_perso[sorteperso][k] < 0:
                     possede_les_ressources = False
 
-            if possede_les_ressources:
+        if possede_les_ressources:
                 # paye les ressources
-                for k, val in self.ressources.items():
+            for k, val in self.ressources.items():
                     self.ressources[k] = val - prix_perso[sorteperso][k]
-                id = get_prochain_id()
-                batiment = self.batiments[batimentsource][idbatiment]
-                x = batiment.x + 100 + (random.randrange(50) - 15)
-                y = batiment.y + (random.randrange(50) - 15)
-                self.delai_perso[sorteperso] = self.delai_max
-                self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+            id = get_prochain_id()
+            batiment = self.batiments[batimentsource][idbatiment]
+            x = batiment.x + 100 + (random.randrange(50) - 15)
+            y = batiment.y + (random.randrange(50) - 15)
+            self.delai_perso[sorteperso] = self.delai_max
+            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                                sorteperso)
 
-
-        else:
-            print("TROP RAPPIDE !!!!!!!!!!!!!!!!!!!!!!!!!! ")
 
     def delai_boucle(self):
 

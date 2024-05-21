@@ -215,7 +215,6 @@ class Controleur():
     def afficher_fin(self, gagnant):
         self.vue.afficher_fin(gagnant)
 
-    # ajoute Abi AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHH
     def tuer_joueur(self):
         self.vue.unbind_joueur()
         self.vue.test_HUD()
