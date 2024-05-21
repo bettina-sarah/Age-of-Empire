@@ -922,15 +922,11 @@ class DruideOurs(Perso):
             for i in cases:  # chaque case
                 cles = i.persos.values()  # 'objet'
                 for j in cles:  # pour chaque objet
-<<<<<<< HEAD
+
                     print(j.parent.nom)
                     if j.parent.nom == self.parent.nom:
                         print("============== DETECTION ami============")
                         self.soigner(j)
-=======
-                    if j.parent.nom != self.parent.nom:
-                        self.attaquer(j)
->>>>>>> main
             self.delai_verifier_champ = 30
 
 class Ingenieur(Perso):
