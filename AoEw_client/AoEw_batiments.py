@@ -222,7 +222,6 @@ class Tour(Batiment):
 
         if len(self.boulets) > 0:
             for i in self.boulets:
-                print( "boulet bougger")
                 rep = i.bouger()
             # if rep:
             # self.cibleennemi.recevoir_coup(self.force)

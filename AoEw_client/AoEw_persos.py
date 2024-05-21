@@ -93,6 +93,7 @@ class Boulet():
                 carte = self.parent.parent.parent.parent.get_subcarte(self.x, self.y, 4)
             persos_a_attaquer = []
 
+            rep = 1
             for i in range(len(carte)):
                 persos_a_attaquer.append(carte[i].persos)
             for i in range(len(persos_a_attaquer)):
@@ -117,6 +118,7 @@ class Boulet():
                     pass
                 self.parent.cibleennemi = None;
                 self.parent.actioncourante = "verifierchampvision"
+
 
             # return self
 

@@ -369,26 +369,6 @@ class Joueur():
         batiment = Maison(self, idmaison, self.couleur, x, y, "maison")
         self.batiments["maison"][idmaison] = batiment
 
-        # x1, y1, x2, y2 = self.parent.parent.installer_batiment(self.nom, batiment)
-        # cartebatiment = self.get_carte_bbox(x1, y1, x2, y2)
-        #
-        # type_case = "batiment"
-        #
-        # if batiment.montype == "maison":
-        #     type_case = "batiment-maison"
-        # elif "mur" in batiment.montype or batiment.montype == "tour":
-        #     type_case = "batiment-mur"
-        #
-        #
-        # for i in cartebatiment:
-        #     # pour contournement avec retour de ressource
-        #     self.cartecase[i[1]][i[0]].montype = type_case
-        #     self.cartecase[i[1]][i[0]].batiment = batiment
-        #     print("new batiment: ", i[1], "/", i[0])
-        #
-        # x1, y1 = cartebatiment[0]
-        # x4, y4 = cartebatiment[-1]
-
 
         #TOUJOURS PREND SET COINS
         # batiment.set_coins(x1 * self.taillecase, y1* self.taillecase , x4* self.taillecase, y4* self.taillecase)
@@ -449,29 +429,27 @@ class Joueur():
         prix_perso = Joueur.prix_unite
         possede_les_ressources = True
 
-        if self.delai_perso[sorteperso] == 0:
-            for k, val in self.ressources.items():
-                if self.ressources[k] - prix_perso[sorteperso][k] < 0:
-                    possede_les_ressources = False
-                    print("pas assez de ressource")
-                    print(k)
-                    print(val)
 
-            if possede_les_ressources:
-                # paye les ressources
-                for k, val in self.ressources.items():
-                    self.ressources[k] = val - prix_perso[sorteperso][k]
-                id = get_prochain_id()
-                batiment = self.batiments[batimentsource][idbatiment]
-                x = batiment.x + 100 + (random.randrange(50) - 15)
-                y = batiment.y + (random.randrange(50) - 15)
-                self.delai_perso[sorteperso] = self.delai_max
-                self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
+        for k, val in self.ressources.items():
+            if self.ressources[k] - prix_perso[sorteperso][k] < 0:
+                possede_les_ressources = False
+                print("pas assez de ressource")
+                print(k)
+                print(val)
+
+        if possede_les_ressources:
+            # paye les ressources
+            for k, val in self.ressources.items():
+                self.ressources[k] = val - prix_perso[sorteperso][k]
+            id = get_prochain_id()
+            batiment = self.batiments[batimentsource][idbatiment]
+            x = batiment.x + 100 + (random.randrange(50) - 15)
+            y = batiment.y + (random.randrange(50) - 15)
+            self.delai_perso[sorteperso] = self.delai_max
+            self.persos[sorteperso][id] = Joueur.classespersos[sorteperso](self, id, batiment, self.couleur, x, y,
                                                                                sorteperso)
 
 
-        else:
-            print("TROP RAPPIDE !!!!!!!!!!!!!!!!!!!!!!!!!! ")
 
     def delai_boucle(self):
 
