@@ -230,4 +230,4 @@ def boucler_sur_jeu():
     #return Response(json.dumps(maliste), mimetype='application/json')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=True,host ="10.57.48.24", port=8000)

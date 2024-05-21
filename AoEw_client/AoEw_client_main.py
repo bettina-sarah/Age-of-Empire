@@ -23,7 +23,7 @@ class Controleur():
         self.modulo_appeler_serveur = 4  # environ 5-6 fois par seconde
         # adresses du URL du serveur de jeu, adresse 127.0.0.1 est pour des tests avec un serveur local... utile pour tester
         # self.url_serveur = "http://jmdeschamps.pythonanywhere.com"
-        self.url_serveur = "http://127.0.0.1:8000"
+        self.url_serveur = "http://10.57.48.24:8000"
         self.session = None
         self.vue = Vue(self, self.url_serveur, self.nom_joueur_local)
         self.vue.root.mainloop()
@@ -88,6 +88,8 @@ class Controleur():
         # on recoit la derniere liste des joueurs pour la partie
         listejoueurs = []
         for i in self.joueurs:
+            print(i)
+            # print(self.joueurs[i])
             listejoueurs.append(i[0])
 
         # print(listejoueurs)

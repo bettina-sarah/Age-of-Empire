@@ -1110,9 +1110,9 @@ class DruideOurs(Perso):
                 cles = i.persos.values()  # 'objet'
                 for j in cles:  # pour chaque objet
                     print(j.parent.nom)
-                    if j.parent.nom != self.parent.nom:
-                        print("============== DETECTION ENNEMI============")
-                        self.attaquer(j)
+                    if j.parent.nom == self.parent.nom:
+                        print("============== DETECTION ami============")
+                        self.soigner(j)
             self.delai_verifier_champ = 30
 #
 # class DruideOurs(Perso):
